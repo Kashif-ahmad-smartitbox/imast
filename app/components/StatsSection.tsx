@@ -3,6 +3,7 @@
 
 import React from "react";
 import { Users, CheckCircle2, Layers, Repeat } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 type Stat = {
   id: string;
@@ -10,7 +11,7 @@ type Stat = {
   label: string;
   color?: string; // main accent color for the stat
   accent?: string; // light background tint
-  Icon?: React.ComponentType<any>;
+  Icon?: LucideIcon;
 };
 
 const DEFAULT_STATS: Stat[] = [

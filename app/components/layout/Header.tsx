@@ -21,10 +21,10 @@ import {
   Users,
   Award,
   Package,
-  Truck,
   HeadphonesIcon,
   Sparkles,
 } from "lucide-react";
+import Link from "next/link";
 
 // Types
 type MenuType = "solution" | "services" | "company" | null;
@@ -160,7 +160,7 @@ export default function Header() {
         >
           {/* Logo */}
           <div className="flex items-center">
-            <a
+            <Link
               href="/"
               className="flex items-center gap-2 group relative"
               onClick={() => setOpenMenu(null)}
@@ -181,7 +181,7 @@ export default function Header() {
                   className="text-red-500 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110"
                 />
               )}
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
