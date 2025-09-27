@@ -9,6 +9,7 @@ import {
   Phone,
   ArrowUp,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function FooterImproved() {
   const [email, setEmail] = useState("");
@@ -34,9 +35,9 @@ export default function FooterImproved() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand / Summary */}
           <div className="space-y-4">
-            <a href="/" className="inline-flex items-center gap-3">
+            <Link href="/" className="inline-flex items-center gap-3">
               <img src="/logo.svg" alt="IMAST" className="h-8 w-auto" />
-            </a>
+            </Link>
 
             <p className="text-sm text-gray-300 max-w-sm">
               Practical software for retail, distribution and loyalty — built to

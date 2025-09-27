@@ -109,8 +109,8 @@ export default function CallToActionImproved() {
                 Quick contact
               </div>
               <p className="mt-2 text-sm text-rose-100">
-                Pick how you'd like to connect — we respond within one business
-                day.
+                Pick how you&apos;d like to connect — we respond within one
+                business day.
               </p>
 
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
