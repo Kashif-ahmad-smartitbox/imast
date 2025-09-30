@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, ArrowRight } from "lucide-react";
 import useWindowSize from "../../hooks/useWindowSize";
 
 export default function Hero() {
@@ -55,7 +55,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative w-full h-screen max-h-[880px] overflow-hidden bg-black">
+    <section className="relative w-full h-[100vh] overflow-hidden bg-black">
       <video
         ref={videoRef}
         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-out ${
@@ -84,29 +84,33 @@ export default function Hero() {
         className={`relative z-10 max-w-7xl mx-auto ${getContainerPadding()} h-full flex items-center`}
       >
         <div className="w-full md:w-3/5 lg:w-2/5 text-white">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight drop-shadow-md">
-            Build connected customer journeys — from store to supply chain
+          <h1 className="text-xl sm:text-4xl lg:text-4xl font-bold leading-tight drop-shadow-md">
+            One Integrated Cloud Platform Automating the Complete Supply Chain
+            from Warehouse to Customer
           </h1>
 
           <p className="mt-4 text-sm sm:text-base lg:text-lg text-white/90">
-            IMAST unifies loyalty, distribution and service into a single
-            platform — reducing complexity and improving revenue for retail and
-            FMCG brands. Fast to implement, built for scale.
+            IMAST brings together warehouse operations, sales and marketing,
+            distribution, retail, loyalty, customer engagement and service in a
+            single cloud platform , seamlessly bridging supply chain and
+            customer journeys.
           </p>
 
           <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
             <a
-              href="#contact"
-              className="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-white text-black font-semibold shadow-md hover:shadow-lg transition"
+              href="/contact"
+              className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
             >
-              Request a demo
+              <span>Request a demo</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </a>
 
             <a
               href="#modules"
-              className="inline-flex items-center justify-center px-5 py-3 rounded-lg border border-white/30 text-white/95 hover:bg-white/5 transition"
+              className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
             >
-              Explore modules
+              <span> Explore modules</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </a>
           </div>
         </div>

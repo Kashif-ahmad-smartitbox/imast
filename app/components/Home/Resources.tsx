@@ -2,17 +2,6 @@
 import React, { useMemo, useState } from "react";
 import { Search, Tag, Calendar, BookOpen, ArrowRight } from "lucide-react";
 
-/**
- * Resources.tsx
- * "Resources / Insights / Blog Previews" section
- * - Featured article banner + preview grid
- * - Search + tag/category filters + author/date chips
- * - Load more with simple client-side pagination
- * - Accessible markup and Tailwind styling
- *
- * Replace placeholder images and links with your real content.
- */
-
 type Post = {
   id: string;
   title: string;
@@ -32,7 +21,8 @@ const POSTS: Post[] = [
     title: "How to cut checkout time by 30%: field-tested tactics",
     excerpt:
       "Practical UX and process changes we implemented with a 400-store retail chain.",
-    image: "https://placehold.co/1200x720?text=Checkout+optimisation",
+    image:
+      "https://images.unsplash.com/photo-1522199755839-a2bacb67c546?w=1200&q=80&auto=format&fit=crop",
     tags: ["Retail", "UX"],
     author: "Rajat Mehta",
     date: "2024-11-12",
@@ -45,7 +35,8 @@ const POSTS: Post[] = [
     title: "Distributor routing: 5 levers that actually save fuel",
     excerpt:
       "Route clustering, priority deliveries and micro-optimisations that work in the field.",
-    image: "https://placehold.co/1200x720?text=Routing",
+    image:
+      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&q=80&auto=format&fit=crop",
     tags: ["Distribution", "Logistics"],
     author: "Anita Rao",
     date: "2025-02-08",
@@ -57,7 +48,8 @@ const POSTS: Post[] = [
     title: "Loyalty programs that don't fail: a blueprint",
     excerpt:
       "Design, rewards and measurement — the playbook we use for FMCG customers.",
-    image: "https://placehold.co/1200x720?text=Loyalty",
+    image:
+      "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=1200&q=80&auto=format&fit=crop",
     tags: ["Loyalty", "Marketing"],
     author: "Priya Singh",
     date: "2024-09-10",
@@ -69,7 +61,8 @@ const POSTS: Post[] = [
     title: "Integrations checklist: connect POS, ERP and analytics cleanly",
     excerpt:
       "Common pitfalls, mapping templates and deployment tips for systems integration.",
-    image: "https://placehold.co/1200x720?text=Integrations",
+    image:
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80&auto=format&fit=crop",
     tags: ["Integrations", "Tech"],
     author: "Siddharth Kumar",
     date: "2025-03-10",
@@ -81,7 +74,8 @@ const POSTS: Post[] = [
     title: "After-sales success: tightening the service loop",
     excerpt:
       "How to close the loop on returns, warranties and customer claims at scale.",
-    image: "https://placehold.co/1200x720?text=After-sales",
+    image:
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80&auto=format&fit=crop",
     tags: ["After-sales", "Operations"],
     author: "Meera Joshi",
     date: "2024-12-02",
@@ -93,7 +87,7 @@ const POSTS: Post[] = [
 export default function Resources() {
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | "All">("All");
-  const [count, setCount] = useState(6);
+  const [count, setCount] = useState(3);
 
   const tags = useMemo(
     () => ["All", ...Array.from(new Set(POSTS.flatMap((p) => p.tags || [])))],

@@ -1,19 +1,19 @@
 import React from "react";
 import Proof from "@/components/Home/Proof";
+import Hero from "@/app/components/Home/Hero";
 import Header from "@/components/layout/Header";
 import Modules from "@/components/Home/Modules";
 import Footer from "@/components/layout/Footer";
 import KeyValue from "@/components/Home/KeyValue";
-import DeepDive from "@/components/Home/DeepDive";
-import UseCases from "@/components/Home/UseCases";
 import Resources from "@/components/Home/Resources";
 import HowItWorks from "@/components/Home/HowItWorks";
-import Hero from "@/app/components/PreviousDesign/Hero";
+import ImastTrial from "../components/Home/ImastTrial";
 import CaseStudies from "@/components/Home/CaseStudies";
 import CallToAction from "@/components/Home/CallToAction";
 import WhyChooseIMAST from "@/components/Home/WhyChooseIMAST";
 import EcosystemSection from "@/components/Home/EcosystemSection";
-import PartnersIntegrations from "@/components/Home/PartnersIntegrations";
+import ImastImpactSection from "@/components/Home/ImastImpactSection";
+import ImastValuesSection from "@/components/Home/ImastValuesSection";
 
 function HomePage() {
   return (
@@ -22,16 +22,16 @@ function HomePage() {
       <Hero />
       <KeyValue />
       <EcosystemSection />
+      <ImastImpactSection />
+      <ImastValuesSection />
       <Modules />
       <HowItWorks />
-      <UseCases />
+      <ImastTrial />
       <Proof />
-      <DeepDive />
       <WhyChooseIMAST />
       <CaseStudies />
-      <PartnersIntegrations />
-      <Resources />
       <CallToAction />
+      <Resources />
       <Footer />
     </>
   );

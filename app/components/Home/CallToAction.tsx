@@ -5,7 +5,7 @@ import { ArrowRight, Phone, Mail, MessageSquare, Calendar } from "lucide-react";
 export default function CallToActionImproved() {
   return (
     <section
-      className="relative overflow-hidden py-20 bg-gradient-to-br from-rose-600 to-rose-700 text-white"
+      className="relative overflow-hidden py-20 bg-gradient-to-br from-slate-900 to-red-900 text-white"
       aria-labelledby="cta-title"
     >
       {/* subtle decorative pattern */}
@@ -79,17 +79,18 @@ export default function CallToActionImproved() {
             <div className="mt-8 flex flex-col sm:flex-row items-center gap-3">
               <a
                 href="/demo"
-                className="inline-flex items-center gap-3 justify-center px-6 py-3 rounded-lg bg-white text-rose-700 font-semibold shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5"
+                className="rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
               >
-                Book a demo
-                <ArrowRight className="w-4 h-4" />
+                <span>Book a demo</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
 
               <a
                 href="/contact"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-white/20 text-sm text-white/95 hover:bg-white/10 transition"
+                className="rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
               >
-                Contact sales
+                <span>Contact sales</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
 
@@ -170,15 +171,18 @@ export default function CallToActionImproved() {
               <div className="mt-6 flex items-center gap-3">
                 <a
                   href="/get-started"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-rose-500/90 text-white font-semibold hover:bg-rose-600 transition"
+                  className="rounded group inline-flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
-                  Get started
+                  <span>Get started</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </a>
+
                 <a
                   href="/pricing"
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-white/10 text-white hover:bg-white/20 transition"
+                  className="rounded group inline-flex items-center gap-3 px-4 py-2 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
-                  View pricing
+                  <span>View pricing</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </a>
               </div>
             </div>

@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   ShieldCheck,
@@ -6,237 +7,197 @@ import {
   TrendingUp,
   ArrowRight,
   Sparkles,
+  CheckCircle,
 } from "lucide-react";
-
-// KeyValue.tsx — improved design
-// - Cleaner layout, stronger visual hierarchy
-// - Animated stat numbers (simple CSS), nicer CTA treatments
-// - Accessible, responsive, Tailwind utility classes
+import ImastCard from "./ImastCard";
 
 export default function KeyValue() {
   return (
-    <section className="bg-gradient-to-b from-white to-gray-50 py-20 lg:py-28">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <section className="bg-gradient-to-br from-white via-rose-50/20 to-gray-50/50 py-20 lg:py-28 relative overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-rose-100/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-100/20 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
           {/* LEFT: Pitch + benefits */}
           <div className="relative">
-            <div className="inline-flex items-center gap-3 mb-4">
-              <span className="inline-flex items-center justify-center p-2 rounded-full bg-red-50 text-red-600 shadow-sm">
-                <Sparkles className="w-4 h-4" />
-              </span>
-              <span className="text-sm font-semibold text-red-600">
-                Why IMAST
-              </span>
+            <div>
+              <h3 className="text-base font-semibold text-red-600">
+                Why Choose IMAST
+              </h3>
+              <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900">
+                Unified platform. Practical outcomes.
+              </h2>
+              <p className="mt-2 text-sm text-gray-600 max-w-xl">
+                We bring retail, distribution, loyalty and after-sales together
+                so you can keep what works, fix what doesn&apos;t, and scale the
+                right way — faster and with less risk
+              </p>
+            </div>
+            <div className="mt-8 flex items-center gap-6 p-4 bg-white/60 rounded-2xl border border-gray-100">
+              <div className="flex -space-x-3">
+                {[1, 2, 3, 4].map((item) => (
+                  <div
+                    key={item}
+                    className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-400 rounded-full border-2 border-white"
+                  />
+                ))}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-900">
+                  Trusted by industry leaders
+                </p>
+                <p className="text-xs text-gray-600">
+                  <strong className="text-gray-800">500+</strong> brands ·{" "}
+                  <strong className="text-gray-800">2M+</strong> daily users
+                </p>
+              </div>
+              <CheckCircle className="w-5 h-5 text-green-500" />
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight text-gray-900">
-              Unified platform. Practical outcomes.
-            </h2>
-
-            <p className="mt-4 text-gray-600 text-base sm:text-lg max-w-xl">
-              We bring retail, distribution, loyalty and after‑sales together so
-              you can keep what works, fix what doesn’t, and scale the right way
-              — faster and with less risk.
-            </p>
-
-            {/* Benefits */}
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Feature
+            {/* Benefits grid */}
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <EnhancedFeature
                 icon={<TrendingUp className="w-5 h-5" />}
                 title="Proven ROI"
-                desc=" measurable lift in revenue & retention within months"
-                color="bg-rose-50 text-rose-600"
+                desc="Measurable lift in revenue & retention within months."
+                color="from-rose-500 to-rose-600"
+                delay="0"
               />
 
-              <Feature
+              <EnhancedFeature
                 icon={<Zap className="w-5 h-5" />}
                 title="Fast to deploy"
-                desc="MVP‑first rollout so you start learning on day one"
-                color="bg-amber-50 text-amber-600"
+                desc="MVP-first rollout so you start learning on day one."
+                color="from-amber-500 to-amber-600"
+                delay="100"
               />
 
-              <Feature
+              <EnhancedFeature
                 icon={<Users className="w-5 h-5" />}
-                title="People‑first"
-                desc="On-ground implementation and training that lasts"
-                color="bg-sky-50 text-sky-600"
+                title="People-first"
+                desc="On-ground implementation and training that lasts."
+                color="from-blue-500 to-blue-600"
+                delay="200"
               />
 
-              <Feature
+              <EnhancedFeature
                 icon={<ShieldCheck className="w-5 h-5" />}
                 title="Secure & compliant"
-                desc="Enterprise controls and privacy-first design"
-                color="bg-violet-50 text-violet-600"
+                desc="Enterprise controls and privacy-first design."
+                color="from-violet-500 to-violet-600"
+                delay="300"
               />
             </div>
 
-            {/* CTA row */}
-            <div className="mt-8 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            {/* CTA section */}
+            <div className="mt-12 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
               <a
                 href="/contact"
-                className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-red-600 text-white font-semibold shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5"
+                className="group inline-flex items-center gap-3 px-5 py-3 rounded bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
               >
-                Request a demo
-                <ArrowRight className="w-4 h-4" />
+                <span>Request a demo</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
 
               <a
                 href="/solutions"
-                className="inline-flex items-center gap-3 px-5 py-3 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition"
+                className="group inline-flex items-center gap-3 px-5 py-3 rounded border border-gray-200 bg-white/80 text-gray-700 font-medium hover:bg-white hover:border-gray-300 hover:shadow-md transition-all duration-300"
               >
                 Explore solutions
+                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1" />
               </a>
-
-              <span className="mt-2 sm:mt-0 ml-auto text-xs text-gray-500">
-                Trusted by <strong className="text-gray-800">500+</strong>{" "}
-                brands · <strong className="text-gray-800">2M+</strong> users
-              </span>
             </div>
-
-            {/* subtle decorative vector */}
-            <svg
-              className="hidden lg:block absolute -right-24 top-6 w-56 h-56 opacity-10"
-              viewBox="0 0 200 200"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden
-            >
-              <defs>
-                <linearGradient id="g" x1="0" x2="1">
-                  <stop offset="0%" stopColor="#FEE2E2" />
-                  <stop offset="100%" stopColor="#FEF3C7" />
-                </linearGradient>
-              </defs>
-              <circle cx="100" cy="100" r="100" fill="url(#g)" />
-            </svg>
           </div>
 
-          {/* RIGHT: Visual / Card stack */}
-          <div className="mx-auto w-full max-w-xl">
-            <div className="relative">
-              <div className="rounded-2xl overflow-hidden bg-white ring-1 ring-black/5">
-                <div className="p-6 lg:p-8">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="text-xs uppercase font-semibold tracking-wide text-gray-500">
-                        Loyalty Campaign
-                      </div>
-                      <div className="mt-2 text-2xl font-bold text-gray-900">
-                        Summer Rewards
-                      </div>
-                      <div className="mt-1 text-sm text-gray-500">
-                        23% uplift vs previous season
-                      </div>
-                    </div>
-
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 text-green-700 font-semibold text-sm">
-                      Active
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid grid-cols-3 gap-4 text-center">
-                    <StatAnimated label="Redemptions" value={"12.4k"} />
-                    <StatAnimated label="Avg Ticket" value={"₹412"} />
-                    <StatAnimated label="Comm. Uplift" value={"+23%"} />
-                  </div>
-
-                  <div className="mt-6">
-                    <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-red-500 to-rose-400 rounded-full w-[60%] transition-width duration-700" />
-                    </div>
-                    <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
-                      <div>Campaign progress</div>
-                      <div>Target 20k</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* subtle footer with mini insights */}
-                <div className="px-6 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-4 text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-red-50 text-red-600">
-                        ₹
-                      </span>
-                      <div>
-                        <div className="text-xs">Revenue/Month</div>
-                        <div className="font-semibold text-gray-900">₹1.2M</div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-amber-50 text-amber-600">
-                        ★
-                      </span>
-                      <div>
-                        <div className="text-xs">NPS</div>
-                        <div className="font-semibold text-gray-900">62</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <a
-                    href="/case-studies"
-                    className="text-sm font-semibold text-rose-600 inline-flex items-center gap-2"
-                  >
-                    See case
-                    <ArrowRight className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
+          {/* RIGHT: Card component */}
+          <div className="relative">
+            <div className="relative z-10">
+              <ImastCard />
             </div>
+
+            {/* Floating elements */}
+            <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-rose-400/20 to-amber-400/20 rounded-3xl blur-xl animate-pulse"></div>
+            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-blue-400/15 to-violet-400/15 rounded-3xl blur-xl animate-pulse delay-1000"></div>
           </div>
         </div>
       </div>
+
+      {/* Local CSS for animations */}
+      <style jsx>{`
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-20px) rotate(5deg);
+          }
+        }
+
+        @keyframes statIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-stat {
+          animation: statIn 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+        }
+
+        .feature-hover {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .feature-hover:hover {
+          transform: translateY(-4px);
+        }
+      `}</style>
     </section>
   );
 }
 
-/* ----------------------
-   Small helper components
-   ---------------------- */
-function Feature({
+function EnhancedFeature({
   icon,
   title,
   desc,
   color,
+  delay,
 }: {
   icon: React.ReactNode;
   title: string;
   desc: string;
-  color?: string;
+  color: string;
+  delay: string;
 }) {
   return (
-    <div className="flex gap-4">
-      <div
-        className={`flex items-center justify-center w-12 h-12 rounded-lg shadow-sm ${
-          color ?? "bg-gray-100 text-red-600"
-        }`}
-      >
-        {icon}
-      </div>
-      <div>
-        <div className="font-semibold text-gray-800">{title}</div>
-        <div className="text-sm text-gray-600 mt-1">{desc}</div>
-      </div>
-    </div>
-  );
-}
-
-function StatAnimated({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <div className="text-xs text-gray-500">{label}</div>
-      <div className="mt-1 font-bold text-gray-900 text-lg animate-count">
-        {value}
+    <div
+      className="feature-hover group p-4 rounded-2xl bg-white/60 border border-gray-100 hover:border-gray-200 hover:bg-white/80 backdrop-blur-sm cursor-pointer transition-all duration-300"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <div className="flex gap-4 items-start">
+        <div
+          className={`flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r ${color} text-white shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110`}
+        >
+          {icon}
+        </div>
+        <div className="flex-1">
+          <h3 className="font-bold text-gray-900 text-sm group-hover:text-gray-800 transition-colors">
+            {title}
+          </h3>
+          <p className="text-gray-600 mt-2 leading-relaxed text-xs">{desc}</p>
+        </div>
       </div>
     </div>
   );
 }
-
-/* simple counting animation (add to your global CSS):
-
-@keyframes countUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-.animate-count { animation: countUp 600ms ease-out both; }
-
-You can also replace text values with a JS-driven counter if you want numbers to increment.
-*/

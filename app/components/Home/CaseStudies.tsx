@@ -1,14 +1,6 @@
 "use client";
-import React, { useMemo, useState } from "react";
-import {
-  Briefcase,
-  BookOpen,
-  ArrowRight,
-  ChevronDown,
-  Search,
-  Filter,
-  Play,
-} from "lucide-react";
+import React, { useMemo, useState, useEffect } from "react";
+import { Briefcase, ArrowRight, ChevronDown, X } from "lucide-react";
 
 type CaseStudy = {
   id: string;
@@ -22,6 +14,7 @@ type CaseStudy = {
   featured?: boolean;
 };
 
+// prettier-ignore
 const CASE_STUDIES: CaseStudy[] = [
   {
     id: "cs-1",
@@ -35,7 +28,7 @@ const CASE_STUDIES: CaseStudy[] = [
       { label: "Stock-outs", value: "-45%" },
       { label: "Campaign ROI", value: "+28%" },
     ],
-    image: "https://placehold.co/600x360?text=Case+1",
+    image: "https://images.unsplash.com/photo-1503602642458-232111445657?w=1400&q=80&auto=format&fit=crop",
     featured: true,
   },
   {
@@ -50,7 +43,7 @@ const CASE_STUDIES: CaseStudy[] = [
       { label: "Route efficiency", value: "+32%" },
       { label: "OTD", value: "95%" },
     ],
-    image: "https://placehold.co/600x360?text=Case+2",
+    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1400&q=80&auto=format&fit=crop",
     featured: true,
   },
   {
@@ -62,7 +55,8 @@ const CASE_STUDIES: CaseStudy[] = [
     vertical: "Retail",
     outcomes: ["Loyalty", "Retention"],
     metrics: [{ label: "Repeat", value: "+18%" }],
-    image: "https://placehold.co/600x360?text=Case+3",
+    image: "https://images.unsplash.com/photo-1503602642458-232111445657?w=1400&q=80&auto=format&fit=crop",
+    featured: true,
   },
   {
     id: "cs-4",
@@ -73,34 +67,26 @@ const CASE_STUDIES: CaseStudy[] = [
     vertical: "Hospitality",
     outcomes: ["Guest experience", "Checkout"],
     metrics: [{ label: "NPS", value: "+12 pts" }],
-    image: "https://placehold.co/600x360?text=Case+4",
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1400&q=80&auto=format&fit=crop",
   },
 ];
 
 export default function CaseStudies() {
-  const [vertical, setVertical] = useState<string | "All">("All");
-  const [query, setQuery] = useState("");
-  const [showCount, setShowCount] = useState(6);
   const [open, setOpen] = useState<CaseStudy | null>(null);
 
-  const verticals = useMemo(
-    () => ["All", ...Array.from(new Set(CASE_STUDIES.map((c) => c.vertical)))],
+  const featured = useMemo(
+    () => CASE_STUDIES.filter((c) => c.featured).slice(0, 3),
     []
   );
+  const others = useMemo(() => CASE_STUDIES.filter((c) => !c.featured), []);
 
-  const filtered = useMemo(() => {
-    return CASE_STUDIES.filter((c) => {
-      if (vertical !== "All" && c.vertical !== vertical) return false;
-      if (
-        query &&
-        !`${c.title} ${c.excerpt}`.toLowerCase().includes(query.toLowerCase())
-      )
-        return false;
-      return true;
-    }).slice(0, showCount);
-  }, [vertical, query, showCount]);
-
-  const featured = CASE_STUDIES.filter((c) => c.featured).slice(0, 3);
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(null);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <section
@@ -124,30 +110,44 @@ export default function CaseStudies() {
           </p>
         </header>
 
-        {/* Featured carousel */}
+        {/* Featured row — three compact cards aligned horizontally */}
         {featured.length > 0 && (
-          <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {featured.map((f, i) => (
+          <div className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {featured.map((f) => (
               <article
                 key={f.id}
-                className="relative rounded-2xl overflow-hidden bg-white shadow-md group"
+                className="relative rounded-2xl overflow-hidden bg-white hover:shadow-xl transition transform hover:-translate-y-1"
               >
-                <img
-                  src={f.image}
-                  alt={f.title}
-                  className="w-full h-44 object-cover"
-                />
+                <div className="relative h-44 md:h-48">
+                  <img
+                    src={f.image}
+                    alt={f.title}
+                    className="w-full h-full object-cover"
+                  />
+
+                  <div
+                    className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-100"
+                    aria-hidden
+                  />
+
+                  {f.featured && (
+                    <div className="absolute top-3 left-3 inline-flex items-center gap-2 bg-rose-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                      Featured
+                    </div>
+                  )}
+                </div>
+
                 <div className="p-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <img
                         src={f.logo}
-                        alt="logo"
+                        alt={`${f.title} logo`}
                         className="h-6 object-contain"
                       />
-                      <div className="text-sm font-semibold text-gray-900">
+                      <h3 className="text-sm font-semibold text-gray-900">
                         {f.title}
-                      </div>
+                      </h3>
                     </div>
                     <div className="text-xs text-gray-400">{f.vertical}</div>
                   </div>
@@ -157,150 +157,90 @@ export default function CaseStudies() {
                   </p>
 
                   <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-xs text-gray-500">
+                    <div className="flex items-center gap-2 text-xs">
                       {f.metrics?.map((m) => (
                         <div
                           key={m.label}
-                          className="bg-gray-100 px-2 py-1 rounded-md"
+                          className="flex flex-col items-start bg-gray-50 px-2 py-1 rounded-md border border-gray-100"
                         >
-                          {m.label}:{" "}
-                          <strong className="text-gray-900">{m.value}</strong>
+                          <span className="text-[11px] text-gray-500">
+                            {m.label}
+                          </span>
+                          <div className="font-medium text-sm text-gray-900">
+                            {m.value}
+                          </div>
                         </div>
                       ))}
                     </div>
 
-                    <button
-                      onClick={() => setOpen(f)}
-                      className="inline-flex items-center gap-2 text-rose-600 font-semibold"
-                    >
-                      Read story <ArrowRight className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setOpen(f)}
+                        className="inline-flex items-center gap-2 text-rose-600 font-semibold text-sm"
+                        aria-label={`Read story: ${f.title}`}
+                      >
+                        Read story <ArrowRight className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        onClick={() => alert("Demo: shared")}
+                        className="hidden md:inline-flex items-center gap-2 text-xs px-3 py-1 rounded-md border border-gray-200"
+                      >
+                        Share
+                      </button>
+                    </div>
                   </div>
                 </div>
               </article>
             ))}
           </div>
         )}
+      </div>
 
-        {/* Controls */}
-        <div className="mb-6 flex flex-col sm:flex-row items-center gap-3 justify-between">
-          <div className="flex items-center gap-2">
-            <label className="sr-only">Filter vertical</label>
-            <div className="inline-flex items-center gap-2 bg-white rounded-md border border-gray-200 px-3 py-2">
-              <Filter className="w-4 h-4 text-gray-400" />
-              <select
-                value={vertical}
-                onChange={(e) => setVertical(e.target.value)}
-                className="bg-transparent outline-none text-sm"
-              >
-                {verticals.map((v) => (
-                  <option key={v} value={v}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="inline-flex items-center bg-white rounded-md border border-gray-200 px-3 py-2 ml-2">
-              <Search className="w-4 h-4 text-gray-400" />
-              <input
-                placeholder="Search stories"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="ml-2 text-sm outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <a
-              href="/case-studies"
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-rose-600 text-white text-sm font-semibold"
-            >
-              View all case studies
-            </a>
-            <button
-              onClick={() => setShowCount((s) => s + 6)}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-sm"
-            >
-              Load more
-            </button>
-          </div>
-        </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((c) => (
-            <article
-              key={c.id}
-              className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition"
-            >
-              <div className="flex items-center gap-3">
-                <img src={c.logo} alt="logo" className="h-8 object-contain" />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 text-sm">
-                    {c.title}
-                  </h3>
-                  <div className="text-xs text-gray-400">{c.vertical}</div>
-                </div>
-              </div>
-
-              <p className="mt-3 text-sm text-gray-600 line-clamp-4">
-                {c.excerpt}
-              </p>
-
-              <div className="mt-4 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  {c.outcomes.map((o) => (
-                    <span key={o} className="bg-gray-100 px-2 py-1 rounded-md">
-                      {o}
-                    </span>
-                  ))}
+      {/* Modal */}
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            // close when backdrop clicked
+            if (e.target === e.currentTarget) setOpen(null);
+          }}
+        >
+          <div className="max-w-3xl w-full bg-white rounded-2xl shadow-lg overflow-hidden max-h-[85vh]">
+            <div className="p-4 md:p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <img
+                    src={open.logo}
+                    alt="logo"
+                    className="h-10 object-contain"
+                  />
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      {open.title}
+                    </h3>
+                    <div className="text-sm text-gray-500">{open.vertical}</div>
+                  </div>
                 </div>
 
                 <button
-                  onClick={() => setOpen(c)}
-                  className="inline-flex items-center gap-2 text-rose-600 font-semibold text-sm"
+                  onClick={() => setOpen(null)}
+                  className="text-gray-400 p-2 rounded-md hover:bg-gray-100"
+                  aria-label="Close dialog"
                 >
-                  Read story <ChevronDown className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-            </article>
-          ))}
-        </div>
-      </div>
 
-      {/* Simple modal (inline) — replace with real modal when integrating */}
-      {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="max-w-3xl w-full bg-white rounded-2xl shadow-lg overflow-auto max-h-[85vh]">
-            <div className="p-6">
-              <div className="flex items-start gap-4">
+              <div className="mt-4">
                 <img
-                  src={open.logo}
-                  alt="logo"
-                  className="h-8 object-contain"
+                  src={open.image}
+                  alt={open.title}
+                  className="w-full h-56 object-cover rounded-md"
                 />
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    {open.title}
-                  </h3>
-                  <div className="text-sm text-gray-500">{open.vertical}</div>
-                </div>
-                <button onClick={() => setOpen(null)} className="text-gray-400">
-                  Close
-                </button>
               </div>
-
-              <img
-                src={open.image}
-                alt={open.title}
-                className="mt-4 rounded-md object-cover w-full h-56"
-              />
 
               <div className="mt-4 text-gray-700">
                 <p>{open.excerpt}</p>
