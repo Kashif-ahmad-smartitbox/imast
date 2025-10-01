@@ -124,7 +124,7 @@ export default function HowItWorks() {
         <div className="">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
             {/* Enhanced Diagram */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 bg-white p-8 rounded-2xl border border-gray-100">
               <div className="mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
                   Unified Platform Architecture
@@ -346,7 +346,7 @@ function EnhancedChannel({
   return (
     <div className="flex flex-col items-center gap-3 group cursor-pointer">
       <div
-        className={`w-16 h-16 bg-white rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110`}
+        className={`w-16 h-16 bg-white rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 border border-gray-100`}
       >
         {icon}
       </div>

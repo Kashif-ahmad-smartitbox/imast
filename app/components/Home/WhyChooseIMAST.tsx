@@ -167,7 +167,7 @@ export default function WhyChooseIMAST() {
             <div className="rounded-2xl bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm font-bold text-gray-500">
                     IMAST vs Typical Competitor
                   </div>
                   <div className="mt-2 text-lg font-semibold text-gray-900">
