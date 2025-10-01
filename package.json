@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "push": "git add . && git commit -m 'update' && git push"
   },
   "dependencies": {
     "classnames": "^2.5.1",
