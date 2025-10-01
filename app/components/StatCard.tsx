@@ -7,14 +7,6 @@ import React, {
   useMemo,
 } from "react";
 
-// StatCard — improved, polished, production-ready
-// - number formatting (Intl)
-// - optional prefix/suffix and trend chip
-// - loading skeleton
-// - accessible roles and aria
-// - optional framer-motion-friendly class slot (no direct dependency)
-// - stable animation respecting prefers-reduced-motion
-
 export type StatCardProps = {
   label: string;
   value: number | string | null; // null => loading
@@ -31,14 +23,18 @@ export type StatCardProps = {
   onClick?: () => void;
 };
 
-function useAnimatedNumber(target: number, duration = 900) {
-  const [display, setDisplay] = useState<number>(target);
+function useAnimatedNumber(target: number | null, duration = 900) {
+  const [display, setDisplay] = useState<number>(target || 0);
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
-  const startValRef = useRef<number>(target);
+  const startValRef = useRef<number>(target || 0);
 
   useEffect(() => {
-    if (typeof target !== "number") return;
+    // If target is null or not a number, don't animate
+    if (target === null || typeof target !== "number") {
+      setDisplay(0);
+      return;
+    }
 
     const prefersReduced =
       typeof window !== "undefined" &&
@@ -104,9 +100,10 @@ export default function StatCard({
   onClick,
 }: StatCardProps): ReactElement {
   const isLoading = value === null;
-  const numeric = typeof value === "number";
-  const numericValue = numeric ? (value as number) : 0;
-  const animatedValue = numeric ? useAnimatedNumber(numericValue, 900) : null;
+
+  // Always call the hook unconditionally
+  const numericValue = typeof value === "number" ? value : 0;
+  const animatedValue = useAnimatedNumber(numericValue, 900);
 
   const variantColors: Record<string, string> = {
     neutral: "bg-white text-gray-900",
@@ -133,22 +130,12 @@ export default function StatCard({
 
   const displayed = useMemo(() => {
     if (isLoading) return "";
-    if (numeric) {
-      const val = animatedValue ?? numericValue;
-      return `${prefix}${formatNumber(val, precision)}${suffix}`;
+    if (typeof value === "number") {
+      return `${prefix}${formatNumber(animatedValue, precision)}${suffix}`;
     }
     // non-numeric value (string)
     return `${prefix}${value}${suffix}`;
-  }, [
-    isLoading,
-    numeric,
-    animatedValue,
-    numericValue,
-    prefix,
-    suffix,
-    precision,
-    value,
-  ]);
+  }, [isLoading, animatedValue, prefix, suffix, precision, value]);
 
   return (
     <button
