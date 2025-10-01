@@ -89,19 +89,19 @@ export default function Modules() {
   );
 
   return (
-    <section className="py-20 lg:py-28 bg-gradient-to-br from-gray-50 via-white to-blue-50/30">
+    <section className="py-20 lg:py-28 bg-rose-700 to-blue-50/30">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="text-center mb-8">
-          <p className="text-sm font-semibold text-rose-600 uppercase tracking-wide">
+          <p className="text-sm font-semibold text-[#FFECEC] uppercase tracking-wide">
             Core Solutions
           </p>
           <h2
             id="proof-title"
-            className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
+            className="mt-2 text-2xl sm:text-3xl font-extrabold text-white"
           >
             Modules that power your business
           </h2>
-          <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-3 text-[#F5E8E6] max-w-2xl mx-auto">
             Choose the modules that fit your needs — integrate seamlessly, start
             with an MVP, and scale as you grow. All built to work together
             perfectly.
@@ -117,7 +117,7 @@ export default function Modules() {
               className={`px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
                 activeCat === c
                   ? "bg-white text-gray-900 shadow-lg shadow-gray-200/50 ring-1 ring-gray-200"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-white/50 backdrop-blur-sm"
+                  : "text-white hover:text-gray-900 hover:bg-white/50 backdrop-blur-sm"
               }`}
             >
               {c}

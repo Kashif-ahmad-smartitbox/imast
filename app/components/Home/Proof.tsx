@@ -82,6 +82,7 @@ const TESTIMONIALS: Testimonial[] = [
 
 const TESTIMONIAL_INTERVAL = 5000;
 const DEFAULT_COUNT_DURATION = 1200;
+const MARQUEE_DURATION = 18;
 
 // Custom Hooks
 function usePrefersReducedMotion(): boolean {
@@ -97,6 +98,8 @@ function usePrefersReducedMotion(): boolean {
       mq.addEventListener("change", handler);
       return () => mq.removeEventListener("change", handler);
     }
+
+    return undefined;
   }, []);
 
   return reduced;
@@ -119,9 +122,9 @@ function useCountTo(
 
     startRef.current = null;
 
-    const step = (ts: number): void => {
-      if (!startRef.current) startRef.current = ts;
-      const elapsed = ts - startRef.current;
+    const step = (timestamp: number): void => {
+      if (!startRef.current) startRef.current = timestamp;
+      const elapsed = timestamp - startRef.current;
       const progress = Math.min(1, elapsed / duration);
       const current = target * progress;
       setValue(Number(current.toFixed(precision)));
@@ -150,11 +153,60 @@ function StatCard({ label, value, sub }: StatCardProps): ReactElement {
       <div
         className="text-xl md:text-2xl font-bold text-gray-900 mb-1"
         aria-label={`${value} ${label}`}
+        role="text"
+        aria-live="polite"
       >
         {value}
       </div>
       <div className="text-sm font-medium text-gray-700">{label}</div>
       {sub && <div className="text-xs text-gray-500 mt-1">{sub}</div>}
+    </div>
+  );
+}
+
+interface MarqueeProps {
+  logos: ClientLogo[];
+  direction: "left" | "right";
+  paused: boolean;
+  reducedMotion: boolean;
+}
+
+function Marquee({
+  logos,
+  direction,
+  paused,
+  reducedMotion,
+}: MarqueeProps): ReactElement {
+  const marqueeRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div
+      ref={marqueeRef}
+      className="flex items-center gap-8 px-6 py-4 whitespace-nowrap will-change-transform"
+      style={{
+        animationPlayState: paused ? "paused" : "running",
+        animation: reducedMotion
+          ? "none"
+          : `marquee-${direction} ${MARQUEE_DURATION}s linear infinite`,
+      }}
+      role="presentation"
+    >
+      {logos.map((logo, index) => (
+        <div
+          key={`${logo.alt}-${index}`}
+          className="flex items-center justify-center p-3 bg-white rounded-md  flex-shrink-0"
+          style={{ minWidth: 160 }}
+        >
+          <img
+            loading="lazy"
+            src={logo.src}
+            alt={logo.alt}
+            className="max-h-15 w-auto object-contain"
+            width={80}
+            height={40}
+          />
+        </div>
+      ))}
     </div>
   );
 }
@@ -214,7 +266,6 @@ export default function Proof(): ReactElement {
   const [testimonialPaused, setTestimonialPaused] = useState<boolean>(false);
   const [marqueePaused, setMarqueePaused] = useState<boolean>(false);
   const testimonialTimerRef = useRef<number | null>(null);
-  const marqueeRef = useRef<HTMLDivElement>(null);
   const reduced = usePrefersReducedMotion();
 
   // Memoized counters for better performance
@@ -231,6 +282,16 @@ export default function Proof(): ReactElement {
     () => [brandsCount, usersCount, uptimeCount, retentionCount],
     [brandsCount, usersCount, uptimeCount, retentionCount]
   );
+
+  // Memoized duplicate logos for marquee
+  const logosForMarquee = useMemo<ClientLogo[]>(() => {
+    return CLIENT_LOGOS.concat(CLIENT_LOGOS).map((logo, index) => ({
+      ...logo,
+      alt: `${logo.alt} duplicate ${
+        Math.floor(index / CLIENT_LOGOS.length) + 1
+      }`,
+    }));
+  }, []);
 
   // Testimonial autoplay functions with useCallback
   const stopAuto = useCallback((): void => {
@@ -264,7 +325,7 @@ export default function Proof(): ReactElement {
     }
   }, [testimonialPaused, startAuto, stopAuto]);
 
-  // Handlers with useCallback
+  // Event handlers with useCallback
   const handleTestimonialSelect = useCallback((index: number): void => {
     setActiveTestimonial(index);
     setTestimonialPaused(true);
@@ -301,16 +362,6 @@ export default function Proof(): ReactElement {
     []
   );
 
-  // Memoized duplicate logos for marquee
-  const logosForMarquee = useMemo<ClientLogo[]>(() => {
-    return CLIENT_LOGOS.concat(CLIENT_LOGOS).map((logo, index) => ({
-      ...logo,
-      alt: `${logo.alt} duplicate ${
-        Math.floor(index / CLIENT_LOGOS.length) + 1
-      }`,
-    }));
-  }, []);
-
   return (
     <section className="py-8 lg:py-12 bg-white" aria-labelledby="proof-title">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -331,37 +382,36 @@ export default function Proof(): ReactElement {
 
         {/* MARQUEE: logos */}
         <div
-          className="overflow-hidden mb-12 relative"
+          className="overflow-hidden mb-6 relative"
           onMouseEnter={handleMarqueeMouseEnter}
           onMouseLeave={handleMarqueeMouseLeave}
           onFocus={handleMarqueeMouseEnter}
           onBlur={handleMarqueeMouseLeave}
           aria-label="Client logos"
         >
-          <div
-            ref={marqueeRef}
-            className="flex items-center gap-8 px-6 py-4 whitespace-nowrap will-change-transform"
-            style={{
-              animationPlayState: marqueePaused ? "paused" : "running",
-              animation: reduced ? "none" : "marquee 18s linear infinite",
-            }}
-            role="presentation"
-          >
-            {logosForMarquee.map((logo, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-center p-3 bg-white rounded-md shadow-sm flex-shrink-0"
-                style={{ minWidth: 160 }}
-              >
-                <img
-                  loading="lazy"
-                  src={logo.src}
-                  alt={logo.alt}
-                  className="max-h-10 w-auto object-contain"
-                />
-              </div>
-            ))}
-          </div>
+          <Marquee
+            logos={logosForMarquee}
+            direction="left"
+            paused={marqueePaused}
+            reducedMotion={reduced}
+          />
+        </div>
+
+        {/* Second marquee flowing right */}
+        <div
+          className="overflow-hidden mb-12 relative"
+          onMouseEnter={handleMarqueeMouseEnter}
+          onMouseLeave={handleMarqueeMouseLeave}
+          onFocus={handleMarqueeMouseEnter}
+          onBlur={handleMarqueeMouseLeave}
+          aria-label="Client logos continued"
+        >
+          <Marquee
+            logos={logosForMarquee}
+            direction="right"
+            paused={marqueePaused}
+            reducedMotion={reduced}
+          />
         </div>
 
         {/* Stats Section */}
@@ -424,7 +474,7 @@ export default function Proof(): ReactElement {
               {/* Navigation Arrows */}
               <button
                 onClick={() => handleTestimonialNavigation("prev")}
-                className="absolute -left-10 z-20 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
+                className="absolute -left-10 z-20 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500"
                 aria-label="Previous testimonial"
               >
                 <ArrowRight className="w-4 h-4 rotate-180" aria-hidden="true" />
@@ -438,11 +488,11 @@ export default function Proof(): ReactElement {
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </button>
 
-              {TESTIMONIALS.map((t, i) => {
-                const visible = i === activeTestimonial;
+              {TESTIMONIALS.map((testimonial, index) => {
+                const visible = index === activeTestimonial;
                 return (
                   <figure
-                    key={i}
+                    key={index}
                     className={`absolute inset-0 transition-all duration-500 ease-out flex flex-col md:flex-row items-center gap-6 p-4 ${
                       visible
                         ? "opacity-100 translate-x-0 z-10"
@@ -452,20 +502,20 @@ export default function Proof(): ReactElement {
                   >
                     <div
                       className="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 font-semibold text-lg flex-shrink-0"
-                      aria-label={`${t.author} avatar`}
+                      aria-label={`${testimonial.author} avatar`}
                     >
-                      {initialsFromName(t.author)}
+                      {initialsFromName(testimonial.author)}
                     </div>
 
                     <figcaption className="flex-1 text-center md:text-left">
                       <blockquote className="text-base lg:text-lg font-semibold text-gray-900 leading-relaxed">
-                        &apos;{t.quote}&apos;
+                        &apos;{testimonial.quote}&apos;
                       </blockquote>
                       <div className="mt-3 text-sm text-gray-700">
-                        — {t.author}
+                        — {testimonial.author}
                       </div>
                       <div className="text-sm text-rose-600 font-medium">
-                        {t.role}
+                        {testimonial.role}
                       </div>
                     </figcaption>
                   </figure>
@@ -477,16 +527,18 @@ export default function Proof(): ReactElement {
                 role="group"
                 aria-label="Testimonial navigation"
               >
-                {TESTIMONIALS.map((_, i) => (
+                {TESTIMONIALS.map((_, index) => (
                   <button
-                    key={i}
-                    onClick={() => handleTestimonialSelect(i)}
-                    aria-label={`Show testimonial ${i + 1} of ${
+                    key={index}
+                    onClick={() => handleTestimonialSelect(index)}
+                    aria-label={`Show testimonial ${index + 1} of ${
                       TESTIMONIALS.length
                     }`}
-                    aria-current={i === activeTestimonial ? "true" : "false"}
+                    aria-current={
+                      index === activeTestimonial ? "true" : "false"
+                    }
                     className={`w-3 h-3 rounded-full transition focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 ${
-                      i === activeTestimonial
+                      index === activeTestimonial
                         ? "bg-rose-600"
                         : "bg-gray-300 hover:bg-gray-400"
                     }`}
@@ -516,12 +568,21 @@ export default function Proof(): ReactElement {
       </div>
 
       <style jsx>{`
-        @keyframes marquee {
+        @keyframes marquee-left {
           0% {
             transform: translateX(0);
           }
           100% {
             transform: translateX(-50%);
+          }
+        }
+
+        @keyframes marquee-right {
+          0% {
+            transform: translateX(-50%);
+          }
+          100% {
+            transform: translateX(0);
           }
         }
 

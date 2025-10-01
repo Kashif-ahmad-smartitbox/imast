@@ -47,7 +47,7 @@ export default function ImastValuesSection({
       {/* Hero Section */}
       <div className="relative">
         {/* Hero Image with gradient overlay */}
-        <div className="w-full h-[480px] md:h-[640px] lg:h-[760px] overflow-hidden bg-gradient-to-br from-slate-900/20 to-rose-900/10">
+        <div className="w-full h-[250px] md:h-[300px] lg:h-[500px] overflow-hidden bg-gradient-to-br from-slate-900/20 to-rose-900/10">
           <img
             src={heroImage}
             alt="IMAST team gathered at event"
@@ -58,7 +58,7 @@ export default function ImastValuesSection({
         </div>
 
         {/* Content Card */}
-        <div className="relative z-30 -mt-32 md:-mt-48 lg:-mt-56">
+        <div className="relative z-30 -mt-[60px] md:-mt-[80px] lg:-mt-[100px]">
           <div className="w-[94vw] md:w-[86vw] lg:w-[76vw] max-w-6xl mx-auto">
             <div className="bg-white rounded-3xl ring-1 ring-slate-200 p-8 md:p-12 lg:p-16">
               <div className="max-w-5xl mx-auto">

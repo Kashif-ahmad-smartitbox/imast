@@ -5,7 +5,7 @@ import { ArrowRight, Phone, Mail, MessageSquare, Calendar } from "lucide-react";
 export default function CallToActionImproved() {
   return (
     <section
-      className="relative overflow-hidden py-20 bg-gradient-to-br from-slate-900 to-red-900 text-white"
+      className="relative overflow-hidden py-20 bg-rose-700 text-white"
       aria-labelledby="cta-title"
     >
       {/* subtle decorative pattern */}

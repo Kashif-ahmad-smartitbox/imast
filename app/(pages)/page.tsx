@@ -30,8 +30,8 @@ function HomePage() {
       <Proof />
       <WhyChooseIMAST />
       <CaseStudies />
-      <CallToAction />
       <Resources />
+      <CallToAction />
       <Footer />
     </>
   );

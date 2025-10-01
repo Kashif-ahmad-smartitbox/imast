@@ -61,7 +61,7 @@ export default function Hero() {
         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-out ${
           hasPlayed ? "opacity-100" : "opacity-0"
         }`}
-        src="/imast.mp4"
+        src="/imast.mov"
         poster="/Thumbnail22.png"
         playsInline
         muted={muted}
