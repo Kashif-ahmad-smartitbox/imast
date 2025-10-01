@@ -65,10 +65,10 @@ export default function WhyChooseIMAST() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="text-center mb-8">
-          <p className="text-sm font-semibold text-rose-600">Why IMAST</p>
+          <p className="text-sm font-semibold text-rose-600">Why IMAST?</p>
           <h2
             id="why-imast-title"
-            className="mt-3 text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight"
+            className="mt-3 text-xl sm:text-4xl font-extrabold text-gray-900 tracking-tight"
           >
             Practical engineering that delivers — secure, fast, and field-proven
           </h2>

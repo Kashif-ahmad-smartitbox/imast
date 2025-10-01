@@ -256,7 +256,7 @@ const DataFlowLines: React.FC<{ isActive: boolean }> = ({ isActive }) => (
         key={i}
         cx="50%"
         cy="50%"
-        r={50 + i * 20}
+        r={120 + i * 20}
         fill="none"
         stroke="url(#flowPattern)"
         strokeWidth="1.5"
@@ -489,10 +489,10 @@ export default function EcosystemSection() {
             {/* Left Content */}
             <div className="text-center lg:text-left">
               <div>
-                <h3 className="text-base font-semibold text-red-600">
+                <h3 className="text-xl font-semibold text-red-600">
                   AI-Enabled Digital Ecosystem
                 </h3>
-                <h2 className="mt-4 text-2xl sm:text-3xl font-extrabold text-white">
+                <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-white">
                   Do you have your own AI-enabled Integrated Digital Ecosystem?
                 </h2>
                 <p className="mt-2 text-sm text-red-50 max-w-xl">
