@@ -9,7 +9,6 @@ import {
   Globe,
   ArrowRight,
   Check,
-  X,
 } from "lucide-react";
 
 const differentiators = [
@@ -60,19 +59,19 @@ const differentiators = [
 export default function WhyChooseIMAST() {
   return (
     <section
-      className="bg-gradient-to-b from-white to-gray-50"
+      className="w-full bg-gradient-to-r from-rose-600 to-rose-700"
       aria-labelledby="why-imast-title"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
         <header className="text-center mb-8">
-          <p className="text-sm font-semibold text-rose-600">Why IMAST?</p>
+          <p className="text-sm font-semibold text-rose-100">Why IMAST?</p>
           <h2
             id="why-imast-title"
-            className="mt-3 text-xl sm:text-4xl font-extrabold text-gray-900 tracking-tight"
+            className="mt-3 text-xl sm:text-4xl font-extrabold tracking-tight text-white"
           >
             Practical engineering that delivers — secure, fast, and field-proven
           </h2>
-          <p className="mt-3 text-gray-600 max-w-3xl mx-auto">
+          <p className="mt-3 max-w-3xl mx-auto text-rose-100">
             No fluff — we build what moves the business. Simple contracts,
             hands-on onboarding, and outcomes that show up on your P&L.
           </p>
@@ -83,7 +82,7 @@ export default function WhyChooseIMAST() {
             {differentiators.map((d) => (
               <article
                 key={d.title}
-                className="relative overflow-hidden rounded-2xl bg-white p-5 sm:p-6hover:shadow-md transition-transform transform hover:-translate-y-1"
+                className="relative overflow-hidden rounded-2xl bg-white p-5 sm:p-6 hover:shadow-md transition-transform transform hover:-translate-y-1"
               >
                 <div className="flex items-start gap-4">
                   <div
@@ -115,7 +114,7 @@ export default function WhyChooseIMAST() {
           </div>
 
           <aside className="lg:col-span-5 space-y-6">
-            <div className="rounded-2xl bg-white p-6">
+            <div className="rounded-2xl bg-white p-6 shadow-sm">
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-sm text-gray-500">
@@ -131,35 +130,55 @@ export default function WhyChooseIMAST() {
               </div>
 
               <ul className="mt-4 space-y-3 text-sm text-gray-700">
-                <li className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <li className="flex items-start gap-3">
+                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
                   <span>
                     Delivery in <strong>weeks</strong> with MVP-first scope
                     control.
                   </span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <li className="flex items-start gap-3">
+                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
                   <span>
                     Field teams for onboarding — we don’t just drop a link and
                     go.
                   </span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <li className="flex items-start gap-3">
+                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
                   <span>
                     Modular architecture — integrates with your ERP, not
                     replaces it.
                   </span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <li className="flex items-start gap-3">
+                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
                   <span>
                     Measurable ROI: focus on retention, revenue lift and reduced
                     ops cost.
                   </span>
                 </li>
               </ul>
+            </div>
+
+            {/* Optional: small quick stat / CTA card */}
+            <div className="rounded-2xl bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-xs text-gray-500">Trusted by</div>
+                  <div className="mt-1 text-2xl font-bold text-gray-900">
+                    500+
+                  </div>
+                </div>
+
+                <a
+                  href="/start-trial"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-rose-600 text-white text-sm font-medium shadow-sm hover:opacity-95 transition"
+                >
+                  Start trial
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           </aside>
         </div>
