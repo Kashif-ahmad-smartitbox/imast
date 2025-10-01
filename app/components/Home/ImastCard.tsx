@@ -73,7 +73,7 @@ export default function ImastCard() {
               ].map((module, index) => (
                 <div
                   key={index}
-                  className="px-3 py-2 rounded-xl bg-gradient-to-br from-gray-50 to-white text-gray-700 text-xs font-medium border border-gray-100  hover:border-gray-200 hover:scale-105 transition-all duration-300 cursor-pointer group/module"
+                  className="px-3 py-2 rounded-xl bg-white text-gray-700 text-xs font-medium border border-gray-100  hover:border-gray-200 hover:scale-105 transition-all duration-300 cursor-pointer group/module"
                 >
                   <div className="flex items-center gap-1.5">
                     <div
@@ -107,7 +107,7 @@ export default function ImastCard() {
                   icon="★"
                   label="Customer NPS"
                   value="50+"
-                  color="amber"
+                  color="rose"
                   delay="150"
                 />
               </div>
@@ -146,7 +146,7 @@ function MetricCard({
 }) {
   return (
     <div
-      className="text-center p-3 rounded-xl bg-gradient-to-b from-white to-gray-50/80 border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-md group/metric"
+      className="text-center p-3 rounded-xl bg-white border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-md group/metric"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div

@@ -8,6 +8,7 @@ import React, {
   ReactElement,
 } from "react";
 import { Award, CheckCircle, ArrowRight } from "lucide-react";
+import StatCard from "../StatCard";
 
 // Types
 interface ClientLogo {
@@ -144,24 +145,6 @@ function useCountTo(
   }, [target, duration, precision, reduced]);
 
   return value;
-}
-
-// Components
-function StatCard({ label, value, sub }: StatCardProps): ReactElement {
-  return (
-    <div className="bg-white rounded-xl p-4 shadow-sm text-center">
-      <div
-        className="text-xl md:text-2xl font-bold text-gray-900 mb-1"
-        aria-label={`${value} ${label}`}
-        role="text"
-        aria-live="polite"
-      >
-        {value}
-      </div>
-      <div className="text-sm font-medium text-gray-700">{label}</div>
-      {sub && <div className="text-xs text-gray-500 mt-1">{sub}</div>}
-    </div>
-  );
 }
 
 interface MarqueeProps {

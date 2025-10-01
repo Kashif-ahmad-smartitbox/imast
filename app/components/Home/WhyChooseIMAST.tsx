@@ -58,7 +58,10 @@ const differentiators = [
 
 export default function WhyChooseIMAST() {
   return (
-    <section className="w-full bg-rose-700" aria-labelledby="why-imast-title">
+    <section
+      className="w-full bg-gradient-to-br from-[#E63935] to-[#F29646]"
+      aria-labelledby="why-imast-title"
+    >
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
         <header className="text-center mb-8">
           <p className="text-sm font-semibold text-rose-100">Why IMAST?</p>

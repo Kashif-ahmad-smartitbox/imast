@@ -23,8 +23,8 @@ export default function KeyValue() {
           {/* LEFT: Pitch + benefits */}
           <div className="relative">
             <div>
-              <h3 className="text-base font-semibold text-red-600">
-                Why Choose IMAST
+              <h3 className="text-lg font-semibold text-red-600">
+                Why Choose IMAST?
               </h3>
               <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900">
                 Unified platform. Practical outcomes.
