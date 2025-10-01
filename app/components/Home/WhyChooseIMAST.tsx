@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   ShieldCheck,
   Zap,
@@ -8,55 +8,100 @@ import {
   Award,
   Globe,
   ArrowRight,
-  Check,
 } from "lucide-react";
 
-const differentiators = [
-  {
-    icon: <ShieldCheck className="w-6 h-6" />,
-    title: "Enterprise-grade security",
-    desc: "TLS, RBAC, audit logs, and compliance-ready controls.",
-    accent: "from-green-50 to-green-100",
-    color: "text-green-600",
-  },
-  {
-    icon: <Zap className="w-6 h-6" />,
-    title: "Fast to deploy",
-    desc: "MVP-first delivery — production-capable in weeks, not months.",
-    accent: "from-amber-50 to-amber-100",
-    color: "text-amber-600",
-  },
-  {
-    icon: <Users className="w-6 h-6" />,
-    title: "On-ground support",
-    desc: "Local implementation teams and training to make rollouts stick.",
-    accent: "from-sky-50 to-sky-100",
-    color: "text-sky-600",
-  },
-  {
-    icon: <Layers className="w-6 h-6" />,
-    title: "Modular & extensible",
-    desc: "Pick modules now and integrate systems later — future-proof.",
-    accent: "from-violet-50 to-violet-100",
-    color: "text-violet-600",
-  },
-  {
-    icon: <Award className="w-6 h-6" />,
-    title: "Proven outcomes",
-    desc: "Measured lift in revenue, retention and operational efficiency.",
-    accent: "from-rose-50 to-rose-100",
-    color: "text-rose-600",
-  },
-  {
-    icon: <Globe className="w-6 h-6" />,
-    title: "Scalable globally",
-    desc: "Deploy once, expand seamlessly across regions with localization support.",
-    accent: "from-indigo-50 to-indigo-100",
-    color: "text-indigo-600",
-  },
-];
+type Differentiator = {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+  accent: string;
+  color: string;
+};
+
+const differentiatorsData = (): Differentiator[] =>
+  [
+    {
+      icon: <ShieldCheck className="w-6 h-6" />,
+      title: "Enterprise-grade security",
+      desc: "TLS, RBAC, audit logs, and compliance-ready controls.",
+      accent: "from-green-50 to-green-100",
+      color: "text-green-600",
+    },
+    {
+      icon: <Zap className="w-6 h-6" />,
+      title: "Fast to deploy",
+      desc: "MVP-first delivery — production-capable in weeks, not months.",
+      accent: "from-amber-50 to-amber-100",
+      color: "text-amber-600",
+    },
+    {
+      icon: <Users className="w-6 h-6" />,
+      title: "On-ground support",
+      desc: "Local implementation teams and training to make rollouts stick.",
+      accent: "from-sky-50 to-sky-100",
+      color: "text-sky-600",
+    },
+    {
+      icon: <Layers className="w-6 h-6" />,
+      title: "Modular & extensible",
+      desc: "Pick modules now and integrate systems later — future-proof.",
+      accent: "from-violet-50 to-violet-100",
+      color: "text-violet-600",
+    },
+    {
+      icon: <Award className="w-6 h-6" />,
+      title: "Proven outcomes",
+      desc: "Measured lift in revenue, retention and operational efficiency.",
+      accent: "from-rose-50 to-rose-100",
+      color: "text-rose-600",
+    },
+    {
+      icon: <Globe className="w-6 h-6" />,
+      title: "Scalable globally",
+      desc: "Deploy once, expand seamlessly across regions with localization support.",
+      accent: "from-indigo-50 to-indigo-100",
+      color: "text-indigo-600",
+    },
+  ] as Differentiator[];
+
+/**
+ * BlinkBullet
+ * - Just a pulsing green circle, no check icon
+ */
+function BlinkBullet({ className = "" }: { className?: string }) {
+  return (
+    <span
+      className={`relative inline-flex items-center justify-center ${className}`}
+      aria-hidden="true"
+    >
+      {/* Ping animation */}
+      <span
+        className="absolute inline-flex h-3 w-3 rounded-full bg-green-400/60 animate-ping"
+        style={{ animationDuration: "1200ms" }}
+      />
+      {/* Solid dot */}
+      <span className="relative inline-flex h-3 w-3 rounded-full bg-green-600" />
+    </span>
+  );
+}
 
 export default function WhyChooseIMAST() {
+  const differentiators = useMemo(() => differentiatorsData(), []);
+
+  const quickPoints = useMemo(
+    () => [
+      "Delivery in weeks with MVP-first scope control.",
+      "Field teams for onboarding — we don't just drop a link and go.",
+      "Modular architecture — integrates with your ERP, not replaces it.",
+      "Measurable ROI: focus on retention, revenue lift and reduced ops cost.",
+      "Built-in compliance and audit readiness — no shortcuts on governance.",
+      "Scales from pilot to enterprise rollout without rework.",
+      "Human + AI support model — automation where it fits, people where it matters.",
+      "Transparent pricing — no hidden costs, no lock-ins.",
+    ],
+    []
+  );
+
   return (
     <section
       className="w-full bg-gradient-to-br from-[#E63935] to-[#F29646]"
@@ -73,7 +118,7 @@ export default function WhyChooseIMAST() {
           </h2>
           <p className="mt-3 max-w-3xl mx-auto text-rose-100">
             No fluff — we build what moves the business. Simple contracts,
-            hands-on onboarding, and outcomes that show up on your P&L.
+            hands-on onboarding, and outcomes that show up on your P&amp;L.
           </p>
         </header>
 
@@ -86,7 +131,7 @@ export default function WhyChooseIMAST() {
               >
                 <div className="flex items-start gap-4">
                   <div
-                    className={`flex-shrink-0 w-14 h-14 rounded-lg bg-gradient-to-br ${d.accent} flex items-center justify-center ring-0`}
+                    className={`flex-shrink-0 w-14 h-14 rounded-lg bg-gradient-to-br ${d.accent} flex items-center justify-center`}
                     aria-hidden
                   >
                     <div className={`${d.color} bg-white/0`}>{d.icon}</div>
@@ -130,66 +175,18 @@ export default function WhyChooseIMAST() {
               </div>
 
               <ul className="mt-4 space-y-3 text-sm text-gray-700">
-                <li className="flex items-start gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
-                  <span>
-                    Delivery in <strong>weeks</strong> with MVP-first scope
-                    control.
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
-                  <span>
-                    Field teams for onboarding — we don&apos;t just drop a link
-                    and go.
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
-                  <span>
-                    Modular architecture — integrates with your ERP, not
-                    replaces it.
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
-                  <span>
-                    Measurable ROI: focus on retention, revenue lift and reduced
-                    ops cost.
-                  </span>
-                </li>
-
-                {/* New points start here */}
-                <li className="flex items-start gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
-                  <span>
-                    Built-in compliance and audit readiness — no shortcuts on
-                    governance.
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
-                  <span>
-                    Scales from pilot to enterprise rollout without rework.
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
-                  <span>
-                    Human + AI support model — automation where it fits, people
-                    where it matters.
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
-                  <span>
-                    Transparent pricing — no hidden costs, no lock-ins.
-                  </span>
-                </li>
+                {quickPoints.map((p) => (
+                  <li key={p} className="flex items-start gap-3">
+                    <span className="flex-shrink-0 mt-1 flex items-center justify-center">
+                      <BlinkBullet />
+                    </span>
+                    <span className="leading-tight">{p}</span>
+                  </li>
+                ))}
               </ul>
             </div>
 
-            {/* Optional: small quick stat / CTA card */}
+            {/* CTA Card */}
             <div className="rounded-2xl bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>

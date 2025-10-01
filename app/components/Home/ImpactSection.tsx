@@ -19,7 +19,7 @@ export default function ImpactSection() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20 lg:py-28 relative z-10">
-        {/* Headline */}
+        <img src="/india.png" className="w-30" alt="India Logo" />
         <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight max-w-3xl">
           Made in India.
           <br />
