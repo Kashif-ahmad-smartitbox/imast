@@ -8,7 +8,7 @@ export default function ImastTrial({
   illustrationSrc?: string;
 }) {
   return (
-    <section className="w-full py-20 px-6 lg:px-12 bg-gradient-to-r from-rose-600 to-rose-700">
+    <section className="w-full py-20 px-6 lg:px-12 bg-gradient-to-r from-[#A94093] to-[#771660]">
       <div className="max-w-8xl mx-auto">
         {/* card container */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
