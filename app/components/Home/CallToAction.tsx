@@ -52,24 +52,24 @@ export default function CallToActionImproved() {
             </p>
 
             <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-              <li className="flex items-start gap-3">
-                <span className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center font-semibold">
+              <li className="flex items-start gap-3 bg-white p-3 rounded-lg">
+                <span className="w-9 h-9 rounded-lg bg-white/10 text-black flex items-center justify-center font-semibold">
                   1
                 </span>
                 <div>
-                  <div className="font-medium">Quick demos</div>
-                  <div className="text-rose-100">
+                  <div className="font-medium text-black">Quick demos</div>
+                  <div className="text-gray-600">
                     20-minute focused walkthrough — no fluff.
                   </div>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <span className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center font-semibold">
+              <li className="flex items-start gap-3 bg-white p-3 rounded-lg">
+                <span className="w-9 h-9 rounded-lg bg-white/10 text-black flex items-center justify-center font-semibold">
                   2
                 </span>
                 <div>
-                  <div className="font-medium">Pilot & rollout</div>
-                  <div className="text-rose-100">
+                  <div className="font-medium text-black">Pilot & rollout</div>
+                  <div className="text-gray-600">
                     MVP-first approach — deploy fast, expand later.
                   </div>
                 </div>
@@ -105,11 +105,11 @@ export default function CallToActionImproved() {
 
           {/* Right - micro actions */}
           <aside className="lg:col-span-5">
-            <div className="bg-white/6 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-md">
-              <div className="text-sm font-semibold text-white">
+            <div className="bg-white backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-md">
+              <div className="text-sm font-semibold text-black">
                 Quick contact
               </div>
-              <p className="mt-2 text-sm text-rose-100">
+              <p className="mt-2 text-sm text-gray-600">
                 Pick how you&apos;d like to connect — we respond within one
                 business day.
               </p>
@@ -117,12 +117,12 @@ export default function CallToActionImproved() {
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <a
                   href="tel:+911234567890"
-                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition"
+                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition shadow-lg border border-black/5"
                 >
-                  <Phone className="w-5 h-5 text-white/90" />
+                  <Phone className="w-5 h-5 text-black/90" />
                   <div>
-                    <div className="font-medium">Request a call</div>
-                    <div className="text-rose-100 text-sm">
+                    <div className="font-medium text-black">Request a call</div>
+                    <div className="text-gray-600 text-sm">
                       +91 12 3456 7890
                     </div>
                   </div>
@@ -130,23 +130,23 @@ export default function CallToActionImproved() {
 
                 <a
                   href="mailto:info@imast.in"
-                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition"
+                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition shadow-lg border border-black/5"
                 >
-                  <Mail className="w-5 h-5 text-white/90" />
+                  <Mail className="w-5 h-5 text-black/90" />
                   <div>
-                    <div className="font-medium">Email us</div>
-                    <div className="text-rose-100 text-sm">info@imast.in</div>
+                    <div className="font-medium text-black">Email us</div>
+                    <div className="text-gray-600 text-sm">info@imast.in</div>
                   </div>
                 </a>
 
                 <a
                   href="/demo"
-                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition"
+                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition shadow-lg border border-black/5"
                 >
-                  <Calendar className="w-5 h-5 text-white/90" />
+                  <Calendar className="w-5 h-5 text-black/90" />
                   <div>
-                    <div className="font-medium">Book demo</div>
-                    <div className="text-rose-100 text-sm">
+                    <div className="font-medium text-black">Book demo</div>
+                    <div className="text-gray-600 text-sm">
                       20-min walkthrough
                     </div>
                   </div>
@@ -154,17 +154,17 @@ export default function CallToActionImproved() {
 
                 <a
                   href="/chat"
-                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition"
+                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition shadow-lg border border-black/5"
                 >
-                  <MessageSquare className="w-5 h-5 text-white/90" />
+                  <MessageSquare className="w-5 h-5 text-black/90" />
                   <div>
-                    <div className="font-medium">Live chat</div>
-                    <div className="text-rose-100 text-sm">Instant answers</div>
+                    <div className="font-medium text-black">Live chat</div>
+                    <div className="text-gray-600 text-sm">Instant answers</div>
                   </div>
                 </a>
               </div>
 
-              <div className="mt-4 text-xs text-rose-100">
+              <div className="mt-4 text-xs text-gray-600">
                 Or schedule a slot — we’d rather show results than slide-decks.
               </div>
 

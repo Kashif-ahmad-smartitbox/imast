@@ -79,9 +79,27 @@ const TESTIMONIALS: Testimonial[] = [
     author: "Head of CRM, FMCG Brand",
     role: "Marketing",
   },
+  {
+    quote:
+      "Customer satisfaction scores increased by 45% after implementing IMAST's solutions.",
+    author: "Customer Service Director, E-commerce",
+    role: "Customer Experience",
+  },
+  {
+    quote:
+      "The platform reduced our operational costs by 28% while improving service quality.",
+    author: "COO, Logistics Company",
+    role: "Operations",
+  },
+  {
+    quote:
+      "Real-time analytics helped us identify new market opportunities we had missed.",
+    author: "Business Analyst, Retail Group",
+    role: "Analytics",
+  },
 ];
 
-const TESTIMONIAL_INTERVAL = 5000;
+const TESTIMONIAL_INTERVAL = 6000;
 const DEFAULT_COUNT_DURATION = 1200;
 const MARQUEE_DURATION = 18;
 
@@ -184,7 +202,7 @@ function Marquee({
             loading="lazy"
             src={logo.src}
             alt={logo.alt}
-            className="max-h-15 w-auto object-contain"
+            className="max-h-20 w-auto object-contain"
             width={80}
             height={40}
           />
@@ -243,6 +261,16 @@ function initialsFromName(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+// Helper function to get current pair of testimonials
+function getTestimonialPair(
+  testimonials: Testimonial[],
+  activeIndex: number
+): [Testimonial, Testimonial | null] {
+  const first = testimonials[activeIndex];
+  const second = testimonials[activeIndex + 1] || null;
+  return [first, second];
+}
+
 // Main Component
 export default function Proof(): ReactElement {
   const [activeTestimonial, setActiveTestimonial] = useState<number>(0);
@@ -276,6 +304,12 @@ export default function Proof(): ReactElement {
     }));
   }, []);
 
+  // Calculate total pairs and current pair
+  const totalPairs = Math.ceil(TESTIMONIALS.length / 2);
+  const [currentTestimonial, nextTestimonial] = useMemo(() => {
+    return getTestimonialPair(TESTIMONIALS, activeTestimonial * 2);
+  }, [activeTestimonial]);
+
   // Testimonial autoplay functions with useCallback
   const stopAuto = useCallback((): void => {
     if (testimonialTimerRef.current !== null) {
@@ -288,10 +322,10 @@ export default function Proof(): ReactElement {
     stopAuto();
     if (!reduced && !testimonialPaused) {
       testimonialTimerRef.current = window.setInterval(() => {
-        setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
+        setActiveTestimonial((prev) => (prev + 1) % totalPairs);
       }, TESTIMONIAL_INTERVAL);
     }
-  }, [reduced, testimonialPaused, stopAuto]);
+  }, [reduced, testimonialPaused, stopAuto, totalPairs]);
 
   // Initialize autoplay
   useEffect(() => {
@@ -318,14 +352,12 @@ export default function Proof(): ReactElement {
     (direction: "prev" | "next") => {
       setTestimonialPaused(true);
       if (direction === "next") {
-        setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
+        setActiveTestimonial((prev) => (prev + 1) % totalPairs);
       } else {
-        setActiveTestimonial(
-          (prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length
-        );
+        setActiveTestimonial((prev) => (prev - 1 + totalPairs) % totalPairs);
       }
     },
-    []
+    [totalPairs]
   );
 
   const handleMarqueeMouseEnter = useCallback(
@@ -349,7 +381,7 @@ export default function Proof(): ReactElement {
     <section className="py-8 lg:py-12 bg-white" aria-labelledby="proof-title">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="text-center mb-8">
-          <p className="text-sm font-semibold text-rose-600 uppercase tracking-wide">
+          <p className="text-2xl font-semibold text-rose-600 uppercase tracking-wide">
             Proof
           </p>
           <h2
@@ -433,10 +465,10 @@ export default function Proof(): ReactElement {
           </div>
         </div>
 
-        {/* Testimonials Section */}
+        {/* IMPROVED Testimonials Section */}
         <div className="bg-white rounded-2xl p-6 lg:p-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8">
               <h3 className="text-lg lg:text-xl font-bold text-gray-900">
                 Customer Feedback
               </h3>
@@ -446,7 +478,7 @@ export default function Proof(): ReactElement {
             </div>
 
             <div
-              className="relative min-h-[180px] flex items-center"
+              className="relative"
               onMouseEnter={handleTestimonialMouseEnter}
               onMouseLeave={handleTestimonialMouseLeave}
               onFocus={handleTestimonialMouseEnter}
@@ -457,91 +489,144 @@ export default function Proof(): ReactElement {
               {/* Navigation Arrows */}
               <button
                 onClick={() => handleTestimonialNavigation("prev")}
-                className="absolute -left-10 z-20 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500"
-                aria-label="Previous testimonial"
+                className="absolute -left-12 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white shadow-lg hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                aria-label="Previous testimonials"
               >
-                <ArrowRight className="w-4 h-4 rotate-180" aria-hidden="true" />
+                <ArrowRight className="w-5 h-5 rotate-180" aria-hidden="true" />
               </button>
 
               <button
                 onClick={() => handleTestimonialNavigation("next")}
-                className="absolute -right-10 z-20 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500"
-                aria-label="Next testimonial"
+                className="absolute -right-12 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white shadow-lg hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                aria-label="Next testimonials"
               >
-                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                <ArrowRight className="w-5 h-5" aria-hidden="true" />
               </button>
 
-              {TESTIMONIALS.map((testimonial, index) => {
-                const visible = index === activeTestimonial;
-                return (
-                  <figure
-                    key={index}
-                    className={`absolute inset-0 transition-all duration-500 ease-out flex flex-col md:flex-row items-center gap-6 p-4 ${
-                      visible
-                        ? "opacity-100 translate-x-0 z-10"
-                        : "opacity-0 -translate-x-6 z-0 pointer-events-none"
-                    }`}
-                    aria-hidden={!visible}
-                  >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                {/* First Testimonial */}
+                <figure className="bg-[#fbf8ff] rounded-2xl p-6 lg:p-8 transition-all duration-500 ease-out hover:shadow-lg">
+                  <div className="flex items-start gap-4">
                     <div
-                      className="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 font-semibold text-lg flex-shrink-0"
-                      aria-label={`${testimonial.author} avatar`}
+                      className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 font-semibold text-base flex-shrink-0"
+                      aria-label={`${currentTestimonial.author} avatar`}
                     >
-                      {initialsFromName(testimonial.author)}
+                      {initialsFromName(currentTestimonial.author)}
                     </div>
-
-                    <figcaption className="flex-1 text-center md:text-left">
-                      <blockquote className="text-base lg:text-lg font-semibold text-gray-900 leading-relaxed">
-                        &apos;{testimonial.quote}&apos;
+                    <figcaption className="flex-1">
+                      <blockquote className="text-sm lg:text-base text-gray-900 leading-relaxed">
+                        &ldquo;{currentTestimonial.quote}&rdquo;
                       </blockquote>
-                      <div className="mt-3 text-sm text-gray-700">
-                        — {testimonial.author}
-                      </div>
-                      <div className="text-sm text-rose-600 font-medium">
-                        {testimonial.role}
+                      <div className="mt-4">
+                        <div className="font-semibold text-gray-800 text-sm">
+                          {currentTestimonial.author}
+                        </div>
+                        <div className="text-xs text-rose-600 font-medium mt-1">
+                          {currentTestimonial.role}
+                        </div>
                       </div>
                     </figcaption>
-                  </figure>
-                );
-              })}
+                  </div>
+                </figure>
 
-              <div
-                className="absolute right-4 bottom-4 flex items-center gap-2"
-                role="group"
-                aria-label="Testimonial navigation"
-              >
-                {TESTIMONIALS.map((_, index) => (
+                {/* Second Testimonial */}
+                {nextTestimonial && (
+                  <figure className="bg-[#fbf8ff] rounded-2xl p-6 lg:p-8 transition-all duration-500 ease-out hover:shadow-lg">
+                    <div className="flex items-start gap-4">
+                      <div
+                        className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 font-semibold text-base flex-shrink-0"
+                        aria-label={`${nextTestimonial.author} avatar`}
+                      >
+                        {initialsFromName(nextTestimonial.author)}
+                      </div>
+                      <figcaption className="flex-1">
+                        <blockquote className="text-sm lg:text-base text-gray-900 leading-relaxed">
+                          &ldquo;{nextTestimonial.quote}&rdquo;
+                        </blockquote>
+                        <div className="mt-4">
+                          <div className="font-semibold text-gray-800 text-sm">
+                            {nextTestimonial.author}
+                          </div>
+                          <div className="text-xs text-rose-600 font-medium mt-1">
+                            {nextTestimonial.role}
+                          </div>
+                        </div>
+                      </figcaption>
+                    </div>
+                  </figure>
+                )}
+              </div>
+
+              {/* Enhanced Navigation Dots */}
+              <div className="flex justify-center items-center gap-3 mt-8">
+                {Array.from({ length: totalPairs }).map((_, index) => (
                   <button
                     key={index}
                     onClick={() => handleTestimonialSelect(index)}
-                    aria-label={`Show testimonial ${index + 1} of ${
+                    aria-label={`Show testimonials ${
+                      index * 2 + 1
+                    } to ${Math.min(index * 2 + 2, TESTIMONIALS.length)} of ${
                       TESTIMONIALS.length
                     }`}
                     aria-current={
                       index === activeTestimonial ? "true" : "false"
                     }
-                    className={`w-3 h-3 rounded-full transition focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 ${
+                    className={`flex items-center gap-1 transition-all focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 rounded-full px-3 py-1 ${
                       index === activeTestimonial
-                        ? "bg-rose-600"
-                        : "bg-gray-300 hover:bg-gray-400"
+                        ? "bg-rose-600 text-white"
+                        : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                     }`}
-                  />
+                  >
+                    <span className="text-xs font-medium">{index + 1}</span>
+                  </button>
                 ))}
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-gray-100">
-              <div className="flex items-center justify-center gap-4">
-                <CheckCircle
-                  className="text-green-600 flex-shrink-0"
-                  aria-hidden="true"
-                />
-                <div className="text-center md:text-left">
-                  <div className="font-semibold text-gray-800">
-                    Security & compliance
+            {/* Enhanced Trust Indicators */}
+            <div className="mt-8 pt-6 border-t border-gray-100">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <CheckCircle
+                    className="text-green-600"
+                    size={20}
+                    aria-hidden="true"
+                  />
+                  <div>
+                    <div className="font-semibold text-gray-800 text-sm">
+                      Enterprise Security
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1">
+                      SOC2, TLS, role-based access
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600">
-                    SOC2 readiness, TLS, role-based access and DPA available.
+                </div>
+                <div className="flex flex-col items-center gap-3">
+                  <Award
+                    className="text-rose-600"
+                    size={20}
+                    aria-hidden="true"
+                  />
+                  <div>
+                    <div className="font-semibold text-gray-800 text-sm">
+                      Industry Leader
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1">
+                      Trusted by 500+ brands
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">✓</span>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-800 text-sm">
+                      24/7 Support
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1">
+                      Dedicated customer success
+                    </div>
                   </div>
                 </div>
               </div>

@@ -64,7 +64,7 @@ export default function WhyChooseIMAST() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
         <header className="text-center mb-8">
-          <p className="text-sm font-semibold text-rose-100">Why IMAST?</p>
+          <p className="text-3xl font-semibold text-rose-100">Why IMAST?</p>
           <h2
             id="why-imast-title"
             className="mt-3 text-xl sm:text-4xl font-extrabold tracking-tight text-white"
@@ -77,7 +77,7 @@ export default function WhyChooseIMAST() {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
             {differentiators.map((d) => (
               <article
@@ -113,8 +113,8 @@ export default function WhyChooseIMAST() {
             ))}
           </div>
 
-          <aside className="lg:col-span-5 space-y-6">
-            <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <aside className="lg:col-span-5 flex flex-col gap-6 h-full">
+            <div className="rounded-2xl bg-white p-6 shadow-sm flex-1">
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-sm text-gray-500">
@@ -140,8 +140,8 @@ export default function WhyChooseIMAST() {
                 <li className="flex items-start gap-3">
                   <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
                   <span>
-                    Field teams for onboarding — we don’t just drop a link and
-                    go.
+                    Field teams for onboarding — we don&apos;t just drop a link
+                    and go.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -156,6 +156,34 @@ export default function WhyChooseIMAST() {
                   <span>
                     Measurable ROI: focus on retention, revenue lift and reduced
                     ops cost.
+                  </span>
+                </li>
+
+                {/* New points start here */}
+                <li className="flex items-start gap-3">
+                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
+                  <span>
+                    Built-in compliance and audit readiness — no shortcuts on
+                    governance.
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
+                  <span>
+                    Scales from pilot to enterprise rollout without rework.
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
+                  <span>
+                    Human + AI support model — automation where it fits, people
+                    where it matters.
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" />
+                  <span>
+                    Transparent pricing — no hidden costs, no lock-ins.
                   </span>
                 </li>
               </ul>

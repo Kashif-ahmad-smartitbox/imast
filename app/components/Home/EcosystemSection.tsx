@@ -489,10 +489,10 @@ export default function EcosystemSection() {
             {/* Left Content */}
             <div className="text-center lg:text-left">
               <div>
-                <h3 className="text-xl font-semibold text-red-600">
+                <h3 className="text-3xl font-semibold text-white">
                   AI-Enabled Digital Ecosystem
                 </h3>
-                <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-white">
+                <h2 className="mt-2 text-xl sm:text-2xl font-extrabold text-rose-600">
                   Do you have your own AI-enabled Integrated Digital Ecosystem?
                 </h2>
                 <p className="mt-2 text-sm text-red-50 max-w-xl">

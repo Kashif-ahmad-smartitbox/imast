@@ -114,7 +114,7 @@ export default function ImpactSection({
     >
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-12">
-          <p className="text-sm font-semibold text-rose-600 uppercase tracking-wide">
+          <p className="text-xl font-semibold text-rose-600 uppercase tracking-wide">
             Proven Results
           </p>
           <h2

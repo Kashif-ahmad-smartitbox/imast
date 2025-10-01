@@ -219,7 +219,7 @@ function Footer() {
               <span className="flex items-center mx-2 text-red-500">
                 <Heart size={12} className="mx-1" />
               </span>
-              Crafted with passion
+              Crafted with ❤️ by SMART ITBOX
             </div>
 
             <div className="flex flex-wrap justify-center gap-6 text-sm">

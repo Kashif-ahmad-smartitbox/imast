@@ -119,7 +119,7 @@ export default function Resources() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="mb-8 text-center">
-          <p className="text-sm font-semibold text-rose-600">Resources</p>
+          <p className="text-3xl font-semibold text-rose-600">Resources</p>
           <h2
             id="resources-title"
             className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"

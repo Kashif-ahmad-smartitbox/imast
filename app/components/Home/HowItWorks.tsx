@@ -87,12 +87,12 @@ export default function HowItWorks() {
 
   return (
     <section
-      className="py-20 lg:py-28 bg-gradient-to-br from-gray-50 via-white to-blue-50/30"
+      className="py-20 lg:py-28 bg-[#f5f5fa] to-blue-50/30"
       aria-labelledby="how-it-works-title"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="mb-16">
-          <h3 className="text-base font-semibold text-red-600">How it work</h3>
+          <h3 className="text-2xl font-semibold text-red-600">How it work</h3>
           <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900">
             From Data to Decisions
           </h2>
@@ -158,7 +158,7 @@ export default function HowItWorks() {
                 <div className="space-y-8">
                   {/* Business Modules */}
                   <div className="text-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 mb-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white mb-6">
                       <GitBranch size={16} className="text-gray-600" />
                       <span className="text-sm font-medium text-gray-700">
                         Business Modules
@@ -346,7 +346,7 @@ function EnhancedChannel({
   return (
     <div className="flex flex-col items-center gap-3 group cursor-pointer">
       <div
-        className={`w-16 h-16 bg-white rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 border border-gray-100`}
+        className={`w-16 h-16 bg-white rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110`}
       >
         {icon}
       </div>

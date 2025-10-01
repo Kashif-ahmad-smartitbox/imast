@@ -4,9 +4,7 @@ import { ArrowRight, TrendingUp, Users, Star, Target } from "lucide-react";
 export default function ImastCard() {
   return (
     <div className="group relative">
-      <div className="absolute inset-0 rounded-3xl blur-xl opacity-60 group-hover:opacity-80 transition-all duration-500 -z-10"></div>
-
-      <div className="relative rounded-2xl bg-white/80 ring-1 ring-white/20 shadow-2xl shadow-gray-200/50 overflow-hidden hover:shadow-2xl hover:shadow-gray-300/50 transition-all duration-500 group-hover:scale-[1.02] group-hover:ring-rose-100/50">
+      <div className="relative rounded-2xl bg-white/80 ring-1 ring-white/20  border border-gray-100 overflow-hidden transition-all duration-500 group-hover:scale-[1.02] group-hover:ring-rose-100/50">
         <div className="p-6 lg:p-8">
           <div className="flex items-start justify-between mb-6">
             <div className="flex-1">
@@ -122,9 +120,6 @@ export default function ImastCard() {
             </div>
           </div>
         </div>
-
-        {/* Hover effect overlay */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-rose-500/5 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
       </div>
     </div>
   );
@@ -146,7 +141,7 @@ function MetricCard({
 }) {
   return (
     <div
-      className="text-center p-3 rounded-xl bg-white border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-md group/metric"
+      className="text-center p-3 rounded-xl bg-white border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-md group/metric group-hover:scale-[1.02] group-hover:ring-rose-100/50"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div

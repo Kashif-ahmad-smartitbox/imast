@@ -23,8 +23,8 @@ export default function KeyValue() {
           {/* LEFT: Pitch + benefits */}
           <div className="relative">
             <div>
-              <h3 className="text-lg font-semibold text-red-600">
-                Why Choose IMAST?
+              <h3 className="text-3xl font-semibold text-red-600">
+                Why Choose IMAST<span className="text-4xl">?</span>
               </h3>
               <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900">
                 Unified platform. Practical outcomes.
@@ -35,7 +35,7 @@ export default function KeyValue() {
                 right way — faster and with less risk
               </p>
             </div>
-            <div className="mt-8 flex items-center gap-6 p-4 bg-white/60 rounded-2xl border border-gray-100">
+            <div className="mt-8 flex items-center gap-6 p-4 bg-white/60 rounded-2xl border border-gray-100 group-hover:scale-[1.02] group-hover:ring-rose-100/50">
               <div className="flex -space-x-3">
                 {[1, 2, 3, 4].map((item) => (
                   <div
@@ -118,8 +118,8 @@ export default function KeyValue() {
             </div>
 
             {/* Floating elements */}
-            <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-rose-400/20 to-amber-400/20 rounded-3xl blur-xl animate-pulse"></div>
-            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-blue-400/15 to-violet-400/15 rounded-3xl blur-xl animate-pulse delay-1000"></div>
+            {/* <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-rose-400/20 to-amber-400/20 rounded-3xl blur-xl animate-pulse"></div>
+            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-blue-400/15 to-violet-400/15 rounded-3xl blur-xl animate-pulse delay-1000"></div> */}
           </div>
         </div>
       </div>
@@ -182,7 +182,7 @@ function EnhancedFeature({
 }) {
   return (
     <div
-      className="feature-hover group p-4 rounded-2xl bg-white/60 border border-gray-100 hover:border-gray-200 hover:bg-white/80 backdrop-blur-sm cursor-pointer transition-all duration-300"
+      className="feature-hover group p-4 rounded-2xl bg-white/60 border border-gray-100 hover:border-gray-200 hover:bg-white/80 backdrop-blur-sm cursor-pointer transition-all duration-300 group-hover:scale-[1.02] group-hover:ring-rose-100/50"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="flex gap-4 items-start">

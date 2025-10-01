@@ -58,12 +58,12 @@ export default function ImastValuesSection({
         </div>
 
         {/* Content Card */}
-        <div className="relative z-30 -mt-[60px] md:-mt-[80px] lg:-mt-[100px]">
+        <div className="relative z-30 -mt-[60px] md:-mt-[80px] lg:-mt-[50px]">
           <div className="w-[94vw] md:w-[86vw] lg:w-[76vw] max-w-6xl mx-auto">
             <div className="bg-white rounded-3xl ring-1 ring-slate-200 p-8 md:p-12 lg:p-16">
               <div className="max-w-5xl mx-auto">
                 <header className="text-center mb-12">
-                  <p className="text-sm font-semibold text-rose-600 uppercase tracking-wide">
+                  <p className="text-2xl font-semibold text-rose-600 uppercase tracking-wide">
                     Our Values
                   </p>
                   <h2
@@ -72,7 +72,7 @@ export default function ImastValuesSection({
                   >
                     {title.split("\n").map((line, i) => (
                       <span key={i} className="block">
-                        {line}
+                        &quot;{line}&quot;
                       </span>
                     ))}
                   </h2>
@@ -83,7 +83,7 @@ export default function ImastValuesSection({
                   {values.map((value, index) => (
                     <div
                       key={index}
-                      className="group relative bg-white rounded-xl p-8 border border-slate-100 hover:border-rose-200 transition-all duration-300 hover:shadow-lg"
+                      className="group relative bg-white rounded-xl p-8 border border-slate-100 hover:border-rose-200 hover:bg-rose-600 text-slate-900 hover:text-slate-100 cursor-pointer transition-all duration-300 hover:shadow-lg"
                     >
                       {/* Icon Section */}
                       <div className="flex items-start justify-between mb-6">
@@ -97,10 +97,10 @@ export default function ImastValuesSection({
 
                       {/* Content */}
                       <div>
-                        <h3 className="text-xl font-semibold text-slate-900 mb-4 leading-tight">
+                        <h3 className="text-xl font-semibold mb-4 leading-tight">
                           {value.title}
                         </h3>
-                        <p className="text-slate-600 leading-relaxed text-[15px]">
+                        <p className="text-slate-600 hover:text-white leading-relaxed text-[15px]">
                           {value.description}
                         </p>
                       </div>

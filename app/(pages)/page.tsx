@@ -14,6 +14,8 @@ import WhyChooseIMAST from "@/components/Home/WhyChooseIMAST";
 import EcosystemSection from "@/components/Home/EcosystemSection";
 import ImastImpactSection from "@/components/Home/ImastImpactSection";
 import ImastValuesSection from "@/components/Home/ImastValuesSection";
+import ImpactSection from "@/components/Home/ImpactSection";
+import ImastAISection from "@/components/Home/ImastAISection";
 
 function HomePage() {
   return (
@@ -25,6 +27,8 @@ function HomePage() {
       <ImastImpactSection />
       <ImastValuesSection />
       <Modules />
+      <ImastAISection />
+      <ImpactSection />
       <HowItWorks />
       <ImastTrial />
       <Proof />

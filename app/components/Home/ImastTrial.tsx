@@ -8,7 +8,7 @@ export default function ImastTrial({
   illustrationSrc?: string;
 }) {
   return (
-    <section className="w-full py-16 lg:py-24 px-6 lg:px-12 bg-gradient-to-r from-[#A94093] to-[#771660] relative overflow-hidden">
+    <section className="w-full py-16 lg:py-24 px-6 lg:px-12 bg-gradient-to-r from-[#4c1d56] to-[#296462] relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-300/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"></div>
@@ -19,16 +19,11 @@ export default function ImastTrial({
           <div className="p-6 lg:p-8 text-white space-y-6">
             {/* Logo/Brand */}
             <div className="flex items-center gap-3 mb-2">
-              <div className="bg-white backdrop-blur-sm rounded-xl p-2">
-                <img
-                  src="/logo.svg"
-                  alt="IMAST"
-                  className="w-8 h-8 lg:w-10 lg:h-10"
-                />
-              </div>
-              <span className="text-sm font-semibold text-rose-100 bg-white/10 px-3 py-1 rounded-full">
-                ENTERPRISE PLATFORM
-              </span>
+              <img
+                src="/logo.svg"
+                alt="IMAST"
+                className="w-8 h-8 lg:w-44 lg:h-20"
+              />
             </div>
 
             {/* Headline */}
