@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 const DEFAULT_BADGES = [
   {
     id: "gdpr",
-    title: "GDP",
+    title: "GDPR",
     href: "/compliance#gdpr",
     src: "/badges/gdpr.png",
   },
