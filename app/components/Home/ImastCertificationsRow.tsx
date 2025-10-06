@@ -4,12 +4,42 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 const DEFAULT_BADGES = [
-  { id: "gdpr", title: "GDPR", href: "/compliance#gdpr", src: "/badges/gdpr.png" },
-  { id: "soc2", title: "SOC 2", href: "/compliance#soc2", src: "/badges/soc2.png" },
-  { id: "iso27001", title: "ISO 27001", href: "/compliance#iso27001", src: "/badges/iso-27001.png" },
-  { id: "pcidss", title: "PCI DSS", href: "/compliance#pcidss", src: "/badges/pcidss.png" },
-  { id: "iso27018", title: "ISO 27018", href: "/compliance#iso27018", src: "/badges/iso-27018.png" },
-  { id: "iso14001", title: "ISO 14001", href: "/compliance#iso14001", src: "/badges/iso-14001.png" },
+  {
+    id: "gdpr",
+    title: "GDP",
+    href: "/compliance#gdpr",
+    src: "/badges/gdpr.png",
+  },
+  {
+    id: "soc2",
+    title: "SOC 2",
+    href: "/compliance#soc2",
+    src: "/badges/soc2.png",
+  },
+  {
+    id: "iso27001",
+    title: "ISO 27001",
+    href: "/compliance#iso27001",
+    src: "/badges/iso-27001.png",
+  },
+  {
+    id: "pcidss",
+    title: "PCI DSS",
+    href: "/compliance#pcidss",
+    src: "/badges/pcidss.png",
+  },
+  {
+    id: "iso27018",
+    title: "ISO 27018",
+    href: "/compliance#iso27018",
+    src: "/badges/iso-27018.png",
+  },
+  {
+    id: "iso14001",
+    title: "ISO 14001",
+    href: "/compliance#iso14001",
+    src: "/badges/iso-14001.png",
+  },
 ];
 
 export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
@@ -17,13 +47,15 @@ export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
     <section className="relative w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 lg:pt-16">
         <div className="mb-16">
-          <h3 className="text-2xl font-semibold text-red-600">Certified & Compliant</h3>
+          <h3 className="text-2xl font-semibold text-red-600">
+            Certified & Compliant
+          </h3>
           <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900">
             Enterprise-Grade Security Standards
           </h2>
           <p className="mt-2 text-sm text-gray-600 max-w-xl">
-            Adhering to global compliance frameworks to ensure your data remains protected 
-            with the highest security certifications
+            Adhering to global compliance frameworks to ensure your data remains
+            protected with the highest security certifications
           </p>
         </div>
 
@@ -35,7 +67,6 @@ export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
           viewport={{ once: true }}
           className="relative"
         >
-          
           {/* Grid layout for responsiveness */}
           <div className="relative grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 lg:gap-8">
             {badges.map((badge, index) => (
@@ -44,15 +75,15 @@ export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
                 href={badge.href ?? "#"}
                 initial={{ opacity: 0, scale: 0.8, y: 20 }}
                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                whileHover={{ 
+                whileHover={{
                   scale: 1.05,
-                  y: -4
+                  y: -4,
                 }}
                 whileTap={{ scale: 0.98 }}
-                transition={{ 
+                transition={{
                   duration: 0.4,
                   delay: index * 0.08,
-                  ease: "easeOut"
+                  ease: "easeOut",
                 }}
                 viewport={{ once: true, margin: "-50px" }}
                 className="group relative flex flex-col items-center justify-center p-4 sm:p-6 bg-white rounded-2xl shadow-xs border border-gray-200/80 hover:shadow-lg transition-all duration-300 hover:border-blue-300/50 z-10"
@@ -62,7 +93,7 @@ export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
                 {/* Enhanced background effects */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white to-blue-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-lg" />
-                
+
                 {/* Animated border */}
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#a94093] to-rose-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 p-px">
                   <div className="w-full h-full bg-white rounded-2xl" />
@@ -82,7 +113,7 @@ export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
                 {/* Badge title for mobile */}
                 <div className="relative z-10 mt-3">
                   <span className="text-xs sm:text-sm font-medium text-gray-700 text-center group-hover:text-gray-900 transition-colors duration-300 block lg:hidden">
-                    {badge.title.split(' ')[0]}
+                    {badge.title.split(" ")[0]}
                   </span>
                   <span className="text-xs sm:text-sm font-medium text-gray-700 text-center group-hover:text-gray-900 transition-colors duration-300 hidden lg:block">
                     {badge.title}
