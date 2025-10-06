@@ -10,7 +10,6 @@ import React, {
 import { Award, CheckCircle, ArrowRight } from "lucide-react";
 import StatCard from "../StatCard";
 
-// Types
 interface ClientLogo {
   src: string;
   alt: string;
@@ -28,30 +27,15 @@ interface Testimonial {
   role: string;
 }
 
-interface StatCardProps {
-  label: string;
-  value: string;
-  sub?: string;
-}
-
 interface UseCountToOptions {
   duration?: number;
   precision?: number;
 }
 
-// Constants
-const CLIENT_LOGOS: ClientLogo[] = [
-  { src: "/client/01.jpg", alt: "Client logo 1" },
-  { src: "/client/02.jpg", alt: "Client logo 2" },
-  { src: "/client/03.jpg", alt: "Client logo 3" },
-  { src: "/client/04.jpg", alt: "Client logo 4" },
-  { src: "/client/05.jpg", alt: "Client logo 5" },
-  { src: "/client/06.jpg", alt: "Client logo 6" },
-  { src: "/client/07.jpg", alt: "Client logo 7" },
-  { src: "/client/08.jpg", alt: "Client logo 8" },
-  { src: "/client/09.jpg", alt: "Client logo 9" },
-  { src: "/client/10.jpg", alt: "Client logo 10" },
-];
+const CLIENT_LOGOS: ClientLogo[] = Array.from({ length: 45 }, (_, i) => ({
+  src: `/client/${String(i + 1).padStart(2, "0")}.jpg`,
+  alt: `Client logo ${i + 1}`,
+}));
 
 const STATS: Stat[] = [
   { key: "brands", label: "Brands", value: 500 },
@@ -101,21 +85,21 @@ const TESTIMONIALS: Testimonial[] = [
 
 const TESTIMONIAL_INTERVAL = 6000;
 const DEFAULT_COUNT_DURATION = 1200;
-const MARQUEE_DURATION = 18;
+const MARQUEE_DURATION = 25;
 
 // Custom Hooks
 function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState<boolean>(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const handler = (): void => setReduced(mq.matches);
-    handler();
+    const handleChange = (): void => setReduced(mediaQuery.matches);
+    handleChange();
 
-    if (mq.addEventListener) {
-      mq.addEventListener("change", handler);
-      return () => mq.removeEventListener("change", handler);
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
     }
 
     return undefined;
@@ -170,6 +154,7 @@ interface MarqueeProps {
   direction: "left" | "right";
   paused: boolean;
   reducedMotion: boolean;
+  className?: string;
 }
 
 function Marquee({
@@ -177,13 +162,11 @@ function Marquee({
   direction,
   paused,
   reducedMotion,
+  className = "",
 }: MarqueeProps): ReactElement {
-  const marqueeRef = useRef<HTMLDivElement>(null);
-
   return (
     <div
-      ref={marqueeRef}
-      className="flex items-center gap-8 px-6 py-4 whitespace-nowrap will-change-transform"
+      className={`flex items-center gap-8 px-6 py-4 whitespace-nowrap will-change-transform ${className}`}
       style={{
         animationPlayState: paused ? "paused" : "running",
         animation: reducedMotion
@@ -195,14 +178,14 @@ function Marquee({
       {logos.map((logo, index) => (
         <div
           key={`${logo.alt}-${index}`}
-          className="flex items-center justify-center p-3 bg-white rounded-md  flex-shrink-0"
+          className="flex items-center justify-center p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex-shrink-0 border border-gray-100"
           style={{ minWidth: 160 }}
         >
           <img
             loading="lazy"
             src={logo.src}
             alt={logo.alt}
-            className="max-h-20 w-auto object-contain"
+            className="max-h-15 w-auto object-contain transition-all duration-300"
             width={80}
             height={40}
           />
@@ -261,7 +244,6 @@ function initialsFromName(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-// Helper function to get current pair of testimonials
 function getTestimonialPair(
   testimonials: Testimonial[],
   activeIndex: number
@@ -271,11 +253,91 @@ function getTestimonialPair(
   return [first, second];
 }
 
+// Enhanced Marquee Container Component
+interface MarqueeContainerProps {
+  logos: ClientLogo[];
+  reducedMotion: boolean;
+}
+
+function MarqueeContainer({
+  logos,
+  reducedMotion,
+}: MarqueeContainerProps): ReactElement {
+  const [paused, setPaused] = useState<boolean>(false);
+
+  // Split logos into 3 parts
+  const logoParts = useMemo(() => {
+    const partSize = Math.ceil(logos.length / 3);
+    return [
+      logos.slice(0, partSize),
+      logos.slice(partSize, partSize * 2),
+      logos.slice(partSize * 2),
+    ];
+  }, [logos]);
+
+  const handleMouseEnter = useCallback((): void => setPaused(true), []);
+  const handleMouseLeave = useCallback((): void => setPaused(false), []);
+
+  return (
+    <div className="space-y-4">
+      {/* First row: right to left */}
+      <div
+        className="overflow-hidden relative"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onFocus={handleMouseEnter}
+        onBlur={handleMouseLeave}
+        aria-label="Client logos scrolling right to left"
+      >
+        <Marquee
+          logos={logoParts[0]}
+          direction="left"
+          paused={paused}
+          reducedMotion={reducedMotion}
+        />
+      </div>
+
+      {/* Second row: left to right */}
+      <div
+        className="overflow-hidden relative"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onFocus={handleMouseEnter}
+        onBlur={handleMouseLeave}
+        aria-label="Client logos scrolling left to right"
+      >
+        <Marquee
+          logos={logoParts[1]}
+          direction="right"
+          paused={paused}
+          reducedMotion={reducedMotion}
+        />
+      </div>
+
+      {/* Third row: right to left (same as first) */}
+      <div
+        className="overflow-hidden relative"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onFocus={handleMouseEnter}
+        onBlur={handleMouseLeave}
+        aria-label="Client logos scrolling right to left"
+      >
+        <Marquee
+          logos={logoParts[2]}
+          direction="left"
+          paused={paused}
+          reducedMotion={reducedMotion}
+        />
+      </div>
+    </div>
+  );
+}
+
 // Main Component
 export default function Proof(): ReactElement {
   const [activeTestimonial, setActiveTestimonial] = useState<number>(0);
   const [testimonialPaused, setTestimonialPaused] = useState<boolean>(false);
-  const [marqueePaused, setMarqueePaused] = useState<boolean>(false);
   const testimonialTimerRef = useRef<number | null>(null);
   const reduced = usePrefersReducedMotion();
 
@@ -294,9 +356,10 @@ export default function Proof(): ReactElement {
     [brandsCount, usersCount, uptimeCount, retentionCount]
   );
 
-  // Memoized duplicate logos for marquee
+  // Memoized duplicate logos for seamless marquee
   const logosForMarquee = useMemo<ClientLogo[]>(() => {
-    return CLIENT_LOGOS.concat(CLIENT_LOGOS).map((logo, index) => ({
+    const duplicated = CLIENT_LOGOS.concat(CLIENT_LOGOS);
+    return duplicated.map((logo, index) => ({
       ...logo,
       alt: `${logo.alt} duplicate ${
         Math.floor(index / CLIENT_LOGOS.length) + 1
@@ -310,7 +373,7 @@ export default function Proof(): ReactElement {
     return getTestimonialPair(TESTIMONIALS, activeTestimonial * 2);
   }, [activeTestimonial]);
 
-  // Testimonial autoplay functions with useCallback
+  // Testimonial autoplay functions
   const stopAuto = useCallback((): void => {
     if (testimonialTimerRef.current !== null) {
       window.clearInterval(testimonialTimerRef.current);
@@ -342,7 +405,7 @@ export default function Proof(): ReactElement {
     }
   }, [testimonialPaused, startAuto, stopAuto]);
 
-  // Event handlers with useCallback
+  // Event handlers
   const handleTestimonialSelect = useCallback((index: number): void => {
     setActiveTestimonial(index);
     setTestimonialPaused(true);
@@ -360,14 +423,6 @@ export default function Proof(): ReactElement {
     [totalPairs]
   );
 
-  const handleMarqueeMouseEnter = useCallback(
-    (): void => setMarqueePaused(true),
-    []
-  );
-  const handleMarqueeMouseLeave = useCallback(
-    (): void => setMarqueePaused(false),
-    []
-  );
   const handleTestimonialMouseEnter = useCallback(
     (): void => setTestimonialPaused(true),
     []
@@ -395,38 +450,9 @@ export default function Proof(): ReactElement {
           </p>
         </header>
 
-        {/* MARQUEE: logos */}
-        <div
-          className="overflow-hidden mb-6 relative"
-          onMouseEnter={handleMarqueeMouseEnter}
-          onMouseLeave={handleMarqueeMouseLeave}
-          onFocus={handleMarqueeMouseEnter}
-          onBlur={handleMarqueeMouseLeave}
-          aria-label="Client logos"
-        >
-          <Marquee
-            logos={logosForMarquee}
-            direction="left"
-            paused={marqueePaused}
-            reducedMotion={reduced}
-          />
-        </div>
-
-        {/* Second marquee flowing right */}
-        <div
-          className="overflow-hidden mb-12 relative"
-          onMouseEnter={handleMarqueeMouseEnter}
-          onMouseLeave={handleMarqueeMouseLeave}
-          onFocus={handleMarqueeMouseEnter}
-          onBlur={handleMarqueeMouseLeave}
-          aria-label="Client logos continued"
-        >
-          <Marquee
-            logos={logosForMarquee}
-            direction="right"
-            paused={marqueePaused}
-            reducedMotion={reduced}
-          />
+        {/* Enhanced Marquee Section */}
+        <div className="mb-12">
+          <MarqueeContainer logos={logosForMarquee} reducedMotion={reduced} />
         </div>
 
         {/* Stats Section */}
@@ -465,9 +491,9 @@ export default function Proof(): ReactElement {
           </div>
         </div>
 
-        {/* IMPROVED Testimonials Section */}
+        {/* Testimonials Section */}
         <div className="bg-white rounded-2xl p-6 lg:p-8">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             <div className="text-center mb-8">
               <h3 className="text-lg lg:text-xl font-bold text-gray-900">
                 Customer Feedback
@@ -486,23 +512,6 @@ export default function Proof(): ReactElement {
               aria-live="polite"
               aria-atomic="true"
             >
-              {/* Navigation Arrows */}
-              <button
-                onClick={() => handleTestimonialNavigation("prev")}
-                className="absolute -left-12 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white shadow-lg hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
-                aria-label="Previous testimonials"
-              >
-                <ArrowRight className="w-5 h-5 rotate-180" aria-hidden="true" />
-              </button>
-
-              <button
-                onClick={() => handleTestimonialNavigation("next")}
-                className="absolute -right-12 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white shadow-lg hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
-                aria-label="Next testimonials"
-              >
-                <ArrowRight className="w-5 h-5" aria-hidden="true" />
-              </button>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
                 {/* First Testimonial */}
                 <figure className="bg-[#fbf8ff] rounded-2xl p-6 lg:p-8 transition-all duration-500 ease-out hover:shadow-lg">
@@ -583,7 +592,7 @@ export default function Proof(): ReactElement {
               </div>
             </div>
 
-            {/* Enhanced Trust Indicators */}
+            {/* Trust Indicators */}
             <div className="mt-8 pt-6 border-t border-gray-100">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                 <div className="flex flex-col items-center gap-3">
@@ -601,21 +610,25 @@ export default function Proof(): ReactElement {
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-center gap-3">
-                  <Award
-                    className="text-rose-600"
-                    size={20}
-                    aria-hidden="true"
-                  />
-                  <div>
-                    <div className="font-semibold text-gray-800 text-sm">
-                      Industry Leader
+                <a
+                  href="/case-studies"
+                  className="w-full md:w-auto inline-flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-3 hover:shadow-md transition"
+                  aria-label="Read case studies"
+                >
+                  <div className="flex-none w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center font-bold text-rose-600">
+                    CS
+                  </div>
+                  <div className="text-left">
+                    <div className="font-semibold text-gray-900">
+                      See the impact
                     </div>
-                    <div className="text-xs text-gray-600 mt-1">
-                      Trusted by 500+ brands
+                    <div className="text-xs text-gray-600">
+                      Case studies & outcomes — 3 min reads
                     </div>
                   </div>
-                </div>
+                  <ArrowRight className="ml-3 text-rose-600" size={16} />
+                </a>
+
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
                     <span className="text-white text-xs font-bold">✓</span>

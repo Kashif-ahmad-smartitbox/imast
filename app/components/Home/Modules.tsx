@@ -92,10 +92,8 @@ export default function Modules() {
     <section className="py-20 lg:py-28 bg-rose-700 to-blue-50/30">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="text-center mb-8">
-          <div className="bg-white text-center inline-block px-4 py-1 rounded-full">
-            <p className="text-2xl font-semibold text-rose-600 uppercase tracking-wide">
-              Core Solutions
-            </p>
+          <div className="bg-white text-center inline-block px-10 py-4 rounded-full">
+            <img src="/imast360.png" alt="Imast 360 Logo" />
           </div>
           <h2
             id="proof-title"

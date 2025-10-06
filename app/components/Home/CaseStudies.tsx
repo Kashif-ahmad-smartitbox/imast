@@ -140,16 +140,10 @@ export default function CaseStudies() {
                 <div className="p-4">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <img
-                        src={f.logo}
-                        alt={`${f.title} logo`}
-                        className="h-6 object-contain"
-                      />
                       <h3 className="text-sm font-semibold text-gray-900">
                         {f.title}
                       </h3>
                     </div>
-                    <div className="text-xs text-gray-400">{f.vertical}</div>
                   </div>
 
                   <p className="mt-3 text-sm text-gray-600 line-clamp-3">
@@ -157,22 +151,6 @@ export default function CaseStudies() {
                   </p>
 
                   <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs">
-                      {f.metrics?.map((m) => (
-                        <div
-                          key={m.label}
-                          className="flex flex-col items-start bg-gray-50 px-2 py-1 rounded-md border border-gray-100"
-                        >
-                          <span className="text-[11px] text-gray-500">
-                            {m.label}
-                          </span>
-                          <div className="font-medium text-sm text-gray-900">
-                            {m.value}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setOpen(f)}
@@ -180,13 +158,6 @@ export default function CaseStudies() {
                         aria-label={`Read story: ${f.title}`}
                       >
                         Read story <ArrowRight className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        onClick={() => alert("Demo: shared")}
-                        className="hidden md:inline-flex items-center gap-2 text-xs px-3 py-1 rounded-md border border-gray-200"
-                      >
-                        Share
                       </button>
                     </div>
                   </div>

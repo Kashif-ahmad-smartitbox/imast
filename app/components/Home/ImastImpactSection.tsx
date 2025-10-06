@@ -25,9 +25,9 @@ type Impact = {
 
 const DEFAULT_IMPACTS: Impact[] = [
   {
-    title: "Sell faster",
-    stat: "20 hrs",
-    subtitle: "saved each week",
+    title: "Automate Process",
+    stat: "100%",
+    subtitle: "Automation of Supply Chain & Customer engagement process",
     color: "bg-blue-600",
     gradient: "from-blue-500 via-blue-600 to-blue-700",
     imageSrc: "/people/1.png",
@@ -35,9 +35,9 @@ const DEFAULT_IMPACTS: Impact[] = [
     icon: <Zap className="w-4 h-4" />,
   },
   {
-    title: "Close more deals",
-    stat: "+29%",
-    subtitle: "sales productivity",
+    title: "ROI",
+    stat: "50% +",
+    subtitle: "Return on Investment",
     color: "bg-teal-600",
     gradient: "from-teal-500 via-teal-600 to-emerald-600",
     imageSrc: "/people/2.png",
@@ -45,9 +45,9 @@ const DEFAULT_IMPACTS: Impact[] = [
     icon: <TrendingUp className="w-4 h-4" />,
   },
   {
-    title: "Scale service",
-    stat: "-27%",
-    subtitle: "support costs",
+    title: "Increase Productivity",
+    stat: "40% +",
+    subtitle: "Over all productivity",
     color: "bg-pink-600",
     gradient: "from-pink-500 via-rose-600 to-fuchsia-600",
     imageSrc: "/people/3.png",
@@ -55,9 +55,9 @@ const DEFAULT_IMPACTS: Impact[] = [
     icon: <Target className="w-4 h-4" />,
   },
   {
-    title: "Build customer relationships",
-    stat: "-27%",
-    subtitle: "customer acquisition costs",
+    title: "Customer Engagemment",
+    stat: "80% +",
+    subtitle: "Over customer engagement and retention",
     color: "bg-amber-600",
     gradient: "from-amber-500 via-orange-600 to-amber-600",
     imageSrc: "/people/4.png",

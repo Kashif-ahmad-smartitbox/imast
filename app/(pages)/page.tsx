@@ -10,12 +10,13 @@ import HowItWorks from "@/components/Home/HowItWorks";
 import ImastTrial from "../components/Home/ImastTrial";
 import CaseStudies from "@/components/Home/CaseStudies";
 import CallToAction from "@/components/Home/CallToAction";
+import ImpactSection from "@/components/Home/ImpactSection";
+import ImastAISection from "@/components/Home/ImastAISection";
 import WhyChooseIMAST from "@/components/Home/WhyChooseIMAST";
 import EcosystemSection from "@/components/Home/EcosystemSection";
 import ImastImpactSection from "@/components/Home/ImastImpactSection";
 import ImastValuesSection from "@/components/Home/ImastValuesSection";
-import ImpactSection from "@/components/Home/ImpactSection";
-import ImastAISection from "@/components/Home/ImastAISection";
+import ImastPromoSection from "@/components/Home/ImastPromoSection";
 
 function HomePage() {
   return (
@@ -25,6 +26,7 @@ function HomePage() {
       <KeyValue />
       <EcosystemSection />
       <ImastImpactSection />
+      <ImastPromoSection />
       <ImastValuesSection />
       <Modules />
       <ImastAISection />

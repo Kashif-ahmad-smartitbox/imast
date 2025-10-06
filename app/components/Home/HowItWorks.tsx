@@ -13,6 +13,7 @@ import {
   GitBranch,
   BarChart3,
 } from "lucide-react";
+import ImastCertificationsRow from "./ImastCertificationsRow";
 
 type Step = {
   id: number;
@@ -278,6 +279,7 @@ export default function HowItWorks() {
           </div>
         </div>
       </div>
+      <ImastCertificationsRow />
     </section>
   );
 }

@@ -160,12 +160,6 @@ export default function Resources() {
                   >
                     Read article <ArrowRight className="w-4 h-4" />
                   </a>
-                  <div className="text-sm text-white/80">
-                    {featured.author} ·{" "}
-                    {new Date(
-                      featured.date || "2024-01-01"
-                    ).toLocaleDateString()}
-                  </div>
                 </div>
               </div>
             </div>
@@ -254,22 +248,12 @@ export default function Resources() {
                 className="w-full h-44 object-cover"
               />
               <div className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-gray-500">{p.tags?.[0]}</div>
-                  <div className="text-xs text-gray-400">
-                    {new Date(p.date || "2024-01-01").toLocaleDateString()}
-                  </div>
-                </div>
-
                 <h3 className="mt-2 text-lg font-semibold text-gray-900 leading-snug">
                   {p.title}
                 </h3>
                 <p className="mt-2 text-sm text-gray-600">{p.excerpt}</p>
 
                 <div className="mt-4 flex items-center justify-between">
-                  <div className="text-sm text-gray-500">
-                    {p.author} · {p.readTime}
-                  </div>
                   <a
                     href={p.slug}
                     className="inline-flex items-center gap-2 text-rose-600 font-semibold"

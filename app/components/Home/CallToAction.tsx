@@ -1,87 +1,78 @@
 "use client";
 import React from "react";
-import { ArrowRight, Phone, Mail, MessageSquare, Calendar } from "lucide-react";
+import {
+  ArrowRight,
+  Phone,
+  Mail,
+  MessageSquare,
+  Calendar,
+  Zap,
+  Target,
+  Rocket,
+} from "lucide-react";
 
 export default function CallToActionImproved() {
   return (
     <section
-      className="relative overflow-hidden py-20 bg-rose-700 text-white"
+      className="relative overflow-hidden py-24 bg-rose-700 text-white"
       aria-labelledby="cta-title"
     >
-      {/* subtle decorative pattern */}
-      <svg
-        className="pointer-events-none absolute right-0 top-0 w-72 opacity-10"
-        viewBox="0 0 200 200"
-        aria-hidden
-      >
-        <defs>
-          <linearGradient id="g" x1="0" x2="1">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.08" />
-            <stop offset="100%" stopColor="#ffffff" stopOpacity="0.02" />
-          </linearGradient>
-        </defs>
-        <rect
-          x="0"
-          y="0"
-          width="200"
-          height="200"
-          fill="url(#g)"
-          transform="rotate(25 100 100)"
-        />
-      </svg>
-
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left - headline and bullets */}
           <div className="lg:col-span-7">
-            <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/90">
-              Talk to product
-            </p>
-
-            <h2
+            <h1
               id="cta-title"
-              className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight"
+              className="mt-6 text-3xl font-bold leading-tight"
             >
-              Ready to see IMAST move the needle?
-            </h2>
+              Ready to see{" "}
+              <span className="bg-gradient-to-r from-white to-rose-100 bg-clip-text text-transparent">
+                IMAST
+              </span>{" "}
+              move the needle?
+            </h1>
 
-            <p className="mt-4 text-lg text-rose-100 max-w-2xl">
-              Book a demo, get a tailored implementation plan, or request a
-              quick call — our team helps you pick the fastest path to
-              measurable outcomes.
+            <p className="mt-6 text-lg text-rose-50 max-w-2xl leading-relaxed">
+              Get a personalized demo, implementation plan, or quick
+              consultation — we&apos;ll help you find the fastest path to
+              measurable results.
             </p>
-
-            <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-              <li className="flex items-start gap-3 bg-white p-3 rounded-lg">
-                <span className="w-9 h-9 rounded-lg bg-white/10 text-black flex items-center justify-center font-semibold">
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex items-start gap-4 bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center font-bold text-white shadow-lg">
                   1
-                </span>
+                </div>
                 <div>
-                  <div className="font-medium text-black">Quick demos</div>
-                  <div className="text-gray-600">
-                    20-minute focused walkthrough — no fluff.
+                  <div className="font-semibold text-white text-md">
+                    Quick Demos
+                  </div>
+                  <div className="text-rose-100 text-sm mt-1">
+                    20-minute focused walkthrough — see exactly how it works
                   </div>
                 </div>
-              </li>
-              <li className="flex items-start gap-3 bg-white p-3 rounded-lg">
-                <span className="w-9 h-9 rounded-lg bg-white/10 text-black flex items-center justify-center font-semibold">
-                  2
-                </span>
-                <div>
-                  <div className="font-medium text-black">Pilot & rollout</div>
-                  <div className="text-gray-600">
-                    MVP-first approach — deploy fast, expand later.
-                  </div>
-                </div>
-              </li>
-            </ul>
+              </div>
 
-            <div className="mt-8 flex flex-col sm:flex-row items-center gap-3">
+              <div className="flex items-start gap-4 bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center font-bold text-white shadow-lg">
+                  2
+                </div>
+                <div>
+                  <div className="font-semibold text-white text-md">
+                    Pilot & Rollout
+                  </div>
+                  <div className="text-rose-100 text-sm mt-1">
+                    MVP-first approach — deploy fast, expand with confidence
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-10 flex flex-col sm:flex-row items-center gap-4">
               <a
                 href="/demo"
-                className="rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                className="rounded group inline-flex items-center gap-3 px-5 py-3  bg-white text-black font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
               >
-                <span>Book a demo</span>
+                <span>Book a Demo</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
 
@@ -89,108 +80,95 @@ export default function CallToActionImproved() {
                 href="/contact"
                 className="rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
               >
-                <span>Contact sales</span>
+                <span>Contact Sales</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
-
-            <div className="mt-6 text-sm text-rose-100">
-              Prefer a tailored plan?{" "}
-              <a href="/contact" className="underline font-semibold">
-                Tell us your goals
-              </a>{" "}
-              and we’ll suggest a path.
-            </div>
           </div>
 
-          {/* Right - micro actions */}
+          {/* Right - contact cards */}
           <aside className="lg:col-span-5">
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-md">
-              <div className="text-sm font-semibold text-black">
-                Quick contact
+            <div className="relative bg-white/10 rounded-3xl p-8 border border-white/20">
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="text-lg font-bold text-white">Quick Connect</h3>
               </div>
-              <p className="mt-2 text-sm text-gray-600">
-                Pick how you&apos;d like to connect — we respond within one
-                business day.
+
+              <p className="text-rose-100 text-md mb-6">
+                Choose your preferred way to connect — we&apos;ll respond within
+                one business day.
               </p>
 
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <a
-                  href="tel:+911234567890"
-                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition shadow-lg border border-black/5"
-                >
-                  <Phone className="w-5 h-5 text-black/90" />
-                  <div>
-                    <div className="font-medium text-black">Request a call</div>
-                    <div className="text-gray-600 text-sm">
-                      +91 12 3456 7890
+              <div className="grid grid-cols-1 gap-4">
+                {[
+                  {
+                    icon: Phone,
+                    title: "Request a Call",
+                    desc: "+91 12 3456 7890",
+                    href: "tel:+911234567890",
+                    color: "from-green-500 to-emerald-500",
+                  },
+                  {
+                    icon: Mail,
+                    title: "Email Us",
+                    desc: "info@imast.in",
+                    href: "mailto:info@imast.in",
+                    color: "from-blue-500 to-cyan-500",
+                  },
+                  {
+                    icon: Calendar,
+                    title: "Book Demo",
+                    desc: "20-min walkthrough",
+                    href: "/demo",
+                    color: "from-purple-500 to-indigo-500",
+                  },
+                  {
+                    icon: MessageSquare,
+                    title: "Live Chat",
+                    desc: "Instant answers",
+                    href: "/chat",
+                    color: "from-orange-500 to-red-500",
+                  },
+                ].map((item, index) => (
+                  <a
+                    key={index}
+                    href={item.href}
+                    className="group flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1"
+                  >
+                    <div
+                      className={`w-12 h-12 rounded-xl bg-gradient-to-r ${item.color} flex items-center justify-center shadow-lg`}
+                    >
+                      <item.icon className="w-6 h-6 text-white" />
                     </div>
-                  </div>
-                </a>
-
-                <a
-                  href="mailto:info@imast.in"
-                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition shadow-lg border border-black/5"
-                >
-                  <Mail className="w-5 h-5 text-black/90" />
-                  <div>
-                    <div className="font-medium text-black">Email us</div>
-                    <div className="text-gray-600 text-sm">info@imast.in</div>
-                  </div>
-                </a>
-
-                <a
-                  href="/demo"
-                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition shadow-lg border border-black/5"
-                >
-                  <Calendar className="w-5 h-5 text-black/90" />
-                  <div>
-                    <div className="font-medium text-black">Book demo</div>
-                    <div className="text-gray-600 text-sm">
-                      20-min walkthrough
+                    <div className="flex-1">
+                      <div className="font-semibold text-white group-hover:text-white/90">
+                        {item.title}
+                      </div>
+                      <div className="text-rose-100 text-sm">{item.desc}</div>
                     </div>
-                  </div>
-                </a>
-
-                <a
-                  href="/chat"
-                  className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/8 transition shadow-lg border border-black/5"
-                >
-                  <MessageSquare className="w-5 h-5 text-black/90" />
-                  <div>
-                    <div className="font-medium text-black">Live chat</div>
-                    <div className="text-gray-600 text-sm">Instant answers</div>
-                  </div>
-                </a>
+                    <ArrowRight className="w-4 h-4 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-transform" />
+                  </a>
+                ))}
               </div>
 
-              <div className="mt-4 text-xs text-gray-600">
-                Or schedule a slot — we’d rather show results than slide-decks.
+              <div className="mt-6 pt-6 border-t border-white/10">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a
+                    href="/demo"
+                    className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-white text-black font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                  >
+                    <span>Get Started Free</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </a>
+
+                  <a
+                    href="/contact"
+                    className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                  >
+                    <span>View Pricing</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </a>
+                </div>
               </div>
-
-              <div className="mt-6 flex items-center gap-3">
-                <a
-                  href="/get-started"
-                  className="rounded group inline-flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
-                >
-                  <span>Get started</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </a>
-
-                <a
-                  href="/pricing"
-                  className="rounded group inline-flex items-center gap-3 px-4 py-2 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
-                >
-                  <span>View pricing</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </a>
-              </div>
-            </div>
-
-            {/* small note */}
-            <div className="mt-4 text-xs text-rose-100">
-              No hard selling — just practical answers and a clear plan to get
-              value quickly.
             </div>
           </aside>
         </div>

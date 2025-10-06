@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { memo, useMemo } from "react";
 import { CheckCircle, Target, Users } from "lucide-react";
 
 type ValueItem = {
@@ -10,59 +10,113 @@ type ValueItem = {
 
 const DEFAULT_VALUES: ValueItem[] = [
   {
-    icon: <CheckCircle className="w-6 h-6" />,
-    title: "Long-term commitment",
+    icon: <CheckCircle className="w-6 h-6" aria-hidden />,
+    title: "Long-Term Partnerships",
     description:
-      "29+ years of running a profitable organization gives us a good sense of challenges that a growing business faces. We take pride in running a sustainable business that's powered by you, our customer.",
+      "We don't just work with clients — we grow with them. With 200+ brands and a 95% client retention rate across industries, our success is built on trust, continuity, and shared growth.",
   },
   {
-    icon: <Target className="w-6 h-6" />,
-    title: "Focus on research and development",
+    icon: <Target className="w-6 h-6" aria-hidden />,
+    title: "Innovation & Research",
     description:
-      "Software is our craft and we back it up with our relentless investments in R&D. So much so that we prefer to own the entire technology stack, including running our data centers globally.",
+      "Innovation is in our DNA. We continuously invest in R&D to deliver scalable, secure, and future-ready SaaS solutions that empower businesses at every stage.",
   },
   {
-    icon: <Users className="w-6 h-6" />,
-    title: "Customer-first philosophy",
+    icon: <Users className="w-6 h-6" aria-hidden />,
+    title: "No Charges for Learnings",
     description:
-      "In all these years, it's our customers' trust and goodwill that has helped us establish a strong position in the market. No matter the size of your business, we're here to help you grow.",
+      "At IMAST, we believe learnings should create value, not cost. When client feedback enhances our products, we implement it without adding financial burden — because progress should be shared.",
   },
 ];
 
-export default function ImastValuesSection({
-  heroImage = "/team-hero.jpg",
-  title = "The core values and principles that drive us",
-  values = DEFAULT_VALUES,
-  ctaHref = "/about",
-  ctaText = "READ OUR STORY",
-}: {
+interface ImastValuesSectionProps {
   heroImage?: string;
   title?: string;
   values?: ValueItem[];
   ctaHref?: string;
   ctaText?: string;
-}) {
+}
+
+function ValueCard({ value, index }: { value: ValueItem; index: number }) {
+  return (
+    <article
+      aria-labelledby={`value-title-${index}`}
+      className="group relative bg-white rounded-xl p-6 border border-slate-100 hover:border-rose-200 hover:bg-rose-600 text-slate-900 hover:text-slate-100 cursor-pointer transition-all duration-300 hover:shadow-lg"
+      tabIndex={0}
+      role="button"
+    >
+      <div className="flex items-start justify-between mb-4">
+        <div
+          className="flex items-center justify-center w-12 h-12 bg-rose-100 text-rose-600 rounded-xl"
+          aria-hidden
+        >
+          {value.icon}
+        </div>
+
+        <div className="w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center text-sm font-medium">
+          {index + 1}
+        </div>
+      </div>
+
+      <div>
+        <h3
+          id={`value-title-${index}`}
+          className="text-xl font-semibold mb-3 leading-tight"
+        >
+          {value.title}
+        </h3>
+
+        {/*
+          Description behaviour:
+          - By default the description is visually constrained with a max-height (approx 3 lines)
+          - On hover / focus (keyboard accessible) it expands smoothly to show full text
+          - We avoid relying on Tailwind line-clamp plugin so the effect works in plain Tailwind
+        */}
+        <p
+          className={`text-[15px] text-slate-600 leading-relaxed overflow-hidden transition-[max-height,color] duration-300`}
+        >
+          {value.description}
+        </p>
+
+        {/* Invisible focus/hover anchor to expand the description for keyboard users */}
+        <style>
+          {`/* CSS to make group hover/focus control p maxHeight */
+          .group:focus p, .group:hover p { max-height: 400px; color: inherit; }
+          .group:hover .text-slate-600 { color: rgb(255 255 255 / 1); }
+        `}
+        </style>
+      </div>
+    </article>
+  );
+}
+
+export default memo(function ImastValuesSection({
+  heroImage = "/team-hero.jpg",
+  title = "The Core Values that Drive IMAST Forward",
+  values = DEFAULT_VALUES,
+  ctaHref = "/about",
+  ctaText = "READ OUR STORY",
+}: ImastValuesSectionProps) {
+  const valuesList = useMemo(() => values, [values]);
+
   return (
     <section className="relative">
-      {/* Hero Section */}
       <div className="relative">
-        {/* Hero Image with gradient overlay */}
         <div className="w-full h-[250px] md:h-[300px] lg:h-[500px] overflow-hidden bg-gradient-to-br from-slate-900/20 to-rose-900/10">
           <img
             src={heroImage}
-            alt="IMAST team gathered at event"
+            alt="IMAST team gathered at an event"
             className="w-full h-full object-cover object-top mix-blend-overlay"
             loading="eager"
             decoding="async"
           />
         </div>
 
-        {/* Content Card */}
         <div className="relative z-30 -mt-[60px] md:-mt-[80px] lg:-mt-[50px]">
           <div className="w-[94vw] md:w-[86vw] lg:w-[76vw] max-w-6xl mx-auto">
             <div className="bg-white rounded-3xl ring-1 ring-slate-200 p-8 md:p-12 lg:p-16">
               <div className="max-w-5xl mx-auto">
-                <header className="text-center mb-12">
+                <header className="text-center mb-8 md:mb-12">
                   <p className="text-2xl font-semibold text-rose-600 uppercase tracking-wide">
                     Our Values
                   </p>
@@ -78,34 +132,19 @@ export default function ImastValuesSection({
                   </h2>
                 </header>
 
-                {/* Values Grid - Professional Design */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                  {values.map((value, index) => (
-                    <div
-                      key={index}
-                      className="group relative bg-white rounded-xl p-8 border border-slate-100 hover:border-rose-200 hover:bg-rose-600 text-slate-900 hover:text-slate-100 cursor-pointer transition-all duration-300 hover:shadow-lg"
-                    >
-                      {/* Icon Section */}
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="flex items-center justify-center w-12 h-12 bg-rose-100 text-rose-600 rounded-xl">
-                          {value.icon}
-                        </div>
-                        <div className="w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                          {index + 1}
-                        </div>
-                      </div>
-
-                      {/* Content */}
-                      <div>
-                        <h3 className="text-xl font-semibold mb-4 leading-tight">
-                          {value.title}
-                        </h3>
-                        <p className="text-slate-600 hover:text-white leading-relaxed text-[15px]">
-                          {value.description}
-                        </p>
-                      </div>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 md:mb-16">
+                  {valuesList.map((value, i) => (
+                    <ValueCard key={i} value={value} index={i} />
                   ))}
+                </div>
+
+                <div className="text-center">
+                  <a
+                    href={ctaHref}
+                    className="inline-block rounded-full px-6 py-3 text-sm font-medium uppercase ring-1 ring-slate-900/5 hover:shadow-md transition"
+                  >
+                    {ctaText}
+                  </a>
                 </div>
               </div>
             </div>
@@ -113,8 +152,7 @@ export default function ImastValuesSection({
         </div>
       </div>
 
-      {/* Bottom spacer */}
       <div className="h-18 md:h-20 lg:h-25" />
     </section>
   );
-}
+});

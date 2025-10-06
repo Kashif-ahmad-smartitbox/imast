@@ -10,6 +10,7 @@ import {
   ArrowRight,
   X,
 } from "lucide-react";
+import ImastAwardsSection from "./ImastAwardsSection";
 
 type Differentiator = {
   icon: React.ReactNode;
@@ -98,11 +99,22 @@ export default function WhyChooseIMAST() {
 
   const quickPoints = useMemo(
     () => [
-      "Delivery in weeks with MVP-first scope control.",
-      "Field teams for onboarding — we don't just drop a link and go.",
-      "Modular architecture — integrates with your ERP, not replaces it.",
-      "Measurable ROI: focus on retention, revenue lift and reduced ops cost.",
-      "Built-in compliance and audit readiness — no shortcuts on governance.",
+      "Deployed directly by the IMAST team — no third-party dependency, no extra cost.",
+      "Delivers 50%+ ROI compared to other players.",
+      "Simple, user-friendly, and feature-rich platform unlike complex alternatives.",
+      "No charges for small changes or new learnings — improvements are client-driven.",
+      "Made in India & fastest-growing SaaS leader with 200+ brands and 95% client retention.",
+    ],
+    []
+  );
+
+  const quickPoints2 = useMemo(
+    () => [
+      "Depend heavily on third-party implementers, causing delays and high additional costs.",
+      "Struggle to provide measurable ROI due to hidden costs, fragmented tools, and heavy license fees.",
+      "Offer complex, siloed systems with limited features and higher training needs.",
+      "Charge for every small customization or update, adding client burden.",
+      "Often slower, imported solutions not aligned with Indian MSME/SMB realities.",
     ],
     []
   );
@@ -132,7 +144,7 @@ export default function WhyChooseIMAST() {
             {differentiators.map((d) => (
               <article
                 key={d.title}
-                className="relative overflow-hidden rounded-2xl bg-white p-5 sm:p-6 hover:shadow-md transition-transform transform hover:-translate-y-1"
+                className="relative flex justify-center items-center overflow-hidden rounded-2xl bg-white p-5 sm:p-6 hover:shadow-md transition-transform transform hover:-translate-y-1"
               >
                 <div className="flex items-start gap-4">
                   <div
@@ -197,19 +209,17 @@ export default function WhyChooseIMAST() {
               </div>
 
               {/* Competitor section */}
-              <div className="mt-8">
+              <div className="mt-4">
                 <div className="text-xs font-medium text-red-700 mb-3">
                   Typical Competitor
                 </div>
                 <ul className="space-y-3 text-sm text-gray-700">
-                  {quickPoints.map((p, idx) => (
+                  {quickPoints2.map((p, idx) => (
                     <li key={`comp-${idx}`} className="flex items-start gap-3">
                       <span className="flex-shrink-0 mt-1 flex items-center justify-center">
                         <RedCrossBullet />
                       </span>
-                      <span className="leading-tight">
-                        Often missing or partial
-                      </span>
+                      <span className="leading-tight">{p}</span>
                     </li>
                   ))}
                 </ul>
@@ -227,6 +237,7 @@ export default function WhyChooseIMAST() {
             </div>
           </aside>
         </div>
+        <ImastAwardsSection />
       </div>
     </section>
   );

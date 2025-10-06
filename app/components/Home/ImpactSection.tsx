@@ -5,15 +5,14 @@ import Image from "next/image";
 
 export default function ImpactSection() {
   const stats = [
-    { value: "25K+", label: "Retailers Empowered" },
-    { value: "10+", label: "Countries Served" },
-    { value: "15+", label: "Years in Business" },
-    { value: "50+", label: "Enterprise Clients" },
+    { value: "300+", label: "Staff from India" },
+    { value: "1 Million+", label: "Active Indian Customer" },
+    { value: "200+", label: "Domestic Brands Served" },
+    { value: "100%", label: "Made in India" },
   ];
 
   return (
     <section className="relative bg-rose-700 text-white overflow-hidden">
-      {/* Decorative line-art illustration at bottom right */}
       <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none select-none">
         <Image src="/temple-line-white.svg" alt="" width={480} height={280} />
       </div>
@@ -26,7 +25,6 @@ export default function ImpactSection() {
           Built for Global Growth.
         </h2>
 
-        {/* Stats */}
         <dl className="mt-10 grid grid-cols-2 gap-8 sm:grid-cols-4 max-w-4xl">
           {stats.map((s) => (
             <div key={s.label} className="flex flex-col">
@@ -36,7 +34,6 @@ export default function ImpactSection() {
           ))}
         </dl>
 
-        {/* CTA */}
         <div className="mt-10">
           <a
             href="/about"

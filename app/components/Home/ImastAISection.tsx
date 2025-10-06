@@ -4,11 +4,6 @@ import Image from "next/image";
 import { ArrowRight, Play } from "lucide-react";
 import { motion } from "framer-motion";
 
-/**
- * Creative IMAST hero / product spotlight section
- * - Requires: tailwindcss, framer-motion, lucide-react, next/image (swap to <img> if not using Next)
- */
-
 export default function ImastCreativeHero() {
   return (
     <section className="relative overflow-hidden bg-white">
@@ -86,38 +81,6 @@ export default function ImastCreativeHero() {
               <Play className="w-4 h-4" /> Watch demo
             </a>
           </div>
-
-          {/* Three quick stats */}
-          <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.25, duration: 0.6 }}
-            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6"
-            aria-hidden
-          >
-            <Stat label="Avg. ROI" value="50%+" />
-            <Stat label="Customer Engagement" value="80%+" />
-            <Stat label="Faster Decisions" value="2×" />
-          </motion.div>
-
-          {/* Feature chips */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            {[
-              "Automated Alerts",
-              "Prescriptive Actions",
-              "Field Sales Insights",
-              "Loyalty Orchestration",
-            ].map((t) => (
-              <span
-                key={t}
-                className="text-xs sm:text-sm px-3 py-1 rounded-full bg-gray-100/70 text-gray-700 border border-gray-200"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-
-          {/* Decorative sparkles (subtle) */}
           <Sparkles />
         </div>
       </div>

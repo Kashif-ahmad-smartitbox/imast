@@ -8,7 +8,7 @@ export default function ImastTrial({
   illustrationSrc?: string;
 }) {
   return (
-    <section className="w-full py-16 lg:py-24 px-6 lg:px-12 bg-gradient-to-r from-[#4c1d56] to-[#296462] relative overflow-hidden">
+    <section className="w-full py-16 lg:py-24 px-6 lg:px-12 bg-gradient-to-br from-slate-900 to-red-900 relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-300/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"></div>
@@ -90,12 +90,6 @@ export default function ImastTrial({
                   </div>
                 </div>
               </div>
-
-              {/* No Risk Guarantee */}
-              <div className="flex items-center gap-2 text-rose-200/80 text-sm">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                No risk · 14-day free trial · Cancel anytime
-              </div>
             </div>
           </div>
 
@@ -108,14 +102,6 @@ export default function ImastTrial({
                 className="w-full h-auto object-contain rounded-lg drop-shadow-2xl"
                 loading="lazy"
               />
-              {/* badge */}
-              <div className="hidden md:flex absolute -left-6 -bottom-8">
-                <div className="bg-white rounded-full p-3 shadow-lg ring-1 ring-black/5 flex items-center justify-center">
-                  <span className="text-sm font-semibold text-rose-600">
-                    ₹ 2000 /mo
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
