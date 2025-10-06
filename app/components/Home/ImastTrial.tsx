@@ -3,7 +3,7 @@ import React from "react";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
 export default function ImastTrial({
-  illustrationSrc = "/rightImage.png",
+  illustrationSrc = "/imast-try-free.png",
 }: {
   illustrationSrc?: string;
 }) {

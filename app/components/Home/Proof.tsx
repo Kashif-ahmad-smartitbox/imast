@@ -178,14 +178,14 @@ function Marquee({
       {logos.map((logo, index) => (
         <div
           key={`${logo.alt}-${index}`}
-          className="flex items-center justify-center p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex-shrink-0 border border-gray-100"
+          className="flex items-center justify-center p-3 bg-white rounded-lg hover:shadow-md transition-shadow duration-300 flex-shrink-0 border border-gray-100"
           style={{ minWidth: 160 }}
         >
           <img
             loading="lazy"
             src={logo.src}
             alt={logo.alt}
-            className="max-h-15 w-auto object-contain transition-all duration-300"
+            className="max-h-20 w-auto object-contain transition-all duration-300"
             width={80}
             height={40}
           />
