@@ -9,7 +9,7 @@ import React, {
 import { Award, CheckCircle, ArrowRight, Star, Quote } from "lucide-react";
 import StatCard from "../StatCard";
 
-// Types
+// --- Types
 interface ClientLogo {
   src: string;
   alt: string;
@@ -35,7 +35,7 @@ interface UseCountToOptions {
   precision?: number;
 }
 
-// Constants
+// --- Constants
 const CLIENT_LOGOS: ClientLogo[] = Array.from({ length: 45 }, (_, i) => ({
   src: `/client/${String(i + 1).padStart(2, "0")}.jpg`,
   alt: `Client logo ${i + 1}`,
@@ -109,7 +109,7 @@ const TESTIMONIAL_INTERVAL = 6000;
 const DEFAULT_COUNT_DURATION = 1200;
 const MARQUEE_DURATION = 25;
 
-// Custom Hooks
+// --- Hooks (unchanged behavior)
 function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
 
@@ -206,180 +206,17 @@ function useTestimonialAutoPlay(totalItems: number, interval: number) {
   };
 }
 
-// Components
-interface MarqueeProps {
-  logos: ClientLogo[];
-  direction: "left" | "right";
-  paused: boolean;
-  reducedMotion: boolean;
-  className?: string;
+// --- Small UI pieces
+function initialsFromName(name: string): string {
+  if (!name || typeof name !== "string") return "U";
+
+  const parts = name.split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "U";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-function Marquee({
-  logos,
-  direction,
-  paused,
-  reducedMotion,
-  className = "",
-}: MarqueeProps) {
-  return (
-    <div
-      className={`flex items-center gap-8 px-6 py-4 whitespace-nowrap will-change-transform ${className}`}
-      style={{
-        animationPlayState: paused ? "paused" : "running",
-        animation: reducedMotion
-          ? "none"
-          : `marquee-${direction} ${MARQUEE_DURATION}s linear infinite`,
-      }}
-      role="presentation"
-    >
-      {logos.map((logo, index) => (
-        <div
-          key={`${logo.alt}-${index}`}
-          className="flex items-center justify-center p-3 bg-white rounded-lg hover:shadow-md transition-all duration-300 flex-shrink-0 border border-gray-100 hover:border-rose-200 hover:scale-105"
-          style={{ minWidth: 160 }}
-        >
-          <img
-            loading="lazy"
-            src={logo.src}
-            alt={logo.alt}
-            className="max-h-20 w-auto object-contain transition-opacity duration-300 hover:opacity-80"
-            width={80}
-            height={40}
-          />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-interface TestimonialCardProps {
-  testimonial: Testimonial;
-  isActive?: boolean;
-}
-
-function TestimonialCard({
-  testimonial,
-  isActive = true,
-}: TestimonialCardProps) {
-  return (
-    <figure
-      className={`bg-gradient-to-br from-white to-rose-25 rounded-2xl p-6 lg:p-8 transition-all duration-500 border-2 ${
-        isActive
-          ? "border-rose-200 shadow-lg scale-100"
-          : "border-gray-100 shadow-md scale-95"
-      } hover:shadow-xl hover:border-rose-300 group`}
-    >
-      <div className="flex items-start gap-4">
-        <div className="flex flex-col items-center gap-3">
-          <div
-            className="w-14 h-14 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center text-rose-700 font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-md"
-            aria-label={`${testimonial.author} avatar`}
-          >
-            {initialsFromName(testimonial.author)}
-          </div>
-          {testimonial.rating && <StarRating rating={testimonial.rating} />}
-        </div>
-
-        <figcaption className="flex-1">
-          <Quote
-            className="text-rose-200 mb-2 transform -scale-x-100"
-            size={20}
-          />
-          <blockquote className="text-sm lg:text-base text-gray-800 leading-relaxed mb-4 font-medium">
-            &ldquo;{testimonial.quote}&rdquo;
-          </blockquote>
-
-          <div className="border-t border-gray-100 pt-4">
-            <div className="font-bold text-gray-900 text-sm">
-              {testimonial.author}
-            </div>
-            <div className="text-xs text-rose-600 font-semibold mt-1">
-              {testimonial.role}
-            </div>
-            {testimonial.company && (
-              <div className="text-xs text-gray-500 mt-1">
-                {testimonial.company}
-              </div>
-            )}
-          </div>
-        </figcaption>
-      </div>
-    </figure>
-  );
-}
-
-interface StarRatingProps {
-  rating: number;
-  maxRating?: number;
-}
-
-function StarRating({ rating, maxRating = 5 }: StarRatingProps) {
-  return (
-    <div
-      className="flex items-center gap-0.5"
-      aria-label={`${rating} out of ${maxRating} stars`}
-    >
-      {Array.from({ length: maxRating }, (_, index) => (
-        <Star
-          key={index}
-          size={14}
-          className={
-            index < rating ? "text-amber-500 fill-amber-500" : "text-gray-300"
-          }
-        />
-      ))}
-    </div>
-  );
-}
-
-interface MarqueeContainerProps {
-  logos: ClientLogo[];
-  reducedMotion: boolean;
-}
-
-function MarqueeContainer({ logos, reducedMotion }: MarqueeContainerProps) {
-  const [paused, setPaused] = useState(false);
-
-  const logoParts = useMemo(() => {
-    const partSize = Math.ceil(logos.length / 3);
-    return [
-      logos.slice(0, partSize),
-      logos.slice(partSize, partSize * 2),
-      logos.slice(partSize * 2),
-    ];
-  }, [logos]);
-
-  const handleMouseEnter = useCallback(() => setPaused(true), []);
-  const handleMouseLeave = useCallback(() => setPaused(false), []);
-
-  return (
-    <div className="space-y-4">
-      {logoParts.map((part, index) => (
-        <div
-          key={index}
-          className="overflow-hidden relative"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onFocus={handleMouseEnter}
-          onBlur={handleMouseLeave}
-          aria-label={`Client logos scrolling ${
-            index % 2 === 0 ? "right to left" : "left to right"
-          }`}
-        >
-          <Marquee
-            logos={part}
-            direction={index % 2 === 0 ? "left" : "right"}
-            paused={paused}
-            reducedMotion={reducedMotion}
-          />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// Utility Functions
 function formatStat(key: Stat["key"], value: number): string {
   const numValue = Number(value);
 
@@ -417,17 +254,81 @@ function getStatSubtext(key: Stat["key"]): string {
   return subtexts[key] || "";
 }
 
-function initialsFromName(name: string): string {
-  if (!name || typeof name !== "string") return "U";
-
-  const parts = name.split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "U";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+function StarRating({
+  rating,
+  maxRating = 5,
+}: {
+  rating: number;
+  maxRating?: number;
+}) {
+  return (
+    <div className="flex items-center gap-0.5" aria-hidden>
+      {Array.from({ length: maxRating }, (_, index) => (
+        <Star
+          key={index}
+          size={14}
+          className={
+            index < rating ? "text-amber-500 fill-amber-500" : "text-gray-300"
+          }
+        />
+      ))}
+    </div>
+  );
 }
 
-// Main Component
+// --- Marquee (unchanged)
+function Marquee({
+  logos,
+  direction,
+  paused,
+  reducedMotion,
+  className = "",
+}: {
+  logos: ClientLogo[];
+  direction: "left" | "right";
+  paused: boolean;
+  reducedMotion: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-8 px-6 py-4 whitespace-nowrap will-change-transform ${className}`}
+      style={{
+        animationPlayState: paused ? "paused" : "running",
+        animation: reducedMotion
+          ? "none"
+          : `marquee-${direction} ${MARQUEE_DURATION}s linear infinite`,
+      }}
+      role="presentation"
+    >
+      {logos.map((logo, index) => (
+        <div
+          key={`${logo.alt}-${index}`}
+          className="flex items-center justify-center p-3 bg-white rounded-lg hover:shadow-md transition-all duration-300 flex-shrink-0 border border-gray-100 hover:border-rose-200 hover:scale-105"
+          style={{ minWidth: 160 }}
+        >
+          <img
+            loading="lazy"
+            src={logo.src}
+            alt={logo.alt}
+            className="max-h-20 w-auto object-contain transition-opacity duration-300 hover:opacity-80"
+            width={80}
+            height={40}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// --- Group testimonials into pages (we'll adapt "per page" responsively)
+function chunkArray<T>(arr: T[], size: number) {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+
+// --- Main Component (improved testimonial slider)
 export default function Proof() {
   const reduced = usePrefersReducedMotion();
 
@@ -445,7 +346,7 @@ export default function Proof() {
     [brandsCount, usersCount, uptimeCount, retentionCount]
   );
 
-  // Marquee logos
+  // Marquee logos (duplicated for smoothness)
   const logosForMarquee = useMemo(() => {
     return CLIENT_LOGOS.concat(CLIENT_LOGOS).map((logo, index) => ({
       ...logo,
@@ -455,11 +356,27 @@ export default function Proof() {
     }));
   }, []);
 
-  // Testimonials management
-  const testimonialsPerView = 2;
-  const totalTestimonialGroups = Math.ceil(
-    TESTIMONIALS.length / testimonialsPerView
+  // --- Responsive testimonials per page
+  const [testimonialsPerPage, setTestimonialsPerPage] = useState(2);
+
+  useEffect(() => {
+    function update() {
+      const w = window.innerWidth;
+      if (w < 640) setTestimonialsPerPage(1);
+      else if (w < 1024) setTestimonialsPerPage(2);
+      else setTestimonialsPerPage(3);
+    }
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const testimonialGroups = useMemo(
+    () => chunkArray(TESTIMONIALS, testimonialsPerPage),
+    [testimonialsPerPage]
   );
+
+  const totalTestimonialGroups = testimonialGroups.length;
 
   const {
     activeIndex: activeTestimonialGroup,
@@ -468,46 +385,55 @@ export default function Proof() {
     setIsPaused: setTestimonialPaused,
   } = useTestimonialAutoPlay(totalTestimonialGroups, TESTIMONIAL_INTERVAL);
 
-  const currentTestimonials = useMemo(() => {
-    const startIndex = activeTestimonialGroup * testimonialsPerView;
-    return TESTIMONIALS.slice(startIndex, startIndex + testimonialsPerView);
-  }, [activeTestimonialGroup, testimonialsPerView]);
-
-  const handleTestimonialSelect = useCallback(
-    (index: number) => {
-      setActiveTestimonialGroup(index);
+  const handleNav = useCallback(
+    (dir: "prev" | "next") => {
       setTestimonialPaused(true);
-    },
-    [setActiveTestimonialGroup, setTestimonialPaused]
-  );
-
-  const handleTestimonialNavigation = useCallback(
-    (direction: "prev" | "next") => {
-      setTestimonialPaused(true);
-      if (direction === "next") {
-        setActiveTestimonialGroup(
-          (prev) => (prev + 1) % totalTestimonialGroups
-        );
-      } else {
-        setActiveTestimonialGroup(
-          (prev) => (prev - 1 + totalTestimonialGroups) % totalTestimonialGroups
-        );
-      }
+      setActiveTestimonialGroup((prev) => {
+        if (dir === "next") return (prev + 1) % totalTestimonialGroups;
+        return (prev - 1 + totalTestimonialGroups) % totalTestimonialGroups;
+      });
     },
     [setActiveTestimonialGroup, setTestimonialPaused, totalTestimonialGroups]
   );
 
-  const handleTestimonialMouseEnter = useCallback(
-    () => setTestimonialPaused(true),
-    [setTestimonialPaused]
-  );
-  const handleTestimonialMouseLeave = useCallback(
-    () => setTestimonialPaused(false),
-    [setTestimonialPaused]
-  );
+  // Pause autoplay on pointer interactions (mouse or touch)
+  const carouselRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = carouselRef.current;
+    if (!el) return;
+
+    const onEnter = () => setTestimonialPaused(true);
+    const onLeave = () => setTestimonialPaused(false);
+
+    el.addEventListener("mouseenter", onEnter);
+    el.addEventListener("mouseleave", onLeave);
+    el.addEventListener("focusin", onEnter);
+    el.addEventListener("focusout", onLeave);
+
+    return () => {
+      el.removeEventListener("mouseenter", onEnter);
+      el.removeEventListener("mouseleave", onLeave);
+      el.removeEventListener("focusin", onEnter);
+      el.removeEventListener("focusout", onLeave);
+    };
+  }, [setTestimonialPaused]);
+
+  // For accessibility: keyboard navigation
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") handleNav("prev");
+      if (e.key === "ArrowRight") handleNav("next");
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [handleNav]);
+
+  // Current group testimonials (for aria-live)
+  const currentTestimonials = testimonialGroups[activeTestimonialGroup] || [];
 
   return (
-    <section className="py-8 lg:py-12 bg-white" aria-labelledby="proof-title">
+    <section className="py-8 lg:py-12 bg-gray-50" aria-labelledby="proof-title">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
         <header className="text-center mb-8">
@@ -525,25 +451,66 @@ export default function Proof() {
           </p>
         </header>
 
-        {/* Enhanced Marquee Section */}
+        {/* Marquee */}
         <div className="mb-12">
-          <MarqueeContainer logos={logosForMarquee} reducedMotion={reduced} />
+          <div className="rounded-2xl p-4 bg-white shadow-sm">
+            <div className="max-w-6xl mx-auto">
+              <div className="hidden sm:block">
+                {/* three rows for larger screens */}
+                <div className="space-y-4">
+                  <div className="overflow-hidden relative">
+                    <Marquee
+                      logos={logosForMarquee.slice(0, 15)}
+                      direction="left"
+                      paused={false}
+                      reducedMotion={reduced}
+                    />
+                  </div>
+                  <div className="overflow-hidden relative">
+                    <Marquee
+                      logos={logosForMarquee.slice(15, 30)}
+                      direction="right"
+                      paused={false}
+                      reducedMotion={reduced}
+                    />
+                  </div>
+                  <div className="overflow-hidden relative">
+                    <Marquee
+                      logos={logosForMarquee.slice(30)}
+                      direction="left"
+                      paused={false}
+                      reducedMotion={reduced}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="block sm:hidden">
+                <div className="overflow-hidden relative">
+                  <Marquee
+                    logos={logosForMarquee.slice(0, 12)}
+                    direction="left"
+                    paused={false}
+                    reducedMotion={reduced}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Stats Section */}
+        {/* Stats */}
         <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-2xl p-6 lg:p-8 mb-12 shadow-sm">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-6">
-              <div className="flex items-center justify-center gap-3 mb-3">
-                <Award className="text-rose-600" size={22} aria-hidden="true" />
-                <h3 className="text-lg lg:text-xl font-bold text-gray-900">
-                  Proven at scale
-                </h3>
-              </div>
-              <p className="text-gray-600">Numbers that matter</p>
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <Award className="text-rose-600" size={22} aria-hidden="true" />
+              <h3 className="text-lg lg:text-xl font-bold text-gray-900">
+                Proven at scale
+              </h3>
             </div>
+            <p className="text-gray-600">Numbers that matter</p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
               {STATS.map((stat, index) => (
                 <StatCard
                   key={stat.key}
@@ -566,11 +533,11 @@ export default function Proof() {
           </div>
         </div>
 
-        {/* Enhanced Testimonials Section */}
-        <div className="bg-white rounded-2xl p-6 lg:p-8">
+        {/* Testimonials Slider */}
+        <div className="rounded-2xl">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h3 className="text-lg lg:text-xl font-bold text-gray-900">
+            <div className="text-center mb-6">
+              <h3 className="text-lg lg:text-xl font-bold text-rose-600">
                 What Our Customers Say
               </h3>
               <p className="text-gray-600">
@@ -579,101 +546,164 @@ export default function Proof() {
             </div>
 
             <div
+              ref={carouselRef}
               className="relative"
-              onMouseEnter={handleTestimonialMouseEnter}
-              onMouseLeave={handleTestimonialMouseLeave}
-              onFocus={handleTestimonialMouseEnter}
-              onBlur={handleTestimonialMouseLeave}
               aria-live="polite"
               aria-atomic="true"
             >
-              {/* Testimonials Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 mb-8">
-                {currentTestimonials.map((testimonial, index) => (
-                  <TestimonialCard
-                    key={testimonial.id}
-                    testimonial={testimonial}
-                    isActive={true}
-                  />
-                ))}
-              </div>
-
-              {/* Enhanced Navigation */}
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                {/* Navigation Buttons */}
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => handleTestimonialNavigation("prev")}
-                    aria-label="Previous testimonials"
-                    className="p-2 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2"
-                  >
-                    <ArrowRight size={16} className="rotate-180" />
-                  </button>
-                  <span className="text-sm text-gray-600 min-w-[80px] text-center">
-                    {activeTestimonialGroup + 1} / {totalTestimonialGroups}
-                  </span>
-                  <button
-                    onClick={() => handleTestimonialNavigation("next")}
-                    aria-label="Next testimonials"
-                    className="p-2 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2"
-                  >
-                    <ArrowRight size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="mt-12 pt-8 border-t border-gray-100">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
-                  <CheckCircle
-                    className="text-green-600"
-                    size={24}
-                    aria-hidden="true"
-                  />
-                  <div>
-                    <div className="font-semibold text-gray-800">
-                      Enterprise Security
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      SOC2, TLS, role-based access
-                    </div>
-                  </div>
-                </div>
-
-                <a
-                  href="/case-studies"
-                  className="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-rose-200 transition-all group"
-                  aria-label="Read case studies"
+              {/* Slider viewport */}
+              <div className="overflow-hidden">
+                <div
+                  className="flex transition-transform duration-700 ease-in-out"
+                  style={{
+                    width: `${testimonialGroups.length * 100}%`,
+                    transform: `translateX(-${
+                      activeTestimonialGroup * (100 / testimonialGroups.length)
+                    }%)`,
+                  }}
                 >
-                  <div className="flex-none w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center font-bold text-rose-600 group-hover:scale-110 transition-transform">
-                    CS
-                  </div>
-                  <div className="text-left flex-1">
-                    <div className="font-semibold text-gray-900">
-                      See the impact
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      Case studies & outcomes — 3 min reads
-                    </div>
-                  </div>
-                  <ArrowRight
-                    className="text-rose-600 group-hover:translate-x-1 transition-transform"
-                    size={16}
-                  />
-                </a>
+                  {testimonialGroups.map((group, gIdx) => (
+                    <div
+                      key={`group-${gIdx}`}
+                      className="flex-shrink-0 px-4 py-6"
+                      style={{ width: `${100 / testimonialGroups.length}%` }}
+                      aria-hidden={gIdx !== activeTestimonialGroup}
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {group.map((t) => (
+                          <figure
+                            key={t.id}
+                            className="bg-white rounded-2xl p-6 h-full flex flex-col justify-between border border-gray-100"
+                          >
+                            <div className="flex items-start gap-4">
+                              <div className="flex flex-col items-center gap-3">
+                                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center text-rose-700 font-bold text-lg flex-shrink-0 shadow-md">
+                                  {initialsFromName(t.author)}
+                                </div>
+                                {t.rating && <StarRating rating={t.rating} />}
+                              </div>
 
-                <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
-                  <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">✓</span>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-800">
-                      24/7 Support
+                              <figcaption className="flex-1">
+                                <Quote
+                                  className="text-rose-200 mb-2 transform -scale-x-100"
+                                  size={20}
+                                />
+                                <blockquote className="text-sm lg:text-base text-gray-800 leading-relaxed mb-4 font-medium">
+                                  “{t.quote}”
+                                </blockquote>
+
+                                <div className="border-t border-gray-100 pt-4">
+                                  <div className="font-bold text-gray-900 text-sm">
+                                    {t.author}
+                                  </div>
+                                  <div className="text-xs text-rose-600 font-semibold mt-1">
+                                    {t.role}
+                                  </div>
+                                  {t.company && (
+                                    <div className="text-xs text-gray-500 mt-1">
+                                      {t.company}
+                                    </div>
+                                  )}
+                                </div>
+                              </figcaption>
+                            </div>
+                          </figure>
+                        ))}
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      Dedicated customer success
+                  ))}
+                </div>
+              </div>
+
+              {/* Controls */}
+              <div className="flex items-center justify-center mt-6">
+                <button
+                  onClick={() => handleNav("prev")}
+                  aria-label="Previous testimonials"
+                  className="p-2 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors mr-2"
+                >
+                  <ArrowRight size={16} className="rotate-180" />
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {testimonialGroups.map((_, i) => (
+                    <button
+                      key={`dot-${i}`}
+                      onClick={() => {
+                        setActiveTestimonialGroup(i);
+                        setTestimonialPaused(true);
+                      }}
+                      aria-label={`Show testimonials page ${i + 1}`}
+                      className={`w-3 h-3 rounded-full ${
+                        i === activeTestimonialGroup
+                          ? "bg-rose-600"
+                          : "bg-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => handleNav("next")}
+                  aria-label="Next testimonials"
+                  className="p-2 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors ml-2"
+                >
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="mt-12 pt-8 border-t border-gray-100">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                  <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
+                    <CheckCircle
+                      className="text-green-600"
+                      size={24}
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <div className="font-semibold text-gray-800">
+                        Enterprise Security
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        SOC2, TLS, role-based access
+                      </div>
+                    </div>
+                  </div>
+
+                  <a
+                    href="/case-studies"
+                    className="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-rose-200 transition-all group"
+                    aria-label="Read case studies"
+                  >
+                    <div className="flex-none w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center font-bold text-rose-600 group-hover:scale-110 transition-transform">
+                      CS
+                    </div>
+                    <div className="text-left flex-1">
+                      <div className="font-semibold text-gray-900">
+                        See the impact
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Case studies & outcomes — 3 min reads
+                      </div>
+                    </div>
+                    <ArrowRight
+                      className="text-rose-600 group-hover:translate-x-1 transition-transform"
+                      size={16}
+                    />
+                  </a>
+
+                  <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
+                    <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">✓</span>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-800">
+                        24/7 Support
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        Dedicated customer success
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -692,7 +722,6 @@ export default function Proof() {
             transform: translateX(-50%);
           }
         }
-
         @keyframes marquee-right {
           0% {
             transform: translateX(-50%);
@@ -702,6 +731,7 @@ export default function Proof() {
           }
         }
 
+        /* Small responsive tweak */
         @media (max-width: 640px) {
           .overflow-hidden img {
             max-height: 28px;
