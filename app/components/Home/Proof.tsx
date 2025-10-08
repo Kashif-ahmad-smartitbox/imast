@@ -107,9 +107,10 @@ const TESTIMONIALS: Testimonial[] = [
 
 const TESTIMONIAL_INTERVAL = 6000;
 const DEFAULT_COUNT_DURATION = 1200;
-const MARQUEE_DURATION = 25;
+const LOGO_SLIDER_PLAY_DURATION = 15000; // 15 seconds of movement
+const LOGO_SLIDER_PAUSE_DURATION = 3000; // 3 seconds pause
 
-// --- Hooks (unchanged behavior)
+// --- Hooks
 function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
 
@@ -206,6 +207,42 @@ function useTestimonialAutoPlay(totalItems: number, interval: number) {
   };
 }
 
+// Logo Slider Hook
+function useLogoSliderAutoPlay(logosCount: number) {
+  const [isPlaying, setIsPlaying] = useState(true);
+  const reduced = usePrefersReducedMotion();
+
+  useEffect(() => {
+    if (reduced) {
+      setIsPlaying(false);
+      return;
+    }
+
+    const cycle = () => {
+      // Play for LOGO_SLIDER_PLAY_DURATION
+      setIsPlaying(true);
+
+      setTimeout(() => {
+        // Pause for LOGO_SLIDER_PAUSE_DURATION
+        setIsPlaying(false);
+
+        setTimeout(() => {
+          // Restart the cycle
+          cycle();
+        }, LOGO_SLIDER_PAUSE_DURATION);
+      }, LOGO_SLIDER_PLAY_DURATION);
+    };
+
+    cycle();
+
+    return () => {
+      // Cleanup will be handled by the component unmounting
+    };
+  }, [reduced, logosCount]);
+
+  return isPlaying;
+}
+
 // --- Small UI pieces
 function initialsFromName(name: string): string {
   if (!name || typeof name !== "string") return "U";
@@ -276,59 +313,56 @@ function StarRating({
   );
 }
 
-// --- Marquee (unchanged)
-function Marquee({
-  logos,
-  direction,
-  paused,
-  reducedMotion,
-  className = "",
-}: {
-  logos: ClientLogo[];
-  direction: "left" | "right";
-  paused: boolean;
-  reducedMotion: boolean;
-  className?: string;
-}) {
+// Logo Slider Component
+function LogoSlider({ logos }: { logos: ClientLogo[] }) {
+  const isPlaying = useLogoSliderAutoPlay(logos.length);
+  const reduced = usePrefersReducedMotion();
+
+  // Duplicate logos for seamless looping
+  const duplicatedLogos = useMemo(() => {
+    return [...logos, ...logos, ...logos];
+  }, [logos]);
+
   return (
-    <div
-      className={`flex items-center gap-8 px-6 py-4 whitespace-nowrap will-change-transform ${className}`}
-      style={{
-        animationPlayState: paused ? "paused" : "running",
-        animation: reducedMotion
-          ? "none"
-          : `marquee-${direction} ${MARQUEE_DURATION}s linear infinite`,
-      }}
-      role="presentation"
-    >
-      {logos.map((logo, index) => (
-        <div
-          key={`${logo.alt}-${index}`}
-          className="flex items-center justify-center p-3 bg-white rounded-lg hover:shadow-md transition-all duration-300 flex-shrink-0 border border-gray-100 hover:border-rose-200 hover:scale-105"
-          style={{ minWidth: 160 }}
-        >
-          <img
-            loading="lazy"
-            src={logo.src}
-            alt={logo.alt}
-            className="max-h-20 w-auto object-contain transition-opacity duration-300 hover:opacity-80"
-            width={80}
-            height={40}
-          />
-        </div>
-      ))}
+    <div className="overflow-hidden py-8">
+      <div
+        className="flex gap-8 items-center"
+        style={{
+          animation: reduced
+            ? "none"
+            : `logo-slide ${LOGO_SLIDER_PLAY_DURATION}ms linear infinite`,
+          animationPlayState: isPlaying ? "running" : "paused",
+        }}
+      >
+        {duplicatedLogos.map((logo, index) => (
+          <div
+            key={`${logo.alt}-${index}`}
+            className="flex-shrink-0 flex items-center justify-center p-4 bg-white rounded-lg border border-gray-100 hover:border-rose-200 hover:shadow-md transition-all duration-300 hover:scale-105"
+            style={{ minWidth: 160 }}
+          >
+            <img
+              loading="lazy"
+              src={logo.src}
+              alt={logo.alt}
+              className="max-h-12 w-auto object-contain transition-opacity duration-300 hover:opacity-80"
+              width={80}
+              height={40}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
-// --- Group testimonials into pages (we'll adapt "per page" responsively)
+// --- Group testimonials into pages
 function chunkArray<T>(arr: T[], size: number) {
   const out: T[][] = [];
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
   return out;
 }
 
-// --- Main Component (improved testimonial slider)
+// --- Main Component
 export default function Proof() {
   const reduced = usePrefersReducedMotion();
 
@@ -345,16 +379,6 @@ export default function Proof() {
     () => [brandsCount, usersCount, uptimeCount, retentionCount],
     [brandsCount, usersCount, uptimeCount, retentionCount]
   );
-
-  // Marquee logos (duplicated for smoothness)
-  const logosForMarquee = useMemo(() => {
-    return CLIENT_LOGOS.concat(CLIENT_LOGOS).map((logo, index) => ({
-      ...logo,
-      alt: `${logo.alt} duplicate ${
-        Math.floor(index / CLIENT_LOGOS.length) + 1
-      }`,
-    }));
-  }, []);
 
   // --- Responsive testimonials per page
   const [testimonialsPerPage, setTestimonialsPerPage] = useState(2);
@@ -436,8 +460,8 @@ export default function Proof() {
     <section className="py-8 lg:py-12 bg-gray-50" aria-labelledby="proof-title">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
-        <header className="text-center mb-8">
-          <p className="text-2xl font-semibold text-rose-600 uppercase tracking-wide">
+        <header className="w-full text-center mb-8">
+          <p className="text-2xl font-semibold text-rose-600 uppercase">
             Proof
           </p>
           <h2
@@ -446,61 +470,22 @@ export default function Proof() {
           >
             Trusted by businesses across India & beyond
           </h2>
-          <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-3 text-gray-600">
             Proven at scale — from local distributors to national retail chains.
           </p>
         </header>
 
-        {/* Marquee */}
+        {/* Single Logo Slider */}
         <div className="mb-12">
-          <div className="rounded-2xl p-4 bg-white shadow-sm">
-            <div className="max-w-6xl mx-auto">
-              <div className="hidden sm:block">
-                {/* three rows for larger screens */}
-                <div className="space-y-4">
-                  <div className="overflow-hidden relative">
-                    <Marquee
-                      logos={logosForMarquee.slice(0, 15)}
-                      direction="left"
-                      paused={false}
-                      reducedMotion={reduced}
-                    />
-                  </div>
-                  <div className="overflow-hidden relative">
-                    <Marquee
-                      logos={logosForMarquee.slice(15, 30)}
-                      direction="right"
-                      paused={false}
-                      reducedMotion={reduced}
-                    />
-                  </div>
-                  <div className="overflow-hidden relative">
-                    <Marquee
-                      logos={logosForMarquee.slice(30)}
-                      direction="left"
-                      paused={false}
-                      reducedMotion={reduced}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="block sm:hidden">
-                <div className="overflow-hidden relative">
-                  <Marquee
-                    logos={logosForMarquee.slice(0, 12)}
-                    direction="left"
-                    paused={false}
-                    reducedMotion={reduced}
-                  />
-                </div>
-              </div>
+          <div className="rounded-2xl">
+            <div className="max-w-7xl mx-auto">
+              <LogoSlider logos={CLIENT_LOGOS} />
             </div>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-2xl p-6 lg:p-8 mb-12 shadow-sm">
+        <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-2xl p-6 lg:p-8 mb-12">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center gap-3 mb-3">
               <Award className="text-rose-600" size={22} aria-hidden="true" />
@@ -714,20 +699,12 @@ export default function Proof() {
       </div>
 
       <style jsx>{`
-        @keyframes marquee-left {
+        @keyframes logo-slide {
           0% {
             transform: translateX(0);
           }
           100% {
-            transform: translateX(-50%);
-          }
-        }
-        @keyframes marquee-right {
-          0% {
-            transform: translateX(-50%);
-          }
-          100% {
-            transform: translateX(0);
+            transform: translateX(-33.33%);
           }
         }
 
