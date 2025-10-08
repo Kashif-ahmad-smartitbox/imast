@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
@@ -43,6 +43,60 @@ const DEFAULT_BADGES = [
 ];
 
 export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
+  // autoplay state
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [isPaused, setIsPaused] = useState(false);
+  const intervalRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const msPerBadge = 700; // how long each badge stays highlighted
+    const pauseAfterCycle = 900; // pause after completing the cycle
+
+    function startLoop() {
+      let idx = 0;
+      setTimeout(() => setActiveIndex(0), 50);
+      intervalRef.current = window.setInterval(() => {
+        idx += 1;
+        if (idx >= badges.length) {
+          // finish cycle
+          setActiveIndex(-1);
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+          setTimeout(() => {
+            if (!isPaused) startLoop();
+          }, pauseAfterCycle);
+          return;
+        }
+        setActiveIndex(idx);
+      }, msPerBadge);
+    }
+
+    if (!isPaused) startLoop();
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [badges.length, isPaused]);
+
+  const handleMouseEnter = (index: number) => {
+    // pause autoplay and highlight hovered badge
+    setIsPaused(true);
+    setActiveIndex(index);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+  const handleMouseLeave = () => {
+    setIsPaused(false);
+    setActiveIndex(-1);
+  };
+
   return (
     <section className="relative w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 lg:pt-16">
@@ -59,7 +113,6 @@ export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
           </p>
         </div>
 
-        {/* Enhanced badge container */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -67,69 +120,72 @@ export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
           viewport={{ once: true }}
           className="relative"
         >
-          {/* Grid layout for responsiveness */}
-          <div className="relative grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 lg:gap-8">
-            {badges.map((badge, index) => (
-              <motion.a
-                key={badge.id}
-                href={badge.href ?? "#"}
-                initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                whileHover={{
-                  scale: 1.05,
-                  y: -4,
-                }}
-                whileTap={{ scale: 0.98 }}
-                transition={{
-                  duration: 0.4,
-                  delay: index * 0.08,
-                  ease: "easeOut",
-                }}
-                viewport={{ once: true, margin: "-50px" }}
-                className="group relative flex flex-col items-center justify-center p-4 sm:p-6 bg-white rounded-2xl shadow-xs border border-gray-200/80 hover:shadow-lg transition-all duration-300 hover:border-blue-300/50 z-10"
-                title={badge.title}
-                aria-label={badge.title}
-              >
-                {/* Enhanced background effects */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white to-blue-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-lg" />
+          {/* make grid overflow-visible so the tooltip can escape */}
+          <div className="relative grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 lg:gap-8 overflow-visible">
+            {badges.map((badge, index) => {
+              const isActive = index === activeIndex;
 
-                {/* Animated border */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#a94093] to-rose-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 p-px">
-                  <div className="w-full h-full bg-white rounded-2xl" />
-                </div>
+              return (
+                <motion.a
+                  key={badge.id}
+                  href={badge.href ?? "#"}
+                  // accessibility: remove title (native tooltip) but keep aria-label
+                  aria-label={badge.title}
+                  // avoid clipping of children by allowing overflow and ensuring z-index layering
+                  className="group relative flex flex-col items-center justify-center p-4 sm:p-6 bg-white rounded-2xl shadow-xs border border-gray-200/80 hover:shadow-lg transition-all duration-300 hover:border-blue-300/50 z-10 overflow-visible"
+                  whileHover={{ scale: 1.06, y: -6 }}
+                  whileTap={{ scale: 0.98 }}
+                  animate={{
+                    scale: isActive ? 1.06 : 1,
+                    y: isActive ? -6 : 0,
+                  }}
+                  transition={{ duration: 0.45, ease: "easeOut" }}
+                  onMouseEnter={() => handleMouseEnter(index)}
+                  onMouseLeave={() => handleMouseLeave()}
+                >
+                  {/* background layers - pointer-events-none so they don't block hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white to-blue-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-lg pointer-events-none" />
 
-                {/* Badge image with better sizing */}
-                <div className="relative z-10 w-full flex justify-center">
-                  <Image
-                    src={badge.src}
-                    alt={badge.title}
-                    width={80}
-                    height={32}
-                    className="object-contain transition-all duration-300 group-hover:scale-105 h-20 w-auto"
-                  />
-                </div>
+                  {/* content above border */}
+                  <div className="relative z-10 w-full flex justify-center">
+                    <Image
+                      src={badge.src}
+                      alt={badge.title}
+                      width={120}
+                      height={48}
+                      className="object-contain transition-all duration-300 group-hover:scale-105 h-20 w-auto"
+                    />
+                  </div>
 
-                {/* Badge title for mobile */}
-                <div className="relative z-10 mt-3">
-                  <span className="text-xs sm:text-sm font-medium text-gray-700 text-center group-hover:text-gray-900 transition-colors duration-300 block lg:hidden">
-                    {badge.title.split(" ")[0]}
-                  </span>
-                  <span className="text-xs sm:text-sm font-medium text-gray-700 text-center group-hover:text-gray-900 transition-colors duration-300 hidden lg:block">
+                  {/* titles */}
+                  <div className="relative z-10 mt-3">
+                    <span className="text-xs sm:text-sm font-medium text-gray-700 text-center group-hover:text-gray-900 transition-colors duration-300 block lg:hidden">
+                      {badge.title.split(" ")[0]}
+                    </span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-700 text-center group-hover:text-gray-900 transition-colors duration-300 hidden lg:block">
+                      {badge.title}
+                    </span>
+                  </div>
+
+                  {/* custom tooltip (desktop) - visible on hover or when autoplay highlights the badge */}
+                  <div
+                    className={`absolute -bottom-14 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 text-white text-xs font-medium rounded-lg transition-all duration-300 pointer-events-none z-30 hidden lg:block ${
+                      isActive
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-2"
+                    }`}
+                    aria-hidden="true"
+                  >
                     {badge.title}
-                  </span>
-                </div>
-
-                {/* Enhanced tooltip for desktop */}
-                <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 shadow-lg hidden lg:block">
-                  {badge.title}
-                  <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
-                </div>
-              </motion.a>
-            ))}
+                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+                  </div>
+                </motion.a>
+              );
+            })}
           </div>
 
-          {/* Connection lines for desktop */}
+          {/* horizontal connection line for desktop */}
           <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-transparent via-gray-300/50 to-transparent hidden lg:block" />
         </motion.div>
       </div>

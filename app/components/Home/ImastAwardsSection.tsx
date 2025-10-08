@@ -283,11 +283,6 @@ function AwardCard({
               >
                 {award.title}
               </h4>
-
-              <div className="text-xs text-slate-500 flex items-center gap-2 whitespace-nowrap">
-                <Calendar className="w-3.5 h-3.5" />
-                <span>{award.year ?? "—"}</span>
-              </div>
             </div>
 
             <p

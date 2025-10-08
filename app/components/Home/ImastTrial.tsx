@@ -1,28 +1,148 @@
 "use client";
 import React from "react";
 import { ArrowRight, CheckCircle } from "lucide-react";
+import { motion, Variants } from "framer-motion";
+
+interface ImastTrialProps {
+  illustrationSrc?: string;
+}
 
 export default function ImastTrial({
   illustrationSrc = "/imast-try-free.png",
-}: {
-  illustrationSrc?: string;
-}) {
+}: ImastTrialProps) {
+  // Enhanced floating animation with proper typing
+  const floatAnimation: Variants = {
+    initial: {
+      y: 0,
+      rotate: 0,
+      scale: 1,
+    },
+    float: {
+      y: [0, -12, 2, -8, 0],
+      rotate: [-0.5, 0.5, -0.3, 0.3, -0.5],
+      scale: [1, 1.002, 0.998, 1.001, 1],
+      transition: {
+        duration: 8,
+        ease: "easeInOut",
+        repeat: Infinity,
+        repeatType: "reverse",
+      },
+    },
+    hover: {
+      y: -8,
+      scale: 1.03,
+      rotate: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut",
+      },
+    },
+    tap: {
+      scale: 0.98,
+      transition: { duration: 0.1 },
+    },
+  };
+
+  // Background elements animation with proper typing
+  const backgroundFloat: Variants = {
+    initial: {
+      y: 0,
+      opacity: 0.1,
+    },
+    animate: {
+      y: [0, -20, 0],
+      opacity: [0.1, 0.15, 0.1],
+      transition: {
+        duration: 10,
+        ease: "easeInOut",
+        repeat: Infinity,
+        repeatType: "reverse",
+      },
+    },
+  };
+
+  // Sparkle animation with proper typing
+  const sparkleAnimation: Variants = {
+    initial: {
+      opacity: 0,
+      scale: 0.9,
+    },
+    animate: {
+      opacity: [0, 0.15, 0.05, 0.12, 0],
+      scale: [0.9, 1.1, 0.95, 1.05, 0.9],
+      transition: {
+        duration: 9,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    },
+  };
+
+  // Features list animation
+  const featureItem: Variants = {
+    initial: { opacity: 0, x: -10 },
+    animate: { opacity: 1, x: 0 },
+  };
+
+  const containerVariants: Variants = {
+    initial: { opacity: 0 },
+    animate: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const features = [
+    "Unified platform for retail, distribution & loyalty",
+    "Fast setup with enterprise-grade controls",
+    "Measurable outcomes from day one",
+  ];
+
   return (
     <section className="w-full py-16 lg:py-24 px-6 lg:px-12 bg-gradient-to-br from-slate-900 to-red-900 relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-300/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"></div>
+      {/* Animated background elements */}
+      <motion.div
+        variants={backgroundFloat}
+        initial="initial"
+        animate="animate"
+        className="absolute top-0 left-0 w-72 h-72 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"
+      />
+
+      <motion.div
+        variants={backgroundFloat}
+        initial="initial"
+        animate="animate"
+        transition={{ delay: 2 }}
+        className="absolute bottom-0 right-0 w-96 h-96 bg-rose-300/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"
+      />
+
+      {/* Enhanced sparkle effect */}
+      <motion.div
+        aria-hidden="true"
+        variants={sparkleAnimation}
+        initial="initial"
+        animate="animate"
+        className="pointer-events-none absolute right-12 lg:right-40 bottom-8 lg:bottom-20 w-40 h-40 rounded-full bg-rose-400/8 blur-2xl"
+      />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* LEFT: Content */}
-          <div className="p-6 lg:p-8 text-white space-y-6">
+          {/* Content Section */}
+          <motion.div
+            className="p-6 lg:p-8 text-white space-y-6"
+            initial="initial"
+            animate="animate"
+            variants={containerVariants}
+          >
             {/* Logo/Brand */}
             <div className="flex items-center gap-3 mb-2">
               <img
                 src="/logo.svg"
                 alt="IMAST"
                 className="w-8 h-8 lg:w-44 lg:h-20"
+                loading="eager"
               />
             </div>
 
@@ -31,7 +151,7 @@ export default function ImastTrial({
               Try{" "}
               <span className="relative inline-block">
                 <span className="relative z-10">IMAST</span>
-                <div className="absolute bottom-2 left-0 w-full h-3 bg-rose-300/30 -rotate-1 z-0"></div>
+                <div className="absolute bottom-2 left-0 w-full h-3 bg-rose-300/30 -rotate-1 z-0" />
               </span>{" "}
               Free
             </h1>
@@ -41,32 +161,34 @@ export default function ImastTrial({
             </p>
 
             {/* Features List */}
-            <div className="space-y-3">
-              {[
-                "Unified platform for retail, distribution & loyalty",
-                "Fast setup with enterprise-grade controls",
-                "Measurable outcomes from day one",
-              ].map((feature, index) => (
-                <div key={index} className="flex items-center gap-3">
+            <motion.div className="space-y-3" variants={containerVariants}>
+              {features.map((feature, index) => (
+                <motion.div
+                  key={feature}
+                  variants={featureItem}
+                  className="flex items-center gap-3"
+                >
                   <CheckCircle className="w-5 h-5 text-rose-200 flex-shrink-0" />
                   <span className="text-rose-100 text-sm lg:text-base">
                     {feature}
                   </span>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
             {/* CTA Section */}
             <div className="space-y-4 pt-4">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <a
+                <motion.a
                   href="/start-trial"
                   className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-rose-700 font-bold rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl active:scale-95 min-w-[200px] justify-center"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   <span className="relative z-10">Start Free Trial</span>
                   <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-white to-rose-100 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </a>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white to-rose-100 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </motion.a>
 
                 {/* Trust Indicators */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 text-rose-100">
@@ -76,7 +198,7 @@ export default function ImastTrial({
                         <div
                           key={i}
                           className="w-6 h-6 bg-rose-300 rounded-full border-2 border-rose-600"
-                        ></div>
+                        />
                       ))}
                     </div>
                     <span className="text-sm font-medium">
@@ -84,25 +206,74 @@ export default function ImastTrial({
                       brands
                     </span>
                   </div>
-                  <div className="hidden sm:block w-px h-4 bg-rose-400/50"></div>
+                  <div className="hidden sm:block w-px h-4 bg-rose-400/50" />
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <strong className="text-white">2M+</strong> users
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* RIGHT: illustration - Keeping original design */}
+          {/* Illustration Section */}
           <div className="relative p-8 lg:p-10 flex justify-center items-center">
-            <div className="relative max-w-md lg:max-w-lg w-full">
-              <img
+            <motion.div
+              variants={floatAnimation}
+              initial="initial"
+              animate="float"
+              whileHover="hover"
+              whileTap="tap"
+              className="relative max-w-md lg:max-w-lg w-full cursor-pointer select-none"
+            >
+              {/* Enhanced decorative frame */}
+              <motion.div
+                initial={{ opacity: 0.06, scale: 0.98 }}
+                animate={{
+                  opacity: [0.06, 0.15, 0.08, 0.12, 0.06],
+                  scale: [0.98, 1.02, 0.99, 1.01, 0.98],
+                }}
+                transition={{
+                  duration: 7,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute -inset-4 rounded-xl border border-rose-600/25 blur-md pointer-events-none"
+              />
+
+              {/* Main illustration */}
+              <motion.img
                 src={illustrationSrc}
                 alt="IMAST product preview"
-                className="w-full h-auto object-contain rounded-lg drop-shadow-2xl"
                 loading="lazy"
+                className="w-full h-auto object-contain rounded-lg relative z-10"
+                draggable={false}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  ease: "easeOut",
+                  delay: 0.2,
+                }}
               />
-            </div>
+
+              {/* Enhanced floating label */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{
+                  opacity: [0, 0.8, 0.6],
+                  y: [10, -5, 10],
+                }}
+                transition={{
+                  delay: 0.5,
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute -top-6 right-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-xs text-rose-100 font-medium border border-rose-400/20"
+              >
+                Live preview
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>

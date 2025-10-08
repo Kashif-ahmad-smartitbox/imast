@@ -1,6 +1,14 @@
 "use client";
-import React, { useMemo, useState } from "react";
-import { Search, Tag, Calendar, BookOpen, ArrowRight } from "lucide-react";
+import React, { useMemo, useState, useCallback } from "react";
+import {
+  Search,
+  Tag,
+  Calendar,
+  BookOpen,
+  ArrowRight,
+  Clock,
+  User,
+} from "lucide-react";
 
 type Post = {
   id: string;
@@ -9,7 +17,7 @@ type Post = {
   image?: string;
   tags?: string[];
   author?: string;
-  date?: string; // ISO or readable
+  date?: string;
   readTime?: string;
   slug?: string;
   featured?: boolean;
@@ -84,44 +92,257 @@ const POSTS: Post[] = [
   },
 ];
 
+const formatDate = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+const FeaturedArticle = ({ post }: { post: Post }) => (
+  <article className="lg:col-span-2 rounded-3xl overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 group">
+    <div className="relative ">
+      <img
+        src={post.image}
+        alt={post.title}
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+      <div className="absolute left-6 bottom-6 right-6">
+        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-rose-500 text-white mb-4 shadow-lg">
+          Featured
+        </span>
+        <h3 className="text-white text-3xl font-bold mb-3 leading-tight">
+          {post.title}
+        </h3>
+        <p className="text-white/95 text-lg mb-4 max-w-2xl">{post.excerpt}</p>
+
+        <div className="flex items-center gap-4 text-white/80 text-sm mb-6">
+          {post.author && (
+            <span className="flex items-center gap-2">
+              <User className="w-4 h-4" />
+              {post.author}
+            </span>
+          )}
+          {post.date && (
+            <span className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              {formatDate(post.date)}
+            </span>
+          )}
+          {post.readTime && (
+            <span className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              {post.readTime}
+            </span>
+          )}
+        </div>
+
+        <a
+          href={post.slug}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-gray-900 font-semibold hover:bg-rose-600 hover:text-white transition-colors duration-300 shadow-lg"
+        >
+          Read article <ArrowRight className="w-4 h-4" />
+        </a>
+      </div>
+    </div>
+  </article>
+);
+
+const PostCard = ({ post }: { post: Post }) => (
+  <article className="bg-white rounded-2xl overflow-hidden transition-all duration-300 group border border-gray-100">
+    <div className="relative overflow-hidden h-56">
+      <img
+        src={post.image}
+        alt={post.title}
+        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    </div>
+
+    <div className="p-6">
+      {post.tags && post.tags.length > 0 && (
+        <div className="flex gap-2 mb-3">
+          {post.tags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-600"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <h3 className="text-xl font-bold text-gray-900 leading-tight mb-3 group-hover:text-rose-600 transition-colors">
+        {post.title}
+      </h3>
+      <p className="text-sm text-gray-600 mb-4 line-clamp-2">{post.excerpt}</p>
+
+      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <a
+          href={post.slug}
+          className="inline-flex items-center gap-2 text-rose-600 font-semibold text-sm hover:gap-3 transition-all"
+        >
+          Read <ArrowRight className="w-4 h-4" />
+        </a>
+      </div>
+    </div>
+  </article>
+);
+
+const SearchBar = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+}) => (
+  <div className="bg-white rounded-2xl p-4 border border-gray-200 transition-shadow">
+    <label htmlFor="rs-search" className="sr-only">
+      Search resources
+    </label>
+    <div className="flex items-center gap-3">
+      <Search className="w-5 h-5 text-gray-400" />
+      <input
+        id="rs-search"
+        placeholder="Search articles..."
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full text-sm outline-none placeholder:text-gray-400"
+      />
+    </div>
+  </div>
+);
+
+const TagFilter = ({
+  tags,
+  activeTag,
+  onTagChange,
+}: {
+  tags: string[];
+  activeTag: string;
+  onTagChange: (tag: string) => void;
+}) => (
+  <div className="bg-white rounded-2xl p-5 border border-gray-200">
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+        <Tag className="w-4 h-4 text-rose-600" />
+        Filter by Topic
+      </h3>
+    </div>
+
+    <div className="flex flex-wrap gap-2">
+      {tags.map((t) => (
+        <button
+          key={t}
+          onClick={() => onTagChange(t)}
+          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+            activeTag === t
+              ? "bg-rose-600 text-white shadow-md scale-105"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105"
+          }`}
+        >
+          {t}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+const Newsletter = () => {
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      if (email) {
+        alert(`Subscribed: ${email} (demo)`);
+        setEmail("");
+      }
+    },
+    [email]
+  );
+
+  return (
+    <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl p-6 border border-rose-100">
+      <div className="flex items-center gap-2 mb-2">
+        <BookOpen className="w-5 h-5 text-rose-600" />
+        <h3 className="font-bold text-gray-900">Newsletter</h3>
+      </div>
+      <p className="text-sm text-gray-600 mb-4">
+        Get product updates and practical playbooks — once a month, no spam.
+      </p>
+      <div className="flex gap-2">
+        <input
+          type="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="flex-1 px-4 py-2 rounded-xl border border-gray-300 text-sm outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200"
+        />
+        <button
+          onClick={handleSubmit}
+          className="px-5 py-2 rounded-xl bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700 transition-colors shadow-md hover:shadow-lg"
+        >
+          Subscribe
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export default function Resources() {
   const [query, setQuery] = useState("");
-  const [activeTag, setActiveTag] = useState<string | "All">("All");
-  const [count, setCount] = useState(3);
+  const [activeTag, setActiveTag] = useState<string>("All");
+  const [displayCount, setDisplayCount] = useState(6);
 
-  const tags = useMemo(
+  const allTags = useMemo(
     () => ["All", ...Array.from(new Set(POSTS.flatMap((p) => p.tags || [])))],
     []
   );
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return POSTS.filter((p) => {
-      if (activeTag !== "All" && !(p.tags || []).includes(activeTag))
-        return false;
-      if (
-        q &&
-        !`${p.title} ${p.excerpt} ${(p.tags || []).join(" ")}`
+  const filteredPosts = useMemo(() => {
+    const searchTerm = query.trim().toLowerCase();
+    return POSTS.filter((post) => {
+      const matchesTag =
+        activeTag === "All" || (post.tags || []).includes(activeTag);
+      const matchesSearch =
+        !searchTerm ||
+        `${post.title} ${post.excerpt} ${(post.tags || []).join(" ")}`
           .toLowerCase()
-          .includes(q)
-      )
-        return false;
-      return true;
-    }).slice(0, count);
-  }, [query, activeTag, count]);
+          .includes(searchTerm);
+      return matchesTag && matchesSearch;
+    });
+  }, [query, activeTag]);
 
-  const featured = POSTS.find((p) => p.featured) || POSTS[0];
+  const displayedPosts = useMemo(
+    () => filteredPosts.slice(2, displayCount),
+    [filteredPosts, displayCount]
+  );
+
+  const featuredPost = useMemo(
+    () => POSTS.find((p) => p.featured) || POSTS[0],
+    []
+  );
+
+  const handleLoadMore = useCallback(() => {
+    setDisplayCount((prev) => prev + 3);
+  }, []);
 
   return (
     <section
-      className="py-16 lg:py-24 bg-white"
+      className="py-20 bg-gradient-to-b from-gray-50 to-white"
       aria-labelledby="resources-title"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="mb-8 text-center">
           <p className="text-3xl font-semibold text-rose-600">Resources</p>
           <h2
-            id="resources-title"
+            id="case-studies-title"
             className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
           >
             Insights, guides and product updates
@@ -132,139 +353,51 @@ export default function Resources() {
           </p>
         </header>
 
-        {/* top: featured article */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          <article className="lg:col-span-2 rounded-2xl overflow-hidden bg-gradient-to-br from-gray-50 to-white">
-            <div className="relative">
-              <img
-                src={featured.image}
-                alt={featured.title}
-                className="w-full h-[100%] object-cover"
-              />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          <FeaturedArticle post={featuredPost} />
 
-              <div className="absolute left-6 bottom-6 right-6 p-6 rounded-lg bg-gradient-to-t from-black/60 to-transparent">
-                <div className="text-xs text-rose-400 font-semibold">
-                  Featured
-                </div>
-                <h3 className="mt-2 text-white text-2xl font-bold">
-                  {featured.title}
-                </h3>
-                <p className="mt-2 text-white/90 max-w-2xl">
-                  {featured.excerpt}
-                </p>
-
-                <div className="mt-4 flex items-center gap-3">
-                  <a
-                    href={featured.slug}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-gray-900 font-semibold"
-                  >
-                    Read article <ArrowRight className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          {/* right: search & tags */}
-          <aside className="space-y-4">
-            <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-              <label htmlFor="rs-search" className="sr-only">
-                Search resources
-              </label>
-              <div className="flex items-center gap-2">
-                <Search className="w-4 h-4 text-gray-400" />
-                <input
-                  id="rs-search"
-                  placeholder="Search articles"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="w-full text-sm outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div className="text-sm font-semibold text-gray-800">Tags</div>
-                <div className="text-xs text-gray-400">Filter</div>
-              </div>
-
-              <div className="mt-3 flex flex-wrap gap-2">
-                {tags.map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => setActiveTag(t as string)}
-                    className={`px-3 py-1 rounded-full text-sm ${
-                      activeTag === t
-                        ? "bg-rose-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    <Tag className="w-4 h-4 inline-block mr-1" />
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-sm">
-              <div className="font-semibold text-gray-800">Newsletter</div>
-              <div className="mt-2 text-gray-600">
-                Get product updates and practical playbooks — once a month.
-              </div>
-              <form
-                className="mt-3 flex gap-2"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  alert("Subscribed (demo)");
-                }}
-              >
-                <input
-                  placeholder="Email address"
-                  className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none"
-                />
-                <button className="px-3 py-2 rounded-lg bg-rose-600 text-white text-sm">
-                  Subscribe
-                </button>
-              </form>
-            </div>
+          <aside className="space-y-6">
+            <SearchBar value={query} onChange={setQuery} />
+            <TagFilter
+              tags={allTags}
+              activeTag={activeTag}
+              onTagChange={setActiveTag}
+            />
+            <Newsletter />
           </aside>
         </div>
 
-        {/* posts grid */}
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          role="list"
-        >
-          {filtered.map((p) => (
-            <article
-              key={p.id}
-              role="listitem"
-              className="bg-white rounded-2xl overflow-hidden hover:shadow-md transition"
-            >
-              <img
-                src={p.image}
-                alt={p.title}
-                className="w-full h-44 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="mt-2 text-lg font-semibold text-gray-900 leading-snug">
-                  {p.title}
-                </h3>
-                <p className="mt-2 text-sm text-gray-600">{p.excerpt}</p>
+        {displayedPosts.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+              {displayedPosts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
 
-                <div className="mt-4 flex items-center justify-between">
-                  <a
-                    href={p.slug}
-                    className="inline-flex items-center gap-2 text-rose-600 font-semibold"
-                  >
-                    Read <ArrowRight className="w-4 h-4" />
-                  </a>
-                </div>
+            {displayCount < filteredPosts.length && (
+              <div className="text-center">
+                <button
+                  onClick={handleLoadMore}
+                  className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gray-900 text-white font-semibold hover:bg-rose-600 transition-colors shadow-lg hover:shadow-xl"
+                >
+                  Load More Articles
+                  <ArrowRight className="w-5 h-5" />
+                </button>
               </div>
-            </article>
-          ))}
-        </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-16">
+            <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No articles found
+            </h3>
+            <p className="text-gray-600">
+              Try adjusting your search or filters
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );
