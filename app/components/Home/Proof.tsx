@@ -9,7 +9,6 @@ import React, {
 import { Award, CheckCircle, ArrowRight, Star, Quote } from "lucide-react";
 import StatCard from "../StatCard";
 
-// --- Types
 interface ClientLogo {
   src: string;
   alt: string;
@@ -107,10 +106,9 @@ const TESTIMONIALS: Testimonial[] = [
 
 const TESTIMONIAL_INTERVAL = 6000;
 const DEFAULT_COUNT_DURATION = 1200;
-const LOGO_SLIDER_PLAY_DURATION = 15000; // 15 seconds of movement
-const LOGO_SLIDER_PAUSE_DURATION = 3000; // 3 seconds pause
+const LOGO_SLIDER_PLAY_DURATION = 15000;
+const LOGO_SLIDER_PAUSE_DURATION = 3000;
 
-// --- Hooks
 function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
 
@@ -337,14 +335,14 @@ function LogoSlider({ logos }: { logos: ClientLogo[] }) {
         {duplicatedLogos.map((logo, index) => (
           <div
             key={`${logo.alt}-${index}`}
-            className="flex-shrink-0 flex items-center justify-center p-4 hover:border-rose-200 hover:shadow-md transition-all duration-300 hover:scale-105"
+            className="flex-shrink-0 flex items-center justify-center p-2 hover:border-rose-200 transition-all duration-300 hover:scale-105"
             style={{ minWidth: 160 }}
           >
             <img
               loading="lazy"
               src={logo.src}
               alt={logo.alt}
-              className="max-h-20 w-auto object-contain transition-all duration-300 grayscale hover:grayscale-0 hover:opacity-100 opacity-80"
+              className="max-h-20 w-auto object-contain transition-all duration-300"
               width={80}
               height={40}
             />
@@ -488,7 +486,7 @@ export default function Proof() {
           </p>
         </header>
         <div className="rounded-2xl mb-8">
-          <div className="bg-rose-600">
+          <div className="bg-white">
             <LogoSlider logos={CLIENT_LOGOS} />
           </div>
         </div>

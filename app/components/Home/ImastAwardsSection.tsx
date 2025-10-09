@@ -2,12 +2,11 @@
 
 import React, {
   memo,
-  useMemo,
   useRef,
   useState,
-  Fragment,
-  KeyboardEvent,
   useEffect,
+  useCallback,
+  KeyboardEvent,
 } from "react";
 import Image from "next/image";
 import {
@@ -51,7 +50,7 @@ interface ImastAwardsSectionProps {
   awards?: AwardItem[];
 }
 
-/* ----- Defaults ----- */
+/* ----- Defaults (kept from your original list) ----- */
 const DEFAULT_AWARDS: AwardItem[] = [
   {
     title: "Excellence in Software Engineering",
@@ -183,7 +182,7 @@ function Lightbox({
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!open && videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
@@ -314,6 +313,7 @@ function MediaBlock({
   );
 }
 
+/* ----- Award Card ----- */
 function AwardCard({
   award,
   openLightbox,
@@ -333,6 +333,8 @@ function AwardCard({
           openLightbox(award.media, award.title);
         }
       }}
+      // enable scroll snapping
+      style={{ scrollSnapAlign: "start" }}
     >
       <div>
         <MediaBlock
@@ -388,49 +390,177 @@ function AwardCard({
   );
 }
 
+/* ====== New: Auto-slider (one card at a time) ====== */
+
 export default memo(function ImastAwardsSection({
   title = "Awards & Accolades",
   awards = DEFAULT_AWARDS,
 }: ImastAwardsSectionProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
-  const checkScrollButtons = () => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      setShowLeftArrow(container.scrollLeft > 0);
-      setShowRightArrow(
-        container.scrollLeft <
-          container.scrollWidth - container.clientWidth - 10
-      );
-    }
-  };
+  const autoplayTimerRef = useRef<number | null>(null);
+  const interactionTimeoutRef = useRef<number | null>(null);
 
-  useEffect(() => {
+  // Tweakable values
+  const AUTOPLAY_DELAY = 3000; // ms between slides
+  const RESUME_AFTER_INTERACTION = 2000; // ms to wait after interaction to resume
+
+  // Scroll-to-index helper
+  const scrollToIndex = useCallback(
+    (index: number, behavior: ScrollBehavior = "smooth") => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+      const child = container.children[index] as HTMLElement | undefined;
+      if (!child) return;
+
+      // offsetLeft should be relative to container in typical layout here
+      const left = child.offsetLeft;
+      container.scrollTo({ left, behavior });
+    },
+    []
+  );
+
+  // Update arrow visibility based on scroll position
+  const checkScrollButtons = useCallback(() => {
     const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener("scroll", checkScrollButtons);
-      checkScrollButtons(); // Initial check
-    }
-    return () => {
-      if (container) {
-        container.removeEventListener("scroll", checkScrollButtons);
-      }
-    };
+    if (!container) return;
+    setShowLeftArrow(container.scrollLeft > 5);
+    setShowRightArrow(
+      container.scrollLeft + container.clientWidth < container.scrollWidth - 5
+    );
   }, []);
 
-  const scroll = (direction: "left" | "right") => {
+  // When container scrolls (user scroll), update state & arrows
+  useEffect(() => {
     const container = scrollContainerRef.current;
-    if (container) {
-      const scrollAmount = 400;
-      container.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
+    if (!container) return;
+
+    const onScroll = () => {
+      checkScrollButtons();
+      // Keep currentIndex roughly in sync with scroll
+      const children = Array.from(container.children) as HTMLElement[];
+      if (!children.length) return;
+      // find the child nearest to current scrollLeft
+      const scrollLeft = container.scrollLeft;
+      let nearest = 0;
+      let minDiff = Infinity;
+      children.forEach((c, i) => {
+        const diff = Math.abs(c.offsetLeft - scrollLeft);
+        if (diff < minDiff) {
+          minDiff = diff;
+          nearest = i;
+        }
       });
+      setCurrentIndex(nearest);
+    };
+
+    container.addEventListener("scroll", onScroll, { passive: true });
+    // initial check
+    checkScrollButtons();
+
+    return () => {
+      container.removeEventListener("scroll", onScroll);
+    };
+  }, [checkScrollButtons]);
+
+  // Pause/resume helpers
+  const pauseTemporarily = useCallback(() => {
+    setIsPaused(true);
+    if (interactionTimeoutRef.current) {
+      window.clearTimeout(interactionTimeoutRef.current);
     }
+    interactionTimeoutRef.current = window.setTimeout(() => {
+      setIsPaused(false);
+      interactionTimeoutRef.current = null;
+    }, RESUME_AFTER_INTERACTION);
+  }, []);
+
+  // Mouse/touch/wheel handlers
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const onEnter = () => setIsPaused(true);
+    const onLeave = () => {
+      // small delay for nicer UX
+      if (interactionTimeoutRef.current)
+        window.clearTimeout(interactionTimeoutRef.current);
+      interactionTimeoutRef.current = window.setTimeout(() => {
+        setIsPaused(false);
+        interactionTimeoutRef.current = null;
+      }, 250);
+    };
+    const onWheel = () => pauseTemporarily();
+    const onTouchStart = () => pauseTemporarily();
+
+    container.addEventListener("mouseenter", onEnter);
+    container.addEventListener("mouseleave", onLeave);
+    container.addEventListener("wheel", onWheel, { passive: true });
+    container.addEventListener("touchstart", onTouchStart, { passive: true });
+
+    return () => {
+      container.removeEventListener("mouseenter", onEnter);
+      container.removeEventListener("mouseleave", onLeave);
+      container.removeEventListener("wheel", onWheel);
+      container.removeEventListener("touchstart", onTouchStart);
+      if (interactionTimeoutRef.current) {
+        window.clearTimeout(interactionTimeoutRef.current);
+        interactionTimeoutRef.current = null;
+      }
+    };
+  }, [pauseTemporarily]);
+
+  // Autoplay effect
+  useEffect(() => {
+    // clear any existing
+    if (autoplayTimerRef.current) {
+      window.clearInterval(autoplayTimerRef.current);
+      autoplayTimerRef.current = null;
+    }
+
+    if (isPaused || awards.length <= 1) return;
+
+    autoplayTimerRef.current = window.setInterval(() => {
+      setCurrentIndex((prev) => {
+        const next = (prev + 1) % awards.length;
+        // perform scroll
+        scrollToIndex(next, "smooth");
+        return next;
+      });
+    }, AUTOPLAY_DELAY);
+
+    return () => {
+      if (autoplayTimerRef.current) {
+        window.clearInterval(autoplayTimerRef.current);
+        autoplayTimerRef.current = null;
+      }
+    };
+  }, [isPaused, awards.length, scrollToIndex]);
+
+  // Arrow controls
+  const goToPrev = () => {
+    setCurrentIndex((prev) => {
+      const next = prev <= 0 ? awards.length - 1 : prev - 1;
+      scrollToIndex(next, "smooth");
+      pauseTemporarily();
+      return next;
+    });
   };
 
+  const goToNext = () => {
+    setCurrentIndex((prev) => {
+      const next = (prev + 1) % awards.length;
+      scrollToIndex(next, "smooth");
+      pauseTemporarily();
+      return next;
+    });
+  };
+
+  // Lightbox controls (pause while open)
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxMedia, setLightboxMedia] = useState<Media | undefined>(
     undefined
@@ -439,17 +569,36 @@ export default memo(function ImastAwardsSection({
     undefined
   );
 
-  function openLightbox(media?: Media, title?: string) {
+  const openLightbox = (media?: Media, title?: string) => {
     if (!media) return;
     setLightboxMedia(media);
     setLightboxTitle(title);
     setLightboxOpen(true);
-  }
-  function closeLightbox() {
+    // pause while lightbox is open
+    setIsPaused(true);
+    if (interactionTimeoutRef.current) {
+      window.clearTimeout(interactionTimeoutRef.current);
+      interactionTimeoutRef.current = null;
+    }
+  };
+  const closeLightbox = () => {
     setLightboxOpen(false);
     setLightboxMedia(undefined);
     setLightboxTitle(undefined);
-  }
+    // resume after short delay
+    if (interactionTimeoutRef.current)
+      window.clearTimeout(interactionTimeoutRef.current);
+    interactionTimeoutRef.current = window.setTimeout(() => {
+      setIsPaused(false);
+      interactionTimeoutRef.current = null;
+    }, RESUME_AFTER_INTERACTION);
+  };
+
+  // On mount, ensure first slide snapped into place
+  useEffect(() => {
+    scrollToIndex(0, "auto");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="relative py-12">
@@ -464,12 +613,11 @@ export default memo(function ImastAwardsSection({
           </p>
         </div>
 
-        {/* Scrollable Container */}
         <div className="relative">
           {/* Left Arrow */}
           {showLeftArrow && (
             <button
-              onClick={() => scroll("left")}
+              onClick={goToPrev}
               className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110 -ml-4"
               aria-label="Scroll left"
             >
@@ -480,7 +628,7 @@ export default memo(function ImastAwardsSection({
           {/* Right Arrow */}
           {showRightArrow && (
             <button
-              onClick={() => scroll("right")}
+              onClick={goToNext}
               className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110 -mr-4"
               aria-label="Scroll right"
             >
@@ -488,14 +636,18 @@ export default memo(function ImastAwardsSection({
             </button>
           )}
 
-          {/* Scrollable Awards Container */}
+          {/* Slider container */}
           <div
             ref={scrollContainerRef}
-            className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide scroll-smooth"
+            // scroll snap & smooth
+            className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide"
             style={{
+              scrollSnapType: "x mandatory",
+              WebkitOverflowScrolling: "touch",
               scrollbarWidth: "none",
               msOverflowStyle: "none",
             }}
+            aria-roledescription="carousel"
           >
             {awards.map((award, idx) => (
               <AwardCard key={idx} award={award} openLightbox={openLightbox} />
@@ -503,10 +655,13 @@ export default memo(function ImastAwardsSection({
           </div>
         </div>
 
-        {/* Scroll Indicator */}
         <div className="flex justify-center mt-6">
           <div className="flex items-center gap-2 text-xs text-white">
-            <span>Scroll horizontally to view more awards</span>
+            <span>
+              {isPaused
+                ? "Paused — interacting"
+                : "Auto-play slider — hover or scroll to pause"}
+            </span>
             <ChevronRight className="w-3 h-3" />
           </div>
         </div>
@@ -519,7 +674,6 @@ export default memo(function ImastAwardsSection({
         title={lightboxTitle}
       />
 
-      {/* Hide scrollbar for webkit browsers */}
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;

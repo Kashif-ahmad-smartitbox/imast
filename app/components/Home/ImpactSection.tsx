@@ -13,8 +13,8 @@ export default function ImpactSection() {
 
   return (
     <section className="relative bg-rose-700 text-white overflow-hidden">
-      <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none select-none">
-        <Image src="/temple-line-white.svg" alt="" width={480} height={280} />
+      <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none select-none">
+        <Image src="/indian_parliament.svg" alt="" width={800} height={280} />
       </div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20 lg:py-28 relative z-10">
