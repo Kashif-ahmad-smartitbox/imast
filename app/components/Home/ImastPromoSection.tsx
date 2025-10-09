@@ -19,8 +19,8 @@ type ImastPromoSectionProps = {
 };
 
 export default function ImastPromoSection({
-  posterSrc = "/videos/imast-promo-poster.jpg",
-  videoSrc = "/videos/imast-promo.mp4",
+  posterSrc = "/Thumbnail22.png",
+  videoSrc = "/imast.mp4",
   theme = "orange",
 }: ImastPromoSectionProps) {
   const [open, setOpen] = useState(false);
@@ -194,24 +194,7 @@ export default function ImastPromoSection({
                   <div className="relative w-full aspect-[16/10] bg-gradient-to-br from-gray-100 to-gray-200">
                     {/* Demo dashboard image */}
                     <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900">
-                      <div className="absolute inset-0 p-6">
-                        <div className="grid grid-cols-3 gap-4 mb-4">
-                          {[1, 2, 3, 4, 5, 6].map((i) => (
-                            <div
-                              key={i}
-                              className="h-20 bg-slate-700/50 rounded-lg border border-slate-600/50"
-                            ></div>
-                          ))}
-                        </div>
-
-                        <div className="h-32 bg-slate-700/30 rounded-lg border border-slate-600/30 mb-4"></div>
-
-                        <div className="flex gap-4">
-                          <div className="flex-1 h-24 bg-gradient-to-r from-rose-500/20 to-orange-500/20 rounded-lg border border-rose-500/30"></div>
-                          <div className="flex-1 h-24 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-lg border border-blue-500/30"></div>
-                        </div>
-                      </div>
-
+                      <img src={posterSrc} className="h-full" alt="" />
                       {/* Play button overlay */}
                       <button
                         aria-label="Play IMAST360 demo video"
@@ -293,7 +276,7 @@ export default function ImastPromoSection({
           onClick={() => setOpen(false)}
         >
           <div
-            className="relative w-full max-w-6xl bg-black rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in duration-300"
+            className="relative w-full max-w-7xl bg-black rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in duration-300"
             onClick={(e) => e.stopPropagation()}
           >
             <video

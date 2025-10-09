@@ -144,7 +144,7 @@ export default function StatCard({
       disabled={isLoading}
       role="group"
       aria-label={ariaLabel ?? `${label} stat`}
-      className={`w-full text-left rounded-2xl p-4 sm:p-5 shadow-sm transition-transform transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-1 ${variantColors[variant]} ${borderColors[variant]} ${className}`}
+      className={`group w-full text-left rounded-2xl p-4 sm:p-5 shadow-2xl transition-all duration-500 transform hover:-translate-y-0.5 hover:scale-105 hover:bg-[#a53d96] bg-white border-gray-400 cursor-pointer`}
     >
       <div className={`flex items-center ${compact ? "gap-3" : "gap-4"}`}>
         {icon ? (
@@ -161,8 +161,10 @@ export default function StatCard({
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <div
-              className={`text-sm font-medium ${
-                isAccent ? "text-white/90" : "text-gray-600"
+              className={`text-lg font-bold ${
+                isAccent
+                  ? "text-white/90"
+                  : "text-gray-600 group-hover:text-white/90"
               }`}
             >
               {label}
@@ -172,7 +174,7 @@ export default function StatCard({
               <div
                 className={`ml-3 text-xs font-medium px-2 py-0.5 rounded-full ${
                   isAccent
-                    ? "bg-white/12 text-white/95"
+                    ? "bg-white/12 text-white/95 "
                     : "bg-gray-100 text-gray-700"
                 }`}
                 aria-hidden
@@ -202,14 +204,16 @@ export default function StatCard({
                   }`}
                 />
               ) : (
-                <span>{displayed}</span>
+                <span className="group-hover:text-white/90">{displayed}</span>
               )}
             </div>
 
             {!compact && !showTrend && sub ? (
               <div
                 className={`text-sm ${
-                  isAccent ? "text-white/90" : "text-gray-500"
+                  isAccent
+                    ? "text-white/90"
+                    : "text-gray-500 group-hover:text-white/90"
                 }`}
               >
                 {sub}
