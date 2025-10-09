@@ -324,7 +324,7 @@ function LogoSlider({ logos }: { logos: ClientLogo[] }) {
   }, [logos]);
 
   return (
-    <div className="overflow-hidden py-8">
+    <div className="overflow-hidden">
       <div
         className="flex gap-8 items-center"
         style={{
@@ -337,20 +337,31 @@ function LogoSlider({ logos }: { logos: ClientLogo[] }) {
         {duplicatedLogos.map((logo, index) => (
           <div
             key={`${logo.alt}-${index}`}
-            className="flex-shrink-0 flex items-center justify-center p-4 bg-white rounded-lg border border-gray-100 hover:border-rose-200 hover:shadow-md transition-all duration-300 hover:scale-105"
+            className="flex-shrink-0 flex items-center justify-center p-4 hover:border-rose-200 hover:shadow-md transition-all duration-300 hover:scale-105"
             style={{ minWidth: 160 }}
           >
             <img
               loading="lazy"
               src={logo.src}
               alt={logo.alt}
-              className="max-h-12 w-auto object-contain transition-opacity duration-300 hover:opacity-80"
+              className="max-h-20 w-auto object-contain transition-all duration-300 grayscale hover:grayscale-0 hover:opacity-100 opacity-80"
               width={80}
               height={40}
             />
           </div>
         ))}
       </div>
+
+      <style jsx>{`
+        @keyframes logo-slide {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-33.33%);
+          }
+        }
+      `}</style>
     </div>
   );
 }
@@ -457,9 +468,11 @@ export default function Proof() {
   const currentTestimonials = testimonialGroups[activeTestimonialGroup] || [];
 
   return (
-    <section className="py-8 lg:py-12 bg-gray-50" aria-labelledby="proof-title">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* Header */}
+    <>
+      <section
+        className="py-8 lg:py-12 bg-gray-50"
+        aria-labelledby="proof-title"
+      >
         <header className="w-full text-center mb-8">
           <p className="text-2xl font-semibold text-rose-600 uppercase">
             Proof
@@ -474,220 +487,219 @@ export default function Proof() {
             Proven at scale — from local distributors to national retail chains.
           </p>
         </header>
+        <div className="rounded-2xl mb-8">
+          <div className="bg-rose-600">
+            <LogoSlider logos={CLIENT_LOGOS} />
+          </div>
+        </div>
 
-        {/* Single Logo Slider */}
-        <div className="mb-12">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          {/* Stats */}
+          <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-2xl p-6 lg:p-8 mb-12">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <Award className="text-rose-600" size={22} aria-hidden="true" />
+                <h3 className="text-lg lg:text-xl font-bold text-gray-900">
+                  Proven at scale
+                </h3>
+              </div>
+              <p className="text-gray-600">Numbers that matter</p>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                {STATS.map((stat, index) => (
+                  <StatCard
+                    key={stat.key}
+                    label={stat.label}
+                    value={formatStat(stat.key, statValues[index])}
+                    sub={getStatSubtext(stat.key)}
+                  />
+                ))}
+              </div>
+
+              <div className="text-center mt-6">
+                <a
+                  href="/case-studies"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-rose-600 hover:text-rose-700 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 rounded-md px-2 py-1"
+                  aria-label="View case studies"
+                >
+                  See case studies <ArrowRight size={14} aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Testimonials Slider */}
           <div className="rounded-2xl">
             <div className="max-w-7xl mx-auto">
-              <LogoSlider logos={CLIENT_LOGOS} />
-            </div>
-          </div>
-        </div>
+              <div className="text-center mb-6">
+                <h3 className="text-lg lg:text-xl font-bold text-rose-600">
+                  What Our Customers Say
+                </h3>
+                <p className="text-gray-600">
+                  Real stories from businesses that transformed their operations
+                </p>
+              </div>
 
-        {/* Stats */}
-        <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-2xl p-6 lg:p-8 mb-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <Award className="text-rose-600" size={22} aria-hidden="true" />
-              <h3 className="text-lg lg:text-xl font-bold text-gray-900">
-                Proven at scale
-              </h3>
-            </div>
-            <p className="text-gray-600">Numbers that matter</p>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-              {STATS.map((stat, index) => (
-                <StatCard
-                  key={stat.key}
-                  label={stat.label}
-                  value={formatStat(stat.key, statValues[index])}
-                  sub={getStatSubtext(stat.key)}
-                />
-              ))}
-            </div>
-
-            <div className="text-center mt-6">
-              <a
-                href="/case-studies"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-rose-600 hover:text-rose-700 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 rounded-md px-2 py-1"
-                aria-label="View case studies"
+              <div
+                ref={carouselRef}
+                className="relative"
+                aria-live="polite"
+                aria-atomic="true"
               >
-                See case studies <ArrowRight size={14} aria-hidden="true" />
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Testimonials Slider */}
-        <div className="rounded-2xl">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-6">
-              <h3 className="text-lg lg:text-xl font-bold text-rose-600">
-                What Our Customers Say
-              </h3>
-              <p className="text-gray-600">
-                Real stories from businesses that transformed their operations
-              </p>
-            </div>
-
-            <div
-              ref={carouselRef}
-              className="relative"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              {/* Slider viewport */}
-              <div className="overflow-hidden">
-                <div
-                  className="flex transition-transform duration-700 ease-in-out"
-                  style={{
-                    width: `${testimonialGroups.length * 100}%`,
-                    transform: `translateX(-${
-                      activeTestimonialGroup * (100 / testimonialGroups.length)
-                    }%)`,
-                  }}
-                >
-                  {testimonialGroups.map((group, gIdx) => (
-                    <div
-                      key={`group-${gIdx}`}
-                      className="flex-shrink-0 px-4 py-6"
-                      style={{ width: `${100 / testimonialGroups.length}%` }}
-                      aria-hidden={gIdx !== activeTestimonialGroup}
-                    >
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {group.map((t) => (
-                          <figure
-                            key={t.id}
-                            className="bg-white rounded-2xl p-6 h-full flex flex-col justify-between border border-gray-100"
-                          >
-                            <div className="flex items-start gap-4">
-                              <div className="flex flex-col items-center gap-3">
-                                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center text-rose-700 font-bold text-lg flex-shrink-0 shadow-md">
-                                  {initialsFromName(t.author)}
-                                </div>
-                                {t.rating && <StarRating rating={t.rating} />}
-                              </div>
-
-                              <figcaption className="flex-1">
-                                <Quote
-                                  className="text-rose-200 mb-2 transform -scale-x-100"
-                                  size={20}
-                                />
-                                <blockquote className="text-sm lg:text-base text-gray-800 leading-relaxed mb-4 font-medium">
-                                  “{t.quote}”
-                                </blockquote>
-
-                                <div className="border-t border-gray-100 pt-4">
-                                  <div className="font-bold text-gray-900 text-sm">
-                                    {t.author}
-                                  </div>
-                                  <div className="text-xs text-rose-600 font-semibold mt-1">
-                                    {t.role}
-                                  </div>
-                                  {t.company && (
-                                    <div className="text-xs text-gray-500 mt-1">
-                                      {t.company}
-                                    </div>
-                                  )}
-                                </div>
-                              </figcaption>
-                            </div>
-                          </figure>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Controls */}
-              <div className="flex items-center justify-center mt-6">
-                <button
-                  onClick={() => handleNav("prev")}
-                  aria-label="Previous testimonials"
-                  className="p-2 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors mr-2"
-                >
-                  <ArrowRight size={16} className="rotate-180" />
-                </button>
-
-                <div className="flex items-center gap-2">
-                  {testimonialGroups.map((_, i) => (
-                    <button
-                      key={`dot-${i}`}
-                      onClick={() => {
-                        setActiveTestimonialGroup(i);
-                        setTestimonialPaused(true);
-                      }}
-                      aria-label={`Show testimonials page ${i + 1}`}
-                      className={`w-3 h-3 rounded-full ${
-                        i === activeTestimonialGroup
-                          ? "bg-rose-600"
-                          : "bg-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => handleNav("next")}
-                  aria-label="Next testimonials"
-                  className="p-2 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors ml-2"
-                >
-                  <ArrowRight size={16} />
-                </button>
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="mt-12 pt-8 border-t border-gray-100">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                  <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
-                    <CheckCircle
-                      className="text-green-600"
-                      size={24}
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <div className="font-semibold text-gray-800">
-                        Enterprise Security
-                      </div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        SOC2, TLS, role-based access
-                      </div>
-                    </div>
-                  </div>
-
-                  <a
-                    href="/case-studies"
-                    className="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-rose-200 transition-all group"
-                    aria-label="Read case studies"
+                {/* Slider viewport */}
+                <div className="overflow-hidden">
+                  <div
+                    className="flex transition-transform duration-700 ease-in-out"
+                    style={{
+                      width: `${testimonialGroups.length * 100}%`,
+                      transform: `translateX(-${
+                        activeTestimonialGroup *
+                        (100 / testimonialGroups.length)
+                      }%)`,
+                    }}
                   >
-                    <div className="flex-none w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center font-bold text-rose-600 group-hover:scale-110 transition-transform">
-                      CS
-                    </div>
-                    <div className="text-left flex-1">
-                      <div className="font-semibold text-gray-900">
-                        See the impact
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Case studies & outcomes — 3 min reads
-                      </div>
-                    </div>
-                    <ArrowRight
-                      className="text-rose-600 group-hover:translate-x-1 transition-transform"
-                      size={16}
-                    />
-                  </a>
+                    {testimonialGroups.map((group, gIdx) => (
+                      <div
+                        key={`group-${gIdx}`}
+                        className="flex-shrink-0 px-4 py-6"
+                        style={{ width: `${100 / testimonialGroups.length}%` }}
+                        aria-hidden={gIdx !== activeTestimonialGroup}
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {group.map((t) => (
+                            <figure
+                              key={t.id}
+                              className="bg-white rounded-2xl p-6 h-full flex flex-col justify-between border border-gray-100"
+                            >
+                              <div className="flex items-start gap-4">
+                                <div className="flex flex-col items-center gap-3">
+                                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center text-rose-700 font-bold text-lg flex-shrink-0 shadow-md">
+                                    {initialsFromName(t.author)}
+                                  </div>
+                                  {t.rating && <StarRating rating={t.rating} />}
+                                </div>
 
-                  <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
-                    <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-800">
-                        24/7 Support
+                                <figcaption className="flex-1">
+                                  <Quote
+                                    className="text-rose-200 mb-2 transform -scale-x-100"
+                                    size={20}
+                                  />
+                                  <blockquote className="text-sm lg:text-base text-gray-800 leading-relaxed mb-4 font-medium">
+                                    “{t.quote}”
+                                  </blockquote>
+
+                                  <div className="border-t border-gray-100 pt-4">
+                                    <div className="font-bold text-gray-900 text-sm">
+                                      {t.author}
+                                    </div>
+                                    <div className="text-xs text-rose-600 font-semibold mt-1">
+                                      {t.role}
+                                    </div>
+                                    {t.company && (
+                                      <div className="text-xs text-gray-500 mt-1">
+                                        {t.company}
+                                      </div>
+                                    )}
+                                  </div>
+                                </figcaption>
+                              </div>
+                            </figure>
+                          ))}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        Dedicated customer success
+                    ))}
+                  </div>
+                </div>
+
+                {/* Controls */}
+                <div className="flex items-center justify-center mt-6">
+                  <button
+                    onClick={() => handleNav("prev")}
+                    aria-label="Previous testimonials"
+                    className="p-2 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors mr-2"
+                  >
+                    <ArrowRight size={16} className="rotate-180" />
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    {testimonialGroups.map((_, i) => (
+                      <button
+                        key={`dot-${i}`}
+                        onClick={() => {
+                          setActiveTestimonialGroup(i);
+                          setTestimonialPaused(true);
+                        }}
+                        aria-label={`Show testimonials page ${i + 1}`}
+                        className={`w-3 h-3 rounded-full ${
+                          i === activeTestimonialGroup
+                            ? "bg-rose-600"
+                            : "bg-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => handleNav("next")}
+                    aria-label="Next testimonials"
+                    className="p-2 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors ml-2"
+                  >
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
+
+                {/* Trust Indicators */}
+                <div className="mt-12 pt-8 border-t border-gray-100">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
+                      <CheckCircle
+                        className="text-green-600"
+                        size={24}
+                        aria-hidden="true"
+                      />
+                      <div>
+                        <div className="font-semibold text-gray-800">
+                          Enterprise Security
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">
+                          SOC2, TLS, role-based access
+                        </div>
+                      </div>
+                    </div>
+
+                    <a
+                      href="/case-studies"
+                      className="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-rose-200 transition-all group"
+                      aria-label="Read case studies"
+                    >
+                      <div className="flex-none w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center font-bold text-rose-600 group-hover:scale-110 transition-transform">
+                        CS
+                      </div>
+                      <div className="text-left flex-1">
+                        <div className="font-semibold text-gray-900">
+                          See the impact
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Case studies & outcomes — 3 min reads
+                        </div>
+                      </div>
+                      <ArrowRight
+                        className="text-rose-600 group-hover:translate-x-1 transition-transform"
+                        size={16}
+                      />
+                    </a>
+
+                    <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
+                      <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">✓</span>
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-800">
+                          24/7 Support
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">
+                          Dedicated customer success
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -696,25 +708,25 @@ export default function Proof() {
             </div>
           </div>
         </div>
-      </div>
 
-      <style jsx>{`
-        @keyframes logo-slide {
-          0% {
-            transform: translateX(0);
+        <style jsx>{`
+          @keyframes logo-slide {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-33.33%);
+            }
           }
-          100% {
-            transform: translateX(-33.33%);
-          }
-        }
 
-        /* Small responsive tweak */
-        @media (max-width: 640px) {
-          .overflow-hidden img {
-            max-height: 28px;
+          /* Small responsive tweak */
+          @media (max-width: 640px) {
+            .overflow-hidden img {
+              max-height: 28px;
+            }
           }
-        }
-      `}</style>
-    </section>
+        `}</style>
+      </section>
+    </>
   );
 }
