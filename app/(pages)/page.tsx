@@ -17,7 +17,6 @@ import EcosystemSection from "@/components/Home/EcosystemSection";
 import ImastImpactSection from "@/components/Home/ImastImpactSection";
 import ImastValuesSection from "@/components/Home/ImastValuesSection";
 import ImastPromoSection from "@/components/Home/ImastPromoSection";
-import LogoSlider from "../components/Home/LogoSlider";
 
 function HomePage() {
   return (
