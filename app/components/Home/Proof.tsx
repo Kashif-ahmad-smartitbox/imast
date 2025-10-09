@@ -486,7 +486,7 @@ export default function Proof() {
           </p>
         </header>
         <div className="rounded-2xl mb-8">
-          <div className="bg-white">
+          <div className="bg-[#AA4091]">
             <LogoSlider logos={CLIENT_LOGOS} />
           </div>
         </div>
