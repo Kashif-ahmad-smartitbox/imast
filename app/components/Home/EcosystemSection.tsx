@@ -192,7 +192,7 @@ const CentralHub: React.FC<{ scale: number; isActive: boolean }> = ({
 
       {/* Main hub */}
       <div
-        className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-red-600 to-from-rose-600 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
+        className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-red-600 to-from-primary-600 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
           isActive ? "scale-110 shadow-2xl" : "scale-100 shadow-lg"
         }`}
         style={{
@@ -492,7 +492,7 @@ export default function EcosystemSection() {
                 <h3 className="text-3xl font-semibold text-white">
                   AI-Enabled Digital Ecosystem
                 </h3>
-                <h2 className="mt-2 text-xl sm:text-2xl font-extrabold text-rose-600">
+                <h2 className="mt-2 text-xl sm:text-2xl font-extrabold text-primary-600">
                   Do you have your own AI-enabled Integrated Digital Ecosystem?
                 </h2>
                 <p className="mt-2 text-sm text-red-50 max-w-xl">
@@ -504,7 +504,7 @@ export default function EcosystemSection() {
               </div>
               <a
                 href="/contact"
-                className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
               >
                 <span>Discover How</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -532,7 +532,7 @@ export default function EcosystemSection() {
                       item={item}
                       radius={120}
                       size={40}
-                      className="bg-gradient-to-br from-red-600 from-rose-600 rounded-2xl shadow-xl ecosystem-core"
+                      className="bg-gradient-to-br from-red-600 from-primary-600 rounded-2xl shadow-xl ecosystem-core"
                       index={index}
                       scale={scale}
                       isActive={activeItem?.name === item.name}
@@ -549,7 +549,7 @@ export default function EcosystemSection() {
                       item={item}
                       radius={190}
                       size={45}
-                      className="bg-gradient-to-br from-red-500 to-from-rose-600 rounded-xl shadow-lg ecosystem-channel"
+                      className="bg-gradient-to-br from-red-500 to-from-primary-600 rounded-xl shadow-lg ecosystem-channel"
                       index={index}
                       scale={scale}
                       isActive={activeItem?.name === item.name}

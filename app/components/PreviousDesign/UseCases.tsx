@@ -156,7 +156,7 @@ export default function UseCases() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="text-center mb-8">
-          <p className="text-sm font-semibold text-rose-600">Use cases</p>
+          <p className="text-sm font-semibold text-primary-600">Use cases</p>
           <h2
             id="usecases-title"
             className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
@@ -183,7 +183,7 @@ export default function UseCases() {
         </div>
 
         {/* CTA strip */}
-        <div className="mt-8 rounded-lg bg-gradient-to-r from-white to-rose-50 p-6 flex flex-col sm:flex-row items-center gap-4 justify-between border border-gray-100">
+        <div className="mt-8 rounded-lg bg-gradient-to-r from-white to-primary-50 p-6 flex flex-col sm:flex-row items-center gap-4 justify-between border border-gray-100">
           <div>
             <div className="text-sm text-gray-600">
               Need a tailored solution?
@@ -195,7 +195,7 @@ export default function UseCases() {
           <div className="flex gap-3">
             <a
               href="/contact"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-600 text-white font-semibold"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white font-semibold"
             >
               Talk to us
             </a>
@@ -233,7 +233,7 @@ function VerticalCard({
     >
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0">
-          <div className="w-14 h-14 rounded-lg flex items-center justify-center bg-gradient-to-br from-rose-50 to-rose-100 text-rose-600 shadow-sm">
+          <div className="w-14 h-14 rounded-lg flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 text-primary-600 shadow-sm">
             <Icon size={20} />
           </div>
         </div>
@@ -247,7 +247,7 @@ function VerticalCard({
               <ul className="mt-2 space-y-1">
                 {v.problems.map((p) => (
                   <li key={p} className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-rose-600 rounded-full mt-1" />
+                    <span className="w-2 h-2 bg-primary-600 rounded-full mt-1" />
                     <span>{p}</span>
                   </li>
                 ))}
@@ -270,13 +270,13 @@ function VerticalCard({
           <div className="mt-4 flex items-center gap-3">
             <a
               href={`/verticals/${v.id}`}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-rose-600"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600"
             >
               Explore <ArrowRight size={14} />
             </a>
             <a
               href="/contact"
-              className="ml-auto inline-flex items-center px-3 py-2 rounded-lg bg-rose-600 text-white text-sm font-medium"
+              className="ml-auto inline-flex items-center px-3 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium"
             >
               Talk to us
             </a>

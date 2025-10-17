@@ -4,7 +4,7 @@ import { ArrowRight, TrendingUp, Users, Star, Target } from "lucide-react";
 export default function ImastCard() {
   return (
     <div className="group relative">
-      <div className="relative rounded-2xl bg-white/80 ring-1 ring-white/20  border border-gray-100 overflow-hidden transition-all duration-500 group-hover:scale-[1.02] group-hover:ring-rose-100/50">
+      <div className="relative rounded-2xl bg-white/80 ring-1 ring-white/20  border border-gray-100 overflow-hidden transition-all duration-500 group-hover:scale-[1.02] group-hover:ring-primary-100/50">
         <div className="p-6 lg:p-8">
           <div className="flex items-start justify-between mb-6">
             <div className="flex-1">
@@ -35,7 +35,7 @@ export default function ImastCard() {
               icon={<TrendingUp className="w-4 h-4" />}
               label="ROI Increase"
               value="50%+"
-              gradient="from-rose-500 to-rose-600"
+              gradient="from-primary-500 to-primary-600"
               delay="0"
             />
             <MetricCard
@@ -57,7 +57,7 @@ export default function ImastCard() {
           {/* Modules section */}
           <div className="mb-8">
             <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-gradient-to-r from-rose-500 to-amber-500 rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-gradient-to-r from-primary-500 to-amber-500 rounded-full"></div>
               Integrated Modules
             </h4>
             <div className="flex flex-wrap gap-2">
@@ -77,7 +77,7 @@ export default function ImastCard() {
                     <div
                       className={`w-1.5 h-1.5 rounded-full ${
                         index % 3 === 0
-                          ? "bg-rose-400"
+                          ? "bg-primary-400"
                           : index % 3 === 1
                           ? "bg-amber-400"
                           : "bg-blue-400"
@@ -112,7 +112,7 @@ export default function ImastCard() {
 
               <a
                 href="/case-studies"
-                className="group/cta inline-flex items-center gap-2 px-4 py-2 rounded bg-gradient-to-r from-rose-500 to-rose-600 text-white font-semibold text-sm shadow-lg hover:shadow-xl hover:from-rose-600 hover:to-rose-700 transition-all duration-300 transform hover:-translate-y-0.5"
+                className="group/cta inline-flex items-center gap-2 px-4 py-2 rounded bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold text-sm shadow-lg hover:shadow-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-300 transform hover:-translate-y-0.5"
               >
                 View Case Study
                 <ArrowRight className="w-4 h-4 transition-transform group-hover/cta:translate-x-1" />
@@ -141,7 +141,7 @@ function MetricCard({
 }) {
   return (
     <div
-      className="text-center p-3 rounded-xl bg-white border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-md group/metric group-hover:scale-[1.02] group-hover:ring-rose-100/50"
+      className="text-center p-3 rounded-xl bg-white border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-md group/metric group-hover:scale-[1.02] group-hover:ring-primary-100/50"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div
@@ -170,7 +170,7 @@ function StatPill({
   delay: string;
 }) {
   const colorClasses = {
-    rose: "bg-rose-50 text-rose-700 border-rose-200",
+    rose: "bg-primary-50 text-primary-700 border-primary-200",
     amber: "bg-amber-50 text-amber-700 border-amber-200",
     blue: "bg-blue-50 text-blue-700 border-blue-200",
   };

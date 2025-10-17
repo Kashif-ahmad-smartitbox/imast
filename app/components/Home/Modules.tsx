@@ -181,7 +181,7 @@ export default function ModulesImproved() {
   }
 
   return (
-    <section className="py-16 lg:py-24 bg-gradient-to-b from-rose-700 to-rose-800">
+    <section className="py-16 lg:py-24 bg-gradient-to-b from-primary-700 to-primary-800">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
@@ -206,11 +206,11 @@ export default function ModulesImproved() {
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="placeholder:italic placeholder:text-slate-300 block bg-white w-full border border-transparent rounded-xl py-3 pl-12 pr-4 shadow focus:outline-none focus:ring-2 focus:ring-rose-400"
+                className="placeholder:italic placeholder:text-slate-300 block bg-white w-full border border-transparent rounded-xl py-3 pl-12 pr-4 shadow focus:outline-none focus:ring-2 focus:ring-primary-400"
                 placeholder="Search modules, e.g. 'inventory'"
                 aria-label="Search modules"
               />
-              <Search className="absolute left-4 top-3.5 w-5 h-5 text-rose-600" />
+              <Search className="absolute left-4 top-3.5 w-5 h-5 text-primary-600" />
             </label>
           </div>
         </div>
@@ -270,7 +270,7 @@ export default function ModulesImproved() {
                           className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-transform will-change-transform"
                         >
                           <div className="flex items-start gap-4">
-                            <div className="flex-none w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow">
+                            <div className="flex-none w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow">
                               <item.icon size={20} aria-hidden />
                             </div>
                             <div className="flex-1">
@@ -284,7 +284,7 @@ export default function ModulesImproved() {
                           </div>
 
                           <div className="mt-4 flex items-center justify-between">
-                            <button className="text-sm px-3 py-1 rounded-md bg-rose-50 text-rose-700 font-medium hover:bg-rose-100">
+                            <button className="text-sm px-3 py-1 rounded-md bg-primary-50 text-primary-700 font-medium hover:bg-primary-100">
                               Learn
                             </button>
                           </div>

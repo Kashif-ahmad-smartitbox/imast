@@ -112,7 +112,7 @@ const FeaturedArticle = ({ post }: { post: Post }) => (
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
       <div className="absolute left-6 bottom-6 right-6">
-        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-rose-500 text-white mb-4 shadow-lg">
+        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-primary-500 text-white mb-4 shadow-lg">
           Featured
         </span>
         <h3 className="text-white text-3xl font-bold mb-3 leading-tight">
@@ -143,7 +143,7 @@ const FeaturedArticle = ({ post }: { post: Post }) => (
 
         <a
           href={post.slug}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-gray-900 font-semibold hover:bg-rose-600 hover:text-white transition-colors duration-300 shadow-lg"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-gray-900 font-semibold hover:bg-primary-600 hover:text-white transition-colors duration-300 shadow-lg"
         >
           Read article <ArrowRight className="w-4 h-4" />
         </a>
@@ -169,7 +169,7 @@ const PostCard = ({ post }: { post: Post }) => (
           {post.tags.map((tag) => (
             <span
               key={tag}
-              className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-600"
+              className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-primary-50 text-primary-600"
             >
               {tag}
             </span>
@@ -177,7 +177,7 @@ const PostCard = ({ post }: { post: Post }) => (
         </div>
       )}
 
-      <h3 className="text-xl font-bold text-gray-900 leading-tight mb-3 group-hover:text-rose-600 transition-colors">
+      <h3 className="text-xl font-bold text-gray-900 leading-tight mb-3 group-hover:text-primary-600 transition-colors">
         {post.title}
       </h3>
       <p className="text-sm text-gray-600 mb-4 line-clamp-2">{post.excerpt}</p>
@@ -185,7 +185,7 @@ const PostCard = ({ post }: { post: Post }) => (
       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
         <a
           href={post.slug}
-          className="inline-flex items-center gap-2 text-rose-600 font-semibold text-sm hover:gap-3 transition-all"
+          className="inline-flex items-center gap-2 text-primary-600 font-semibold text-sm hover:gap-3 transition-all"
         >
           Read <ArrowRight className="w-4 h-4" />
         </a>
@@ -230,7 +230,7 @@ const TagFilter = ({
   <div className="bg-white rounded-2xl p-5 border border-gray-200">
     <div className="flex items-center justify-between mb-4">
       <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-        <Tag className="w-4 h-4 text-rose-600" />
+        <Tag className="w-4 h-4 text-primary-600" />
         Filter by Topic
       </h3>
     </div>
@@ -242,7 +242,7 @@ const TagFilter = ({
           onClick={() => onTagChange(t)}
           className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
             activeTag === t
-              ? "bg-rose-600 text-white shadow-md scale-105"
+              ? "bg-primary-600 text-white shadow-md scale-105"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105"
           }`}
         >
@@ -268,9 +268,9 @@ const Newsletter = () => {
   );
 
   return (
-    <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl p-6 border border-rose-100">
+    <div className="bg-gradient-to-br from-primary-50 to-pink-50 rounded-2xl p-6 border border-primary-100">
       <div className="flex items-center gap-2 mb-2">
-        <BookOpen className="w-5 h-5 text-rose-600" />
+        <BookOpen className="w-5 h-5 text-primary-600" />
         <h3 className="font-bold text-gray-900">Newsletter</h3>
       </div>
       <p className="text-sm text-gray-600 mb-4">
@@ -282,11 +282,11 @@ const Newsletter = () => {
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 px-4 py-2 rounded-xl border border-gray-300 text-sm outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200"
+          className="flex-1 px-4 py-2 rounded-xl border border-gray-300 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
         />
         <button
           onClick={handleSubmit}
-          className="px-5 py-2 rounded-xl bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700 transition-colors shadow-md hover:shadow-lg"
+          className="px-5 py-2 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 transition-colors shadow-md hover:shadow-lg"
         >
           Subscribe
         </button>
@@ -340,7 +340,7 @@ export default function Resources() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="mb-8 text-center">
-          <p className="text-3xl font-semibold text-rose-600">Resources</p>
+          <p className="text-3xl font-semibold text-primary-600">Resources</p>
           <h2
             id="case-studies-title"
             className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
@@ -379,7 +379,7 @@ export default function Resources() {
               <div className="text-center">
                 <button
                   onClick={handleLoadMore}
-                  className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gray-900 text-white font-semibold hover:bg-rose-600 transition-colors shadow-lg hover:shadow-xl"
+                  className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gray-900 text-white font-semibold hover:bg-primary-600 transition-colors shadow-lg hover:shadow-xl"
                 >
                   Load More Articles
                   <ArrowRight className="w-5 h-5" />

@@ -30,8 +30,8 @@ const STEPS: Step[] = [
     title: "Connect modules",
     desc: "Plug warehouse , SFA , Distribution , Retail, CRM modules into single data layer",
     Icon: LinkIcon,
-    colorClass: "bg-rose-50 text-rose-600",
-    gradient: "from-rose-500 to-pink-500",
+    colorClass: "bg-primary-50 text-primary-600",
+    gradient: "from-primary-500 to-pink-500",
   },
   {
     id: 2,
@@ -106,7 +106,7 @@ export default function HowItWorks() {
         {/* Enhanced Steps with Connectors */}
         <div ref={containerRef} className="relative mb-20">
           {/* Progress Line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-rose-200 via-amber-200 to-violet-200 hidden lg:block"></div>
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-200 via-amber-200 to-violet-200 hidden lg:block"></div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {STEPS.map((step, index) => (
@@ -151,7 +151,7 @@ export default function HowItWorks() {
                   <div className="flex gap-2">
                     <div className="w-3 h-3 rounded-full bg-green-400"></div>
                     <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-rose-400"></div>
+                    <div className="w-3 h-3 rounded-full bg-primary-400"></div>
                   </div>
                 </div>
 
@@ -197,14 +197,14 @@ export default function HowItWorks() {
                   {/* Data Flow */}
                   <div className="relative">
                     <div className="relative flex items-center justify-center gap-2">
-                      <div className="flex-1 h-0.5 bg-gradient-to-r from-rose-600 to-rose-700"></div>
+                      <div className="flex-1 h-0.5 bg-gradient-to-r from-primary-600 to-primary-700"></div>
                       <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-100">
                         <Cpu size={16} className="text-gray-600" />
                         <span className="text-sm font-medium text-gray-700">
                           Real-time Data Sync
                         </span>
                       </div>
-                      <div className="flex-1 h-0.5 bg-gradient-to-r from-rose-600 to-rose-700"></div>
+                      <div className="flex-1 h-0.5 bg-gradient-to-r from-primary-600 to-primary-700"></div>
                     </div>
                   </div>
 
@@ -329,7 +329,7 @@ function StepCard({
 
         {/* Progress indicator for last step */}
         {stepNumber === totalSteps && (
-          <div className="w-full h-1 bg-gradient-to-r from-rose-500 via-amber-500 to-violet-500 rounded-full mt-2"></div>
+          <div className="w-full h-1 bg-gradient-to-r from-primary-500 via-amber-500 to-violet-500 rounded-full mt-2"></div>
         )}
       </div>
     </article>

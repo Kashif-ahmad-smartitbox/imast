@@ -9,7 +9,7 @@ export default function ImastCreativeHero() {
     <section className="relative overflow-hidden bg-white">
       {/* Subtle radial backdrop */}
       <div aria-hidden className="absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-1/4 -translate-x-1/2 w-[680px] h-[680px] rounded-full bg-gradient-to-br from-rose-50 via-white to-transparent opacity-80 blur-3xl" />
+        <div className="absolute left-1/2 top-1/4 -translate-x-1/2 w-[680px] h-[680px] rounded-full bg-gradient-to-br from-primary-50 via-white to-transparent opacity-80 blur-3xl" />
         <div className="absolute -right-32 bottom-0 w-[520px] h-[520px] rounded-full bg-gradient-to-tr from-sky-50 via-white to-transparent opacity-60 blur-3xl" />
       </div>
 
@@ -43,13 +43,13 @@ export default function ImastCreativeHero() {
             transition={{ duration: 0.5 }}
             className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight"
           >
-            IMAST <span className="text-rose-600">AI</span> — intelligent
+            IMAST <span className="text-primary-600">AI</span> — intelligent
             decisions at scale
           </motion.h1>
 
           {/* Underline accent */}
           <div className="mt-3 flex justify-center">
-            <span className="inline-block w-16 h-1 rounded-full bg-rose-600/90 shadow-sm" />
+            <span className="inline-block w-16 h-1 rounded-full bg-primary-600/90 shadow-sm" />
           </div>
 
           {/* Subtext */}
@@ -68,7 +68,7 @@ export default function ImastCreativeHero() {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <a
               href="/imast-ai"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-rose-600 text-white font-semibold shadow-lg hover:bg-rose-700 transition"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary-600 text-white font-semibold shadow-lg hover:bg-primary-700 transition"
             >
               Explore IMAST AI
               <ArrowRight className="w-4 h-4" />

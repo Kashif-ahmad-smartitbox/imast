@@ -170,7 +170,7 @@ export default function DeepDiveImproved() {
     <section className="bg-white" aria-labelledby="deep-dive-title">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="mb-6">
-          <p className="text-sm font-semibold text-rose-600">Deep dive</p>
+          <p className="text-sm font-semibold text-primary-600">Deep dive</p>
           <h2
             id="deep-dive-title"
             className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
@@ -197,9 +197,9 @@ export default function DeepDiveImproved() {
               aria-controls={`panel-${m.id}`}
               id={`tab-${m.id}`}
               onClick={() => setActiveId(m.id)}
-              className={`px-4 py-2 rounded-full font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 ${
+              className={`px-4 py-2 rounded-full font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 ${
                 m.id === activeId
-                  ? "bg-rose-600 text-white shadow"
+                  ? "bg-primary-600 text-white shadow"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -269,9 +269,9 @@ export default function DeepDiveImproved() {
                   className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/95 shadow hover:scale-105 transition focus:outline-none"
                 >
                   {isPlaying ? (
-                    <Pause className="text-rose-600" />
+                    <Pause className="text-primary-600" />
                   ) : (
-                    <Play className="text-rose-600" />
+                    <Play className="text-primary-600" />
                   )}
                 </button>
 
@@ -289,7 +289,7 @@ export default function DeepDiveImproved() {
 
                 <a
                   href={`/modules/${activeModule.id}`}
-                  className="ml-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-rose-600 text-white font-semibold"
+                  className="ml-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-600 text-white font-semibold"
                 >
                   Open module <ArrowRight className="w-4 h-4" />
                 </a>
@@ -309,7 +309,7 @@ export default function DeepDiveImproved() {
                   onClick={() => setThumbIndex(i)}
                   className={`rounded-md overflow-hidden border ${
                     i === thumbIndex
-                      ? "border-rose-600 ring-2 ring-rose-100"
+                      ? "border-primary-600 ring-2 ring-primary-100"
                       : "border-transparent"
                   } focus:outline-none`}
                 >
@@ -358,7 +358,7 @@ export default function DeepDiveImproved() {
               <ul className="mt-3 space-y-3">
                 {activeModule.features.map((f) => (
                   <li key={f.title} className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-md bg-white flex items-center justify-center text-rose-600 shadow-sm transform transition group-hover:scale-105">
+                    <div className="w-10 h-10 rounded-md bg-white flex items-center justify-center text-primary-600 shadow-sm transform transition group-hover:scale-105">
                       {f.icon}
                     </div>
                     <div>

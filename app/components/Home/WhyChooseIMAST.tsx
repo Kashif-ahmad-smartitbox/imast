@@ -54,8 +54,8 @@ const differentiatorsData = (): Differentiator[] =>
       icon: <Award className="w-6 h-6" />,
       title: "Proven outcomes",
       desc: "Measured lift in revenue, retention and operational efficiency.",
-      accent: "from-rose-50 to-rose-100",
-      color: "text-rose-600",
+      accent: "from-primary-50 to-primary-100",
+      color: "text-primary-600",
     },
     {
       icon: <Globe className="w-6 h-6" />,
@@ -126,14 +126,14 @@ export default function WhyChooseIMAST() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
         <header className="text-center mb-8">
-          <p className="text-3xl font-semibold text-rose-100">Why IMAST?</p>
+          <p className="text-3xl font-semibold text-primary-100">Why IMAST?</p>
           <h2
             id="why-imast-title"
             className="mt-3 text-xl sm:text-4xl font-extrabold tracking-tight text-white"
           >
             Practical engineering that delivers — secure, fast, and field-proven
           </h2>
-          <p className="mt-3 max-w-3xl mx-auto text-rose-100">
+          <p className="mt-3 max-w-3xl mx-auto text-primary-100">
             No fluff — we build what moves the business. Simple contracts,
             hands-on onboarding, and outcomes that show up on your P&amp;L.
           </p>
@@ -163,7 +163,7 @@ export default function WhyChooseIMAST() {
                     <div className="mt-4 flex items-center gap-3">
                       <a
                         href="/contact"
-                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-rose-600 text-white text-sm font-medium shadow-sm hover:opacity-95 transition"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-primary-600 text-white text-sm font-medium shadow-sm hover:opacity-95 transition"
                       >
                         Discuss
                         <ArrowRight className="w-4 h-4" />
@@ -228,7 +228,7 @@ export default function WhyChooseIMAST() {
               <div className="mt-6 flex items-center justify-end gap-3">
                 <a
                   href="/start-trial"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-rose-600 text-white text-sm font-medium shadow-sm hover:opacity-95 transition"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary-600 text-white text-sm font-medium shadow-sm hover:opacity-95 transition"
                 >
                   Start trial
                   <ArrowRight className="w-4 h-4" />

@@ -115,7 +115,7 @@ export default function ImastTrial({
         initial="initial"
         animate="animate"
         transition={{ delay: 2 }}
-        className="absolute bottom-0 right-0 w-96 h-96 bg-rose-300/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"
+        className="absolute bottom-0 right-0 w-96 h-96 bg-primary-300/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"
       />
 
       {/* Enhanced sparkle effect */}
@@ -124,7 +124,7 @@ export default function ImastTrial({
         variants={sparkleAnimation}
         initial="initial"
         animate="animate"
-        className="pointer-events-none absolute right-12 lg:right-40 bottom-8 lg:bottom-20 w-40 h-40 rounded-full bg-rose-400/8 blur-2xl"
+        className="pointer-events-none absolute right-12 lg:right-40 bottom-8 lg:bottom-20 w-40 h-40 rounded-full bg-primary-400/8 blur-2xl"
       />
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -151,12 +151,12 @@ export default function ImastTrial({
               Try{" "}
               <span className="relative inline-block">
                 <span className="relative z-10">IMAST</span>
-                <div className="absolute bottom-2 left-0 w-full h-3 bg-rose-300/30 -rotate-1 z-0" />
+                <div className="absolute bottom-2 left-0 w-full h-3 bg-primary-300/30 -rotate-1 z-0" />
               </span>{" "}
               Free
             </h1>
 
-            <p className="text-xl lg:text-2xl font-light text-rose-100 leading-relaxed max-w-xl">
+            <p className="text-xl lg:text-2xl font-light text-primary-100 leading-relaxed max-w-xl">
               No credit card required. No software to install. Start in minutes.
             </p>
 
@@ -168,8 +168,8 @@ export default function ImastTrial({
                   variants={featureItem}
                   className="flex items-center gap-3"
                 >
-                  <CheckCircle className="w-5 h-5 text-rose-200 flex-shrink-0" />
-                  <span className="text-rose-100 text-sm lg:text-base">
+                  <CheckCircle className="w-5 h-5 text-primary-200 flex-shrink-0" />
+                  <span className="text-primary-100 text-sm lg:text-base">
                     {feature}
                   </span>
                 </motion.div>
@@ -181,23 +181,23 @@ export default function ImastTrial({
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <motion.a
                   href="/start-trial"
-                  className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-rose-700 font-bold rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl active:scale-95 min-w-[200px] justify-center"
+                  className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-primary-700 font-bold rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl active:scale-95 min-w-[200px] justify-center"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <span className="relative z-10">Start Free Trial</span>
                   <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-white to-rose-100 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white to-primary-100 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </motion.a>
 
                 {/* Trust Indicators */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 text-rose-100">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 text-primary-100">
                   <div className="flex items-center gap-2">
                     <div className="flex -space-x-2">
                       {[1, 2, 3].map((i) => (
                         <div
                           key={i}
-                          className="w-6 h-6 bg-rose-300 rounded-full border-2 border-rose-600"
+                          className="w-6 h-6 bg-primary-300 rounded-full border-2 border-primary-600"
                         />
                       ))}
                     </div>
@@ -206,7 +206,7 @@ export default function ImastTrial({
                       brands
                     </span>
                   </div>
-                  <div className="hidden sm:block w-px h-4 bg-rose-400/50" />
+                  <div className="hidden sm:block w-px h-4 bg-primary-400/50" />
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <strong className="text-white">2M+</strong> users
                   </div>
@@ -237,7 +237,7 @@ export default function ImastTrial({
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute -inset-4 rounded-xl border border-rose-600/25 blur-md pointer-events-none"
+                className="absolute -inset-4 rounded-xl border border-primary-600/25 blur-md pointer-events-none"
               />
 
               {/* Main illustration */}
@@ -269,7 +269,7 @@ export default function ImastTrial({
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute -top-6 right-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-xs text-rose-100 font-medium border border-rose-400/20"
+                className="absolute -top-6 right-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-xs text-primary-100 font-medium border border-primary-400/20"
               >
                 Live preview
               </motion.div>

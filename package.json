@@ -10,6 +10,7 @@
     "push": "git add . && git commit -m 'Code Updated' && git push"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.3",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.18",
@@ -17,7 +18,8 @@
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "recharts": "^3.2.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

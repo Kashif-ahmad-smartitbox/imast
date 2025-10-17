@@ -119,7 +119,7 @@ export default function PartnersIntegrations() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="text-center mb-8">
-          <p className="text-sm font-semibold text-rose-600">
+          <p className="text-sm font-semibold text-primary-600">
             Partners & Integrations
           </p>
           <h2
@@ -161,7 +161,7 @@ export default function PartnersIntegrations() {
                 onClick={() => setFilter(c)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
                   filter === c
-                    ? "bg-rose-600 text-white shadow"
+                    ? "bg-primary-600 text-white shadow"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
@@ -176,7 +176,7 @@ export default function PartnersIntegrations() {
               placeholder="Search integrations (e.g. Razorpay, Tally)"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full sm:w-64 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-rose-100"
+              className="w-full sm:w-64 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-100"
             />
             <a
               href="/integrations"
@@ -216,7 +216,7 @@ export default function PartnersIntegrations() {
               <div className="mt-4 flex items-center justify-between">
                 <a
                   href={p.docs || "/docs/integrations"}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-rose-600"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-primary-600"
                 >
                   View docs <ArrowRight className="w-4 h-4" />
                 </a>
@@ -233,8 +233,8 @@ export default function PartnersIntegrations() {
 
         {/* CTA */}
         <div className="mt-8 text-center">
-          <div className="inline-flex items-center gap-3 bg-rose-50 px-4 py-3 rounded-2xl border border-rose-100">
-            <Cloud className="text-rose-600" />
+          <div className="inline-flex items-center gap-3 bg-primary-50 px-4 py-3 rounded-2xl border border-primary-100">
+            <Cloud className="text-primary-600" />
             <div className="text-left">
               <div className="font-semibold text-gray-900">Open API & SDKs</div>
               <div className="text-sm text-gray-600">
@@ -243,7 +243,7 @@ export default function PartnersIntegrations() {
             </div>
             <a
               href="/docs/api"
-              className="ml-4 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-rose-600 text-white"
+              className="ml-4 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-600 text-white"
             >
               Explore API <ArrowRight className="w-4 h-4" />
             </a>

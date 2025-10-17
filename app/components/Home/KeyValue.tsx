@@ -13,9 +13,9 @@ import ImastCard from "./ImastCard";
 
 export default function KeyValue() {
   return (
-    <section className="bg-gradient-to-br from-white via-rose-50/20 to-gray-50/50 py-20 lg:py-28 relative overflow-hidden">
+    <section className="bg-gradient-to-br from-white via-primary-50/20 to-gray-50/50 py-20 lg:py-28 relative overflow-hidden">
       {/* Background elements */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-rose-100/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute top-0 left-0 w-72 h-72 bg-primary-100/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-100/20 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative">
@@ -35,7 +35,7 @@ export default function KeyValue() {
                 right way — faster and with less risk
               </p>
             </div>
-            <div className="mt-8 flex items-center gap-6 p-4 bg-white/60 rounded-2xl border border-gray-100 group-hover:scale-[1.02] group-hover:ring-rose-100/50">
+            <div className="mt-8 flex items-center gap-6 p-4 bg-white/60 rounded-2xl border border-gray-100 group-hover:scale-[1.02] group-hover:ring-primary-100/50">
               <div className="flex -space-x-3">
                 {[1, 2, 3, 4].map((item) => (
                   <div
@@ -62,7 +62,7 @@ export default function KeyValue() {
                 icon={<TrendingUp className="w-5 h-5" />}
                 title="Proven ROI"
                 desc="Measurable lift in revenue & retention within months."
-                color="from-rose-500 to-rose-600"
+                color="from-primary-500 to-primary-600"
                 delay="0"
               />
 
@@ -95,7 +95,7 @@ export default function KeyValue() {
             <div className="mt-12 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
               <a
                 href="/contact"
-                className="group inline-flex items-center gap-3 px-5 py-3 rounded bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                className="group inline-flex items-center gap-3 px-5 py-3 rounded bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
               >
                 <span>Request a demo</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -118,7 +118,7 @@ export default function KeyValue() {
             </div>
 
             {/* Floating elements */}
-            {/* <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-rose-400/20 to-amber-400/20 rounded-3xl blur-xl animate-pulse"></div>
+            {/* <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-primary-400/20 to-amber-400/20 rounded-3xl blur-xl animate-pulse"></div>
             <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-blue-400/15 to-violet-400/15 rounded-3xl blur-xl animate-pulse delay-1000"></div> */}
           </div>
         </div>
@@ -182,7 +182,7 @@ function EnhancedFeature({
 }) {
   return (
     <div
-      className="feature-hover group p-4 rounded-2xl bg-white/60 border border-gray-100 hover:border-gray-200 hover:bg-white/80 backdrop-blur-sm cursor-pointer transition-all duration-300 group-hover:scale-[1.02] group-hover:ring-rose-100/50"
+      className="feature-hover group p-4 rounded-2xl bg-white/60 border border-gray-100 hover:border-gray-200 hover:bg-white/80 backdrop-blur-sm cursor-pointer transition-all duration-300 group-hover:scale-[1.02] group-hover:ring-primary-100/50"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="flex gap-4 items-start">

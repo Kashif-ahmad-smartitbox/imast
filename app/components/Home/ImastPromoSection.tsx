@@ -72,11 +72,11 @@ export default function ImastPromoSection({
 
   const themeConfig = {
     orange: {
-      cta: "bg-gradient-to-r from-rose-600 to-orange-500 hover:from-rose-700 hover:to-orange-600 focus-visible:ring-rose-300",
+      cta: "bg-gradient-to-r from-primary-600 to-orange-500 hover:from-primary-700 hover:to-orange-600 focus-visible:ring-primary-300",
       sectionBg: "bg-gradient-to-br from-white to-slate-50",
-      accent: "text-rose-600",
-      badge: "bg-rose-100 text-rose-700",
-      gradientText: "from-rose-600 to-rose-400",
+      accent: "text-primary-600",
+      badge: "bg-primary-100 text-primary-700",
+      gradientText: "from-primary-600 to-primary-400",
     },
     blue: {
       cta: "bg-gradient-to-r from-sky-600 to-blue-500 hover:from-sky-700 hover:to-blue-600 focus-visible:ring-sky-300",
@@ -172,7 +172,7 @@ export default function ImastPromoSection({
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <a
                 href="/contact"
-                className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
               >
                 <span>Get Special Pricing</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -203,7 +203,7 @@ export default function ImastPromoSection({
                       >
                         <div className="relative">
                           <div className="absolute inset-0 bg-white/20 rounded-full scale-150 group-hover:scale-170 transition-transform duration-300"></div>
-                          <div className="relative bg-gradient-to-r from-rose-600 to-rose-700 rounded-full p-6 shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                          <div className="relative bg-gradient-to-r from-primary-600 to-primary-700 rounded-full p-6 shadow-2xl group-hover:scale-110 transition-transform duration-300">
                             <Play className="w-8 h-8 text-white ml-1" />
                           </div>
                         </div>
@@ -242,7 +242,9 @@ export default function ImastPromoSection({
                 {/* Floating elements */}
                 <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-lg p-4 border border-gray-300">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-rose-600">50%</div>
+                    <div className="text-2xl font-bold text-primary-600">
+                      50%
+                    </div>
                     <div className="text-xs font-medium text-gray-600">OFF</div>
                   </div>
                 </div>

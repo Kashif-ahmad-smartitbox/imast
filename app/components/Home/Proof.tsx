@@ -335,7 +335,7 @@ function LogoSlider({ logos }: { logos: ClientLogo[] }) {
         {duplicatedLogos.map((logo, index) => (
           <div
             key={`${logo.alt}-${index}`}
-            className="flex-shrink-0 flex items-center justify-center p-2 hover:border-rose-200 transition-all duration-300 hover:scale-105"
+            className="flex-shrink-0 flex items-center justify-center p-2 hover:border-primary-200 transition-all duration-300 hover:scale-105"
             style={{ minWidth: 160 }}
           >
             <img
@@ -472,7 +472,7 @@ export default function Proof() {
         aria-labelledby="proof-title"
       >
         <header className="w-full text-center mb-8">
-          <p className="text-2xl font-semibold text-rose-600 uppercase">
+          <p className="text-2xl font-semibold text-primary-600 uppercase">
             Our Esteemed Clients
           </p>
           <h2
@@ -491,10 +491,14 @@ export default function Proof() {
           </div>
         </div>
         {/* Stats */}
-        <div className="bg-gradient-to-br from-[#EC7242] to-rose-100  p-6 lg:p-8 mb-12">
+        <div className="bg-gradient-to-br from-[#EC7242] to-primary-100  p-6 lg:p-8 mb-12">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center gap-3 mb-3">
-              <Award className="text-rose-600" size={22} aria-hidden="true" />
+              <Award
+                className="text-primary-600"
+                size={22}
+                aria-hidden="true"
+              />
               <h3 className="text-lg lg:text-xl font-bold text-gray-900">
                 Proven at scale
               </h3>
@@ -515,7 +519,7 @@ export default function Proof() {
             <div className="text-center mt-6">
               <a
                 href="/case-studies"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-rose-600 hover:text-rose-700 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 rounded-md px-2 py-1"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-md px-2 py-1"
                 aria-label="View case studies"
               >
                 See case studies <ArrowRight size={14} aria-hidden="true" />
@@ -528,7 +532,7 @@ export default function Proof() {
         <div className="rounded-2xl">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-6">
-              <h3 className="text-lg lg:text-xl font-bold text-rose-600">
+              <h3 className="text-lg lg:text-xl font-bold text-primary-600">
                 What Our Customers Say
               </h3>
               <p className="text-gray-600">
@@ -568,7 +572,7 @@ export default function Proof() {
                           >
                             <div className="flex items-start gap-4">
                               <div className="flex flex-col items-center gap-3">
-                                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center text-rose-700 font-bold text-lg flex-shrink-0 shadow-md">
+                                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center text-primary-700 font-bold text-lg flex-shrink-0 shadow-md">
                                   {initialsFromName(t.author)}
                                 </div>
                                 {t.rating && <StarRating rating={t.rating} />}
@@ -576,7 +580,7 @@ export default function Proof() {
 
                               <figcaption className="flex-1">
                                 <Quote
-                                  className="text-rose-200 mb-2 transform -scale-x-100"
+                                  className="text-primary-200 mb-2 transform -scale-x-100"
                                   size={20}
                                 />
                                 <blockquote className="text-sm lg:text-base text-gray-800 leading-relaxed mb-4 font-medium">
@@ -587,7 +591,7 @@ export default function Proof() {
                                   <div className="font-bold text-gray-900 text-sm">
                                     {t.author}
                                   </div>
-                                  <div className="text-xs text-rose-600 font-semibold mt-1">
+                                  <div className="text-xs text-primary-600 font-semibold mt-1">
                                     {t.role}
                                   </div>
                                   {t.company && (
@@ -611,7 +615,7 @@ export default function Proof() {
                 <button
                   onClick={() => handleNav("prev")}
                   aria-label="Previous testimonials"
-                  className="p-2 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors mr-2"
+                  className="p-2 rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors mr-2"
                 >
                   <ArrowRight size={16} className="rotate-180" />
                 </button>
@@ -627,7 +631,7 @@ export default function Proof() {
                       aria-label={`Show testimonials page ${i + 1}`}
                       className={`w-3 h-3 rounded-full ${
                         i === activeTestimonialGroup
-                          ? "bg-rose-600"
+                          ? "bg-primary-600"
                           : "bg-gray-300"
                       }`}
                     />
@@ -637,7 +641,7 @@ export default function Proof() {
                 <button
                   onClick={() => handleNav("next")}
                   aria-label="Next testimonials"
-                  className="p-2 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors ml-2"
+                  className="p-2 rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors ml-2"
                 >
                   <ArrowRight size={16} />
                 </button>
@@ -664,10 +668,10 @@ export default function Proof() {
 
                   <a
                     href="/case-studies"
-                    className="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-rose-200 transition-all group"
+                    className="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-primary-200 transition-all group"
                     aria-label="Read case studies"
                   >
-                    <div className="flex-none w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center font-bold text-rose-600 group-hover:scale-110 transition-transform">
+                    <div className="flex-none w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center font-bold text-primary-600 group-hover:scale-110 transition-transform">
                       CS
                     </div>
                     <div className="text-left flex-1">
@@ -679,7 +683,7 @@ export default function Proof() {
                       </div>
                     </div>
                     <ArrowRight
-                      className="text-rose-600 group-hover:translate-x-1 transition-transform"
+                      className="text-primary-600 group-hover:translate-x-1 transition-transform"
                       size={16}
                     />
                   </a>

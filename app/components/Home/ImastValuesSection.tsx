@@ -41,13 +41,13 @@ function ValueCard({ value, index }: { value: ValueItem; index: number }) {
   return (
     <article
       aria-labelledby={`value-title-${index}`}
-      className="group relative bg-white rounded-xl p-6 border border-slate-100 hover:border-rose-200 hover:bg-rose-600 text-slate-900 hover:text-slate-100 cursor-pointer transition-all duration-300 hover:shadow-lg"
+      className="group relative bg-white rounded-xl p-6 border border-slate-100 hover:border-primary-200 hover:bg-primary-600 text-slate-900 hover:text-slate-100 cursor-pointer transition-all duration-300 hover:shadow-lg"
       tabIndex={0}
       role="button"
     >
       <div className="flex items-start justify-between mb-4">
         <div
-          className="flex items-center justify-center w-12 h-12 bg-rose-100 text-rose-600 rounded-xl"
+          className="flex items-center justify-center w-12 h-12 bg-primary-100 text-primary-600 rounded-xl"
           aria-hidden
         >
           {value.icon}
@@ -102,7 +102,7 @@ export default memo(function ImastValuesSection({
   return (
     <section className="relative">
       <div className="relative">
-        <div className="w-full h-[250px] md:h-[300px] lg:h-[500px] overflow-hidden bg-gradient-to-br from-slate-900/20 to-rose-900/10">
+        <div className="w-full h-[250px] md:h-[300px] lg:h-[500px] overflow-hidden bg-gradient-to-br from-slate-900/20 to-primary-900/10">
           <img
             src={heroImage}
             alt="IMAST team gathered at an event"
@@ -117,7 +117,7 @@ export default memo(function ImastValuesSection({
             <div className="bg-white rounded-3xl ring-1 ring-slate-200 p-8 md:p-12 lg:p-16">
               <div className="max-w-5xl mx-auto">
                 <header className="text-center mb-8 md:mb-12">
-                  <p className="text-2xl font-semibold text-rose-600 uppercase tracking-wide">
+                  <p className="text-2xl font-semibold text-primary-600 uppercase tracking-wide">
                     Our Values
                   </p>
                   <h2

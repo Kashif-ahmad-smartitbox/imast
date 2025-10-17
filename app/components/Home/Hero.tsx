@@ -99,7 +99,7 @@ export default function Hero() {
           <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
             <a
               href="/contact"
-              className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-rose-600 to-rose-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+              className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
             >
               <span>Request a demo</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

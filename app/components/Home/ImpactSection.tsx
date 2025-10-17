@@ -12,7 +12,7 @@ export default function ImpactSection() {
   ];
 
   return (
-    <section className="relative bg-rose-700 text-white overflow-hidden">
+    <section className="relative bg-primary-700 text-white overflow-hidden">
       <div className="absolute right-0 bottom-0 opacity-15 pointer-events-none select-none">
         <Image src="/indian_parliament.svg" alt="" width={700} height={400} />
       </div>
@@ -29,7 +29,7 @@ export default function ImpactSection() {
           {stats.map((s) => (
             <div key={s.label} className="flex flex-col">
               <dt className="text-2xl md:text-3xl font-extrabold">{s.value}</dt>
-              <dd className="text-sm text-rose-100">{s.label}</dd>
+              <dd className="text-sm text-primary-100">{s.label}</dd>
             </div>
           ))}
         </dl>
@@ -37,7 +37,7 @@ export default function ImpactSection() {
         <div className="mt-10">
           <a
             href="/about"
-            className="inline-flex items-center gap-2 rounded-md border border-white/40 bg-white/10 px-6 py-3 text-sm md:text-base font-semibold hover:bg-white hover:text-rose-700 transition"
+            className="inline-flex items-center gap-2 rounded-md border border-white/40 bg-white/10 px-6 py-3 text-sm md:text-base font-semibold hover:bg-white hover:text-primary-700 transition"
           >
             More about IMAST
             <ArrowRight className="w-4 h-4" />

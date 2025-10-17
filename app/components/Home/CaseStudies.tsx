@@ -95,7 +95,7 @@ export default function CaseStudies() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="mb-8 text-center">
-          <p className="text-3xl font-semibold text-rose-600">
+          <p className="text-3xl font-semibold text-primary-600">
             Customer stories
           </p>
           <h2
@@ -131,7 +131,7 @@ export default function CaseStudies() {
                   />
 
                   {f.featured && (
-                    <div className="absolute top-3 left-3 inline-flex items-center gap-2 bg-rose-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                    <div className="absolute top-3 left-3 inline-flex items-center gap-2 bg-primary-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
                       Featured
                     </div>
                   )}
@@ -154,7 +154,7 @@ export default function CaseStudies() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setOpen(f)}
-                        className="inline-flex items-center gap-2 text-rose-600 font-semibold text-sm"
+                        className="inline-flex items-center gap-2 text-primary-600 font-semibold text-sm"
                         aria-label={`Read story: ${f.title}`}
                       >
                         Read story <ArrowRight className="w-4 h-4" />
@@ -230,7 +230,7 @@ export default function CaseStudies() {
                 <div className="mt-6 flex items-center gap-3">
                   <a
                     href={`/case-studies/${open.id}`}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-600 text-white font-semibold"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white font-semibold"
                   >
                     Read full case study
                   </a>

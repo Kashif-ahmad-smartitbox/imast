@@ -49,7 +49,7 @@ const DEFAULT_IMPACTS: Impact[] = [
     stat: "40% +",
     subtitle: "Over all productivity",
     color: "bg-pink-600",
-    gradient: "from-pink-500 via-rose-600 to-fuchsia-600",
+    gradient: "from-pink-500 via-primary-600 to-fuchsia-600",
     imageSrc: "/people/3.png",
     href: "/scale-service",
     icon: <Target className="w-4 h-4" />,
@@ -114,7 +114,7 @@ export default function ImpactSection({
     >
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-12">
-          <p className="text-xl font-semibold text-rose-600 uppercase tracking-wide">
+          <p className="text-xl font-semibold text-primary-600 uppercase tracking-wide">
             Proven Results
           </p>
           <h2

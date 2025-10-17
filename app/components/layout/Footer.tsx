@@ -109,7 +109,7 @@ const SocialButton: React.FC<SocialButtonProps> = ({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 text-gray-700 hover:shadow-md transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 hover:border-rose-200 hover:text-rose-600"
+      className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 text-gray-700 hover:shadow-md transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 hover:border-primary-200 hover:text-primary-600"
     >
       <Icon className="w-4 h-4" />
     </a>
@@ -120,7 +120,7 @@ const FooterColumn: React.FC<FooterColumnProps> = ({ title, items }) => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-        <div className="w-1 h-6 bg-gradient-to-b from-rose-500 to-rose-600 rounded-full mr-3" />
+        <div className="w-1 h-6 bg-gradient-to-b from-primary-500 to-primary-600 rounded-full mr-3" />
         {title}
       </h3>
       <ul className="space-y-3">
@@ -197,9 +197,9 @@ const NewsletterForm: React.FC<NewsletterFormProps> = ({
           value={email}
           onChange={handleChange}
           placeholder="Enter your email"
-          className={`w-full px-4 py-3 bg-white border rounded-xl text-gray-900 placeholder-gray-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent ${
+          className={`w-full px-4 py-3 bg-white border rounded-xl text-gray-900 placeholder-gray-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent ${
             status === "error"
-              ? "border-rose-400 shadow-sm"
+              ? "border-primary-400 shadow-sm"
               : "border-gray-200 hover:border-gray-300"
           }`}
           aria-invalid={status === "error"}
@@ -212,7 +212,7 @@ const NewsletterForm: React.FC<NewsletterFormProps> = ({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-rose-500 to-rose-600 text-white rounded-xl hover:scale-[1.02] transition-all duration-300 font-semibold shadow hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-w-[120px]"
+        className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:scale-[1.02] transition-all duration-300 font-semibold shadow hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-w-[120px]"
       >
         {isSubmitting ? (
           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -353,7 +353,7 @@ const Footer: React.FC = () => {
           {/* Contact Information */}
           <div className="lg:col-span-2 space-y-6">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-              <div className="w-1 h-6 bg-gradient-to-b from-rose-500 to-rose-600 rounded-full mr-3" />
+              <div className="w-1 h-6 bg-gradient-to-b from-primary-500 to-primary-600 rounded-full mr-3" />
               Get in Touch
             </h3>
 
@@ -416,7 +416,7 @@ const Footer: React.FC = () => {
                 <div
                   id="subscription-message"
                   className={`w-full text-sm font-medium text-center lg:text-right ${
-                    status === "error" ? "text-rose-500" : "text-green-600"
+                    status === "error" ? "text-primary-500" : "text-green-600"
                   }`}
                   role="alert"
                 >

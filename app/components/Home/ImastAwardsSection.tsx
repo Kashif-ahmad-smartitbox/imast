@@ -348,7 +348,7 @@ function AwardCard({
       <div className="p-5">
         <div className="flex items-start gap-4">
           <div
-            className="w-10 h-10 rounded-md bg-rose-50 flex items-center justify-center text-rose-600 flex-shrink-0"
+            className="w-10 h-10 rounded-md bg-primary-50 flex items-center justify-center text-primary-600 flex-shrink-0"
             aria-hidden
           >
             <Award className="w-5 h-5" />
@@ -604,7 +604,7 @@ export default memo(function ImastAwardsSection({
     <section className="relative py-12">
       <div className="max-w-7xl mx-auto">
         <div className="mb-10">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-rose-100">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-primary-100">
             {title}
           </h2>
           <p className="mt-2 text-sm text-gray-50 max-w-xl">

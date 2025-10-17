@@ -273,7 +273,7 @@ export default function Header() {
             {!isMobile && (
               <a
                 href="/contact"
-                className={`inline-flex items-center gap-2 bg-gradient-to-r from-rose-600 to-rose-700 text-white rounded shadow-lg hover:shadow-xl transition-all duration-300 font-semibold hover:scale-105 hover:gap-3 group relative overflow-hidden ${
+                className={`inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded shadow-lg hover:shadow-xl transition-all duration-300 font-semibold hover:scale-105 hover:gap-3 group relative overflow-hidden ${
                   isSmallTablet
                     ? "px-3 py-2 text-sm"
                     : isTablet
@@ -916,7 +916,7 @@ function MobileMenu({
 
           <a
             href="/contact"
-            className={`flex items-center justify-center gap-2 w-full bg-gradient-to-r from-rose-600 to-rose-700 text-white py-3 rounded font-semibold mt-4 hover:shadow-lg transition-all duration-300 hover:gap-3 hover:scale-105 ${buttonTextSize}`}
+            className={`flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-3 rounded font-semibold mt-4 hover:shadow-lg transition-all duration-300 hover:gap-3 hover:scale-105 ${buttonTextSize}`}
             onClick={onClose}
           >
             Contact Us

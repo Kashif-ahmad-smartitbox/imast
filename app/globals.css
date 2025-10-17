@@ -4,6 +4,20 @@
   --font-outfit: "Outfit", sans-serif;
 }
 
+@theme {
+  --color-primary-50: oklch(96.9% 0.015 12.422);
+  --color-primary-100: oklch(93.7% 0.03 12.42);
+  --color-primary-200: oklch(87.6% 0.058 12.4);
+  --color-primary-300: oklch(78.8% 0.111 12.4);
+  --color-primary-400: oklch(70.6% 0.169 12.43);
+  --color-primary-500: oklch(64.5% 0.246 16.439);
+  --color-primary-600: oklch(58.3% 0.246 17.585);
+  --color-primary-700: oklch(51.4% 0.209 17.968);
+  --color-primary-800: oklch(44.5% 0.166 16.935);
+  --color-primary-900: oklch(39.6% 0.127 16.958);
+  --color-primary-950: oklch(27.9% 0.091 12.422);
+}
+
 html {
   scroll-behavior: smooth;
 }

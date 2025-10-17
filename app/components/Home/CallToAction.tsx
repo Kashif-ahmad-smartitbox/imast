@@ -14,7 +14,7 @@ import {
 export default function CallToActionImproved() {
   return (
     <section
-      className="relative overflow-hidden py-24 bg-rose-700 text-white"
+      className="relative overflow-hidden py-24 bg-primary-700 text-white"
       aria-labelledby="cta-title"
     >
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
@@ -26,13 +26,13 @@ export default function CallToActionImproved() {
               className="mt-6 text-3xl font-bold leading-tight"
             >
               Ready to see{" "}
-              <span className="bg-gradient-to-r from-white to-rose-100 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
                 IMAST
               </span>{" "}
               move the needle?
             </h1>
 
-            <p className="mt-6 text-lg text-rose-50 max-w-2xl leading-relaxed">
+            <p className="mt-6 text-lg text-primary-50 max-w-2xl leading-relaxed">
               Get a personalized demo, implementation plan, or quick
               consultation — we&apos;ll help you find the fastest path to
               measurable results.
@@ -46,7 +46,7 @@ export default function CallToActionImproved() {
                   <div className="font-semibold text-white text-md">
                     Quick Demos
                   </div>
-                  <div className="text-rose-100 text-sm mt-1">
+                  <div className="text-primary-100 text-sm mt-1">
                     20-minute focused walkthrough — see exactly how it works
                   </div>
                 </div>
@@ -60,7 +60,7 @@ export default function CallToActionImproved() {
                   <div className="font-semibold text-white text-md">
                     Pilot & Rollout
                   </div>
-                  <div className="text-rose-100 text-sm mt-1">
+                  <div className="text-primary-100 text-sm mt-1">
                     MVP-first approach — deploy fast, expand with confidence
                   </div>
                 </div>
@@ -93,7 +93,7 @@ export default function CallToActionImproved() {
                 <h3 className="text-lg font-bold text-white">Quick Connect</h3>
               </div>
 
-              <p className="text-rose-100 text-md mb-6">
+              <p className="text-primary-100 text-md mb-6">
                 Choose your preferred way to connect — we&apos;ll respond within
                 one business day.
               </p>
@@ -143,7 +143,9 @@ export default function CallToActionImproved() {
                       <div className="font-semibold text-white group-hover:text-white/90">
                         {item.title}
                       </div>
-                      <div className="text-rose-100 text-sm">{item.desc}</div>
+                      <div className="text-primary-100 text-sm">
+                        {item.desc}
+                      </div>
                     </div>
                     <ArrowRight className="w-4 h-4 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-transform" />
                   </a>

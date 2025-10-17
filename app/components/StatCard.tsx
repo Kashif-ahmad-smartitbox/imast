@@ -109,14 +109,14 @@ export default function StatCard({
     neutral: "bg-white text-gray-900",
     accent: "bg-gradient-to-br from-indigo-600 to-violet-600 text-white",
     success: "bg-gradient-to-br from-emerald-500 to-green-600 text-white",
-    danger: "bg-gradient-to-br from-rose-500 to-red-600 text-white",
+    danger: "bg-gradient-to-br from-primary-500 to-red-600 text-white",
   };
 
   const borderColors: Record<string, string> = {
     neutral: "ring-1 ring-gray-100",
     accent: "ring-1 ring-indigo-200/30",
     success: "ring-1 ring-emerald-200/30",
-    danger: "ring-1 ring-rose-200/30",
+    danger: "ring-1 ring-primary-200/30",
   };
 
   const textColors: Record<string, string> = {
