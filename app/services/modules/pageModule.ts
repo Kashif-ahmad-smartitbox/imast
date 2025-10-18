@@ -1,8 +1,6 @@
 import { getCookie } from "@/app/lib/cookies";
 import { api } from "../apiClient";
 
-/* -------------------- Interfaces -------------------- */
-
 export interface PageItem {
   _id: string;
   title: string;
@@ -42,24 +40,18 @@ export interface PageUpdateResponse {
   page: PageItem;
 }
 
-/* -------------------- API Calls -------------------- */
-
-/** Get paginated list of pages */
 export const getPages = async (): Promise<PageResponse> => {
   return api.get<PageResponse>("/admin/pages");
 };
 
-/** Get single page by ID */
 export const getPage = async (id: string): Promise<any> => {
   return api.get<any>(`/admin/pages/${id}`);
 };
 
-/** Get published page with module content (by slug) */
 export const getPageWithContent = async (slug: string): Promise<any> => {
   return api.get<any>(`/admin/pages/slug/${slug}`);
 };
 
-/** Update page by ID */
 export const updatePage = async (
   id: string,
   payload: PageUpdatePayload,
@@ -85,7 +77,6 @@ export const updatePage = async (
   );
 };
 
-/* -------------------- Default Export -------------------- */
 export default {
   getPages,
   getPage,

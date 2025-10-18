@@ -11,7 +11,7 @@ import {
   Calendar,
   Link,
 } from "lucide-react";
-import { getPages, PageItem } from "@/app/services/modules/page";
+import { getPages, PageItem } from "@/app/services/modules/pageModule";
 import CommonDashHeader from "@/app/components/common/CommonDashHeader";
 import { useRouter } from "next/navigation";
 

@@ -6,7 +6,7 @@ import {
   getPage,
   getPageWithContent,
   updatePage,
-} from "@/services/modules/page";
+} from "@/app/services/modules/pageModule";
 import { updateModule } from "@/services/modules/module";
 import {
   Save,
@@ -445,13 +445,13 @@ export default function EditPage() {
   // ────────────────────────────────
   const filteredModules =
     pageData?.layout?.filter((item: PageLayoutItem) => {
-      const module = item.module;
+      const moduleData = item.module;
       const searchLower = searchTerm.toLowerCase();
 
       return (
-        module.title?.toLowerCase().includes(searchLower) ||
-        module.type?.toLowerCase().includes(searchLower) ||
-        JSON.stringify(module.content).toLowerCase().includes(searchLower)
+        moduleData.title?.toLowerCase().includes(searchLower) ||
+        moduleData.type?.toLowerCase().includes(searchLower) ||
+        JSON.stringify(moduleData.content).toLowerCase().includes(searchLower)
       );
     }) || [];
 
@@ -524,7 +524,8 @@ export default function EditPage() {
             Page Not Found
           </h2>
           <p className="text-gray-500 mb-8">
-            The page you're looking for doesn't exist or has been moved.
+            The page you&apos;re looking for doesn&apos;t exist or has been
+            moved.
           </p>
           <button
             onClick={() => router.back()}
@@ -885,7 +886,7 @@ export default function EditPage() {
                             <p className="text-blue-800 text-sm leading-relaxed">
                               Modules are only visible and editable when the
                               page is published. Change the status to
-                              "Published" to view and manage modules.
+                              &quot;Published&quot; to view and manage modules.
                             </p>
                           </div>
                         </div>
@@ -995,8 +996,9 @@ export default function EditPage() {
                       </h3>
                       <p className="text-gray-500 mb-8 leading-relaxed">
                         Page modules are only visible when the page is
-                        published. Please change the page status to "Published"
-                        in the Page Settings to view and manage modules.
+                        published. Please change the page status to
+                        &quot;Published&quot; in the Page Settings to view and
+                        manage modules.
                       </p>
                       <button
                         onClick={() => setActiveTab("settings")}
@@ -1011,23 +1013,25 @@ export default function EditPage() {
                     {filteredModules.length > 0 ? (
                       filteredModules.map(
                         (item: PageLayoutItem, index: number) => {
-                          const module = item.module;
-                          const isEditing = editingModuleId === module._id;
-                          const isExpanded = expandedModules.has(module._id);
+                          const moduleData = item.module;
+                          const isEditing = editingModuleId === moduleData._id;
+                          const isExpanded = expandedModules.has(
+                            moduleData._id
+                          );
 
                           return (
                             <div
-                              key={module._id}
+                              key={moduleData._id}
                               className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-all duration-200"
                             >
                               <div className="flex flex-col xl:flex-row xl:justify-between xl:items-start gap-4">
                                 <div className="flex-1">
                                   <div className="flex items-center gap-3 mb-3 flex-wrap">
                                     <h3 className="text-xl font-semibold text-gray-900">
-                                      {module.title || "Untitled Module"}
+                                      {moduleData.title || "Untitled Module"}
                                     </h3>
                                     <span className="text-xs bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1.5 rounded-full font-semibold shadow-sm">
-                                      {module.type}
+                                      {moduleData.type}
                                     </span>
                                   </div>
 
@@ -1035,7 +1039,7 @@ export default function EditPage() {
                                     <Hash className="w-4 h-4" />
                                     Module ID:{" "}
                                     <span className="font-mono bg-gray-100 px-3 py-1 rounded-lg text-gray-800 border">
-                                      {module._id}
+                                      {moduleData._id}
                                     </span>
                                   </p>
 
@@ -1043,7 +1047,7 @@ export default function EditPage() {
                                   <div className="flex flex-wrap gap-2">
                                     <button
                                       onClick={() =>
-                                        toggleModuleExpansion(module._id)
+                                        toggleModuleExpansion(moduleData._id)
                                       }
                                       className="flex items-center gap-2 px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 border border-gray-300"
                                     >
@@ -1061,7 +1065,7 @@ export default function EditPage() {
                                 <div className="flex items-center gap-2">
                                   {!isEditing ? (
                                     <button
-                                      onClick={() => startEdit(module)}
+                                      onClick={() => startEdit(moduleData)}
                                       className="flex items-center gap-2 px-5 py-2.5 text-sm bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
                                     >
                                       <Edit3 className="w-4 h-4" />
@@ -1090,7 +1094,11 @@ export default function EditPage() {
                                 >
                                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
                                     <pre className="text-sm text-gray-700 overflow-auto font-mono">
-                                      {JSON.stringify(module.content, null, 2)}
+                                      {JSON.stringify(
+                                        moduleData.content,
+                                        null,
+                                        2
+                                      )}
                                     </pre>
                                   </div>
                                 </div>
@@ -1144,9 +1152,9 @@ export default function EditPage() {
                                     <button
                                       onClick={() =>
                                         handleModuleUpdate(
-                                          module._id,
-                                          module.type,
-                                          module.title
+                                          moduleData._id,
+                                          moduleData.type,
+                                          moduleData.title
                                         )
                                       }
                                       disabled={savingModule}
