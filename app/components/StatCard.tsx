@@ -9,7 +9,7 @@ import React, {
 
 export type StatCardProps = {
   label: string;
-  value: number | string | null; // null => loading
+  value: number | string | null;
   sub?: string;
   icon?: ReactNode;
   ariaLabel?: string;
