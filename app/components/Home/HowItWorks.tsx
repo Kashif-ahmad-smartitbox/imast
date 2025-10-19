@@ -59,7 +59,7 @@ const STEPS: Step[] = [
   },
 ];
 
-export default function HowItWorks() {
+export default function HowItWorks(props: any) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [visibleSteps, setVisibleSteps] = useState<Record<number, boolean>>({});
 

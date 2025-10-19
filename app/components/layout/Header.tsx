@@ -157,7 +157,7 @@ const COMPANY_LINKS = [
 
 /* ------------------------- Main Component ------------------------- */
 
-export default function Header() {
+export default function Header(props: any) {
   const [openMenu, setOpenMenu] = useState<MenuType>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const scrolled = useScrolled(10);

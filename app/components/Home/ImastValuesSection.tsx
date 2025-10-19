@@ -3,39 +3,9 @@ import React, { memo, useMemo } from "react";
 import { CheckCircle, Target, Users } from "lucide-react";
 
 type ValueItem = {
-  icon?: React.ReactNode;
   title: string;
   description: string;
 };
-
-const DEFAULT_VALUES: ValueItem[] = [
-  {
-    icon: <CheckCircle className="w-6 h-6" aria-hidden />,
-    title: "Long-Term Partnerships",
-    description:
-      "We don't just work with clients — we grow with them. With 200+ brands and a 95% client retention rate across industries, our success is built on trust, continuity, and shared growth.",
-  },
-  {
-    icon: <Target className="w-6 h-6" aria-hidden />,
-    title: "Innovation & Research",
-    description:
-      "Innovation is in our DNA. We continuously invest in R&D to deliver scalable, secure, and future-ready SaaS solutions that empower businesses at every stage.",
-  },
-  {
-    icon: <Users className="w-6 h-6" aria-hidden />,
-    title: "No Charges for Learnings",
-    description:
-      "At IMAST, we believe learnings should create value, not cost. When client feedback enhances our products, we implement it without adding financial burden — because progress should be shared.",
-  },
-];
-
-interface ImastValuesSectionProps {
-  heroImage?: string;
-  title?: string;
-  values?: ValueItem[];
-  ctaHref?: string;
-  ctaText?: string;
-}
 
 function ValueCard({ value, index }: { value: ValueItem; index: number }) {
   return (
@@ -50,7 +20,7 @@ function ValueCard({ value, index }: { value: ValueItem; index: number }) {
           className="flex items-center justify-center w-12 h-12 bg-primary-100 text-primary-600 rounded-xl"
           aria-hidden
         >
-          {value.icon}
+          <CheckCircle />
         </div>
 
         <div className="w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center text-sm font-medium">
@@ -90,21 +60,15 @@ function ValueCard({ value, index }: { value: ValueItem; index: number }) {
   );
 }
 
-export default memo(function ImastValuesSection({
-  heroImage = "/team-hero.jpg",
-  title = "The Core Values that Drive IMAST Forward",
-  values = DEFAULT_VALUES,
-  ctaHref = "/about",
-  ctaText = "READ OUR STORY",
-}: ImastValuesSectionProps) {
-  const valuesList = useMemo(() => values, [values]);
+export default memo(function ImastValuesSection(props: any) {
+  const valuesList = useMemo(() => props.data.values, [props.data.values]);
 
   return (
     <section className="relative">
       <div className="relative">
         <div className="w-full h-[250px] md:h-[300px] lg:h-[500px] overflow-hidden bg-gradient-to-br from-slate-900/20 to-primary-900/10">
           <img
-            src={heroImage}
+            src={props.data.heroImage}
             alt="IMAST team gathered at an event"
             className="w-full h-full object-cover object-top mix-blend-overlay"
             loading="eager"
@@ -124,7 +88,7 @@ export default memo(function ImastValuesSection({
                     id="impact-heading"
                     className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
                   >
-                    {title.split("\n").map((line, i) => (
+                    {props.data.title.split("\n").map((line, i) => (
                       <span key={i} className="block">
                         &quot;{line}&quot;
                       </span>
@@ -140,10 +104,10 @@ export default memo(function ImastValuesSection({
 
                 <div className="text-center">
                   <a
-                    href={ctaHref}
+                    href={props.data.ctaHref}
                     className="inline-block rounded-full px-6 py-3 text-sm font-medium uppercase ring-1 ring-slate-900/5 hover:shadow-md transition"
                   >
-                    {ctaText}
+                    {props.data.ctaText}
                   </a>
                 </div>
               </div>

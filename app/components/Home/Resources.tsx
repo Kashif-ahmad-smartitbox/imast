@@ -295,7 +295,7 @@ const Newsletter = () => {
   );
 };
 
-export default function Resources() {
+export default function Resources(props: any) {
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string>("All");
   const [displayCount, setDisplayCount] = useState(6);

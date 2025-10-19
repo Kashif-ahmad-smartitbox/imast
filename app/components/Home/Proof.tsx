@@ -372,7 +372,7 @@ function chunkArray<T>(arr: T[], size: number) {
 }
 
 // --- Main Component
-export default function Proof() {
+export default function Proof(props: any) {
   const reduced = usePrefersReducedMotion();
 
   // Stats counters

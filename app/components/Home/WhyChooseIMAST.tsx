@@ -20,7 +20,7 @@ type Differentiator = {
   color: string;
 };
 
-const differentiatorsData = (): Differentiator[] =>
+const differentiatorsData = (props: any): Differentiator[] =>
   [
     {
       icon: <ShieldCheck className="w-6 h-6" />,
@@ -94,7 +94,7 @@ function RedCrossBullet({ className = "" }: { className?: string }) {
   );
 }
 
-export default function WhyChooseIMAST() {
+export default function WhyChooseIMAST(props: any) {
   const differentiators = useMemo(() => differentiatorsData(), []);
 
   const quickPoints = useMemo(

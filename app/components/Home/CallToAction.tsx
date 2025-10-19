@@ -11,7 +11,7 @@ import {
   Rocket,
 } from "lucide-react";
 
-export default function CallToActionImproved() {
+export default function CallToActionImproved(props: any) {
   return (
     <section
       className="relative overflow-hidden py-24 bg-primary-700 text-white"

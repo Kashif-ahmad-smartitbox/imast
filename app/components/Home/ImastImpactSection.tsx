@@ -1,79 +1,11 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  User,
-  ChartBar,
-  Headphones,
-  Users,
-  ArrowRight,
-  Sparkles,
-  Target,
-  Zap,
-  TrendingUp,
-} from "lucide-react";
+import * as Icons from "lucide-react";
 
-type Impact = {
-  title: string;
-  stat: string;
-  subtitle: string;
-  color: string;
-  imageSrc: string;
-  href: string;
-  icon?: React.ReactNode;
-  gradient?: string;
-};
-
-const DEFAULT_IMPACTS: Impact[] = [
-  {
-    title: "Automate Process",
-    stat: "100%",
-    subtitle: "Automation of Supply Chain & Customer engagement process",
-    color: "bg-blue-600",
-    gradient: "from-blue-500 via-blue-600 to-blue-700",
-    imageSrc: "/people/1.png",
-    href: "/sell-faster",
-    icon: <Zap className="w-4 h-4" />,
-  },
-  {
-    title: "ROI",
-    stat: "50% +",
-    subtitle: "Return on Investment",
-    color: "bg-teal-600",
-    gradient: "from-teal-500 via-teal-600 to-emerald-600",
-    imageSrc: "/people/2.png",
-    href: "/close-more",
-    icon: <TrendingUp className="w-4 h-4" />,
-  },
-  {
-    title: "Increase Productivity",
-    stat: "40% +",
-    subtitle: "Over all productivity",
-    color: "bg-pink-600",
-    gradient: "from-pink-500 via-primary-600 to-fuchsia-600",
-    imageSrc: "/people/3.png",
-    href: "/scale-service",
-    icon: <Target className="w-4 h-4" />,
-  },
-  {
-    title: "Customer Engagemment",
-    stat: "80% +",
-    subtitle: "Over customer engagement and retention",
-    color: "bg-amber-600",
-    gradient: "from-amber-500 via-orange-600 to-amber-600",
-    imageSrc: "/people/4.png",
-    href: "/build-relationships",
-    icon: <Sparkles className="w-4 h-4" />,
-  },
-];
-
-export default function ImpactSection({
-  impacts = DEFAULT_IMPACTS,
-}: {
-  impacts?: Impact[];
-}) {
+export default function ImpactSection(props: any) {
   const [activeCard, setActiveCard] = useState<number | null>(null);
   const [visibleCards, setVisibleCards] = useState<boolean[]>(() =>
-    impacts.map(() => false)
+    props.data.impacts.map(() => false)
   );
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -105,7 +37,7 @@ export default function ImpactSection({
 
     cards.forEach((c) => observer.observe(c));
     return () => observer.disconnect();
-  }, [impacts]);
+  }, [props.data.impacts]);
 
   return (
     <section
@@ -115,17 +47,16 @@ export default function ImpactSection({
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-12">
           <p className="text-xl font-semibold text-primary-600 uppercase tracking-wide">
-            Proven Results
+            {props.data.subtitle}
           </p>
           <h2
             id="impact-heading"
             className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
           >
-            Transform Your Business Growth
+            {props.data.title}
           </h2>
           <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-            Discover how our solutions drive measurable results across your
-            organization
+            {props.data.description}
           </p>
         </header>
 
@@ -134,7 +65,7 @@ export default function ImpactSection({
           ref={containerRef}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-6 items-start"
         >
-          {impacts.map((it, idx) => {
+          {props.data.impacts.map((it: any, idx: any) => {
             const revealed = visibleCards[idx];
             return (
               <article
@@ -163,12 +94,6 @@ export default function ImpactSection({
                   >
                     {/* Top Badge */}
                     <div className="absolute -top-3 left-6 inline-flex items-center gap-2 bg-white text-slate-900 rounded-full px-4 py-2 shadow-lg">
-                      <span
-                        className="flex items-center justify-center"
-                        aria-hidden
-                      >
-                        {it.icon}
-                      </span>
                       <span className="text-sm font-bold whitespace-nowrap">
                         {it.title}
                       </span>
@@ -234,7 +159,7 @@ export default function ImpactSection({
                   className="mt-6 inline-flex items-center gap-2 text-base font-semibold text-slate-800 hover:text-blue-600 transition-colors duration-300"
                 >
                   Learn more
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
+                  <Icons.ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
                 </a>
               </article>
             );

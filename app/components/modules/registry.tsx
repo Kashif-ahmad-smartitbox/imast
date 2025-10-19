@@ -1,0 +1,87 @@
+"use client";
+import dynamic from "next/dynamic";
+import type { ComponentType } from "react";
+
+const Hero = dynamic(() => import("@/app/components/Home/Hero"), { ssr: true });
+const Header = dynamic(() => import("@/app/components/layout/Header"), {
+  ssr: true,
+});
+const Footer = dynamic(() => import("@/app/components/layout/Footer"), {
+  ssr: true,
+});
+const Modules = dynamic(() => import("@/components/Home/Modules"), {
+  ssr: false,
+});
+const Proof = dynamic(() => import("@/components/Home/Proof"), { ssr: false });
+const KeyValue = dynamic(() => import("@/components/Home/KeyValue"), {
+  ssr: false,
+});
+const Resources = dynamic(() => import("@/components/Home/Resources"), {
+  ssr: false,
+});
+const HowItWorks = dynamic(() => import("@/components/Home/HowItWorks"), {
+  ssr: false,
+});
+const ImastTrial = dynamic(() => import("@/components/Home/ImastTrial"), {
+  ssr: false,
+});
+const CaseStudies = dynamic(() => import("@/components/Home/CaseStudies"), {
+  ssr: false,
+});
+const CallToAction = dynamic(() => import("@/components/Home/CallToAction"), {
+  ssr: false,
+});
+const ImpactSection = dynamic(() => import("@/components/Home/ImpactSection"), {
+  ssr: false,
+});
+const ImastAISection = dynamic(
+  () => import("@/components/Home/ImastAISection"),
+  { ssr: false }
+);
+const WhyChooseIMAST = dynamic(
+  () => import("@/components/Home/WhyChooseIMAST"),
+  { ssr: false }
+);
+const EcosystemSection = dynamic(
+  () => import("@/components/Home/EcosystemSection"),
+  { ssr: false }
+);
+const ImastImpactSection = dynamic(
+  () => import("@/components/Home/ImastImpactSection"),
+  { ssr: false }
+);
+const ImastValuesSection = dynamic(
+  () => import("@/components/Home/ImastValuesSection"),
+  { ssr: false }
+);
+const ImastPromoSection = dynamic(
+  () => import("@/components/Home/ImastPromoSection"),
+  { ssr: false }
+);
+
+export type ModuleComponentProps = {
+  data: any;
+};
+
+const registry: Record<string, ComponentType<ModuleComponentProps>> = {
+  header: Header,
+  hero: Hero,
+  modules: Modules,
+  proof: Proof,
+  keyvalue: KeyValue,
+  resources: Resources,
+  howitworks: HowItWorks,
+  imasttrial: ImastTrial,
+  casestudies: CaseStudies,
+  cta: CallToAction,
+  impact: ImpactSection,
+  imastai: ImastAISection,
+  whychooseimast: WhyChooseIMAST,
+  ecosystem: EcosystemSection,
+  imastimpact: ImastImpactSection,
+  imastvalues: ImastValuesSection,
+  imastpromo: ImastPromoSection,
+  footer: Footer,
+};
+
+export default registry;

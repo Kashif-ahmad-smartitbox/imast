@@ -155,7 +155,7 @@ const SECTIONS: Section[] = [
   },
 ];
 
-export default function ModulesImproved() {
+export default function ModulesImproved(props: any) {
   const [query, setQuery] = useState("");
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
     () => {

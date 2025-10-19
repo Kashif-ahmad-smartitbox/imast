@@ -6,7 +6,7 @@ import {
   getPage,
   getPageWithContent,
   updatePage,
-} from "@/app/services/modules/pageModule";
+} from "@/services/modules/pageModule";
 import { updateModule } from "@/services/modules/module";
 import {
   Save,
@@ -31,11 +31,18 @@ import {
   Type,
   Hash,
   FileCode,
+  Text,
+  List,
+  ToggleLeft,
+  Image,
+  Plus,
+  Trash2,
 } from "lucide-react";
 
 // ────────────────────────────────
-// Types
+// Constants & Types
 // ────────────────────────────────
+
 type PageStatus = "draft" | "published" | "scheduled";
 
 interface PageFields {
@@ -80,9 +87,66 @@ interface UpdateMessage {
   text: string;
 }
 
+type ContentFieldType =
+  | "text"
+  | "number"
+  | "boolean"
+  | "array"
+  | "object"
+  | "rich-text"
+  | "image";
+
+interface ContentField {
+  key: string;
+  type: ContentFieldType;
+  value: any;
+}
+
+// ────────────────────────────────
+// Utility Functions
+// ────────────────────────────────
+
+const formatDateForInput = (dateString?: string): string => {
+  if (!dateString) return "";
+  try {
+    return new Date(dateString).toISOString().slice(0, 16);
+  } catch {
+    return "";
+  }
+};
+
+const formatDisplayDate = (dateString?: string): string => {
+  if (!dateString) return "Unknown";
+  try {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "Invalid Date";
+  }
+};
+
+const isValidUrl = (url: string): boolean => {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === "http:" || urlObj.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+const isValidSlug = (slug: string): boolean => {
+  return /^[a-z0-9-]+$/.test(slug);
+};
+
 // ────────────────────────────────
 // Input Components
 // ────────────────────────────────
+
 interface InputFieldProps {
   label: string;
   value: string;
@@ -220,8 +284,540 @@ const SelectField: React.FC<SelectFieldProps> = ({
 };
 
 // ────────────────────────────────
+// Module Content Editor Components
+// ────────────────────────────────
+
+interface ArrayFieldEditorProps {
+  value: any[];
+  onChange: (value: any[]) => void;
+}
+
+const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
+  value,
+  onChange,
+}) => {
+  const [items, setItems] = useState<any[]>(value || []);
+  const [newItem, setNewItem] = useState("");
+
+  // Parse item value to maintain proper data types
+  const parseItemValue = (itemValue: string): any => {
+    if (!itemValue.trim()) return itemValue;
+
+    try {
+      // Try to parse as JSON first (for objects and arrays)
+      const parsed = JSON.parse(itemValue);
+      return parsed;
+    } catch {
+      // If not valid JSON, return as string
+      return itemValue;
+    }
+  };
+
+  const addItem = () => {
+    if (newItem.trim()) {
+      const parsedValue = parseItemValue(newItem);
+      const updatedItems = [...items, parsedValue];
+      setItems(updatedItems);
+      onChange(updatedItems);
+      setNewItem("");
+    }
+  };
+
+  const removeItem = (index: number) => {
+    const updatedItems = items.filter((_, i) => i !== index);
+    setItems(updatedItems);
+    onChange(updatedItems);
+  };
+
+  const updateItem = (index: number, newValue: string) => {
+    const parsedValue = parseItemValue(newValue);
+    const updatedItems = [...items];
+    updatedItems[index] = parsedValue;
+    setItems(updatedItems);
+    onChange(updatedItems);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addItem();
+    }
+  };
+
+  // Format item for display
+  const formatItemForDisplay = (item: any): string => {
+    if (typeof item === "object" && item !== null) {
+      return JSON.stringify(item);
+    }
+    return String(item);
+  };
+
+  return (
+    <div className="space-y-3">
+      {items.map((item, index) => (
+        <div key={index} className="flex items-center gap-2">
+          <input
+            type="text"
+            value={formatItemForDisplay(item)}
+            onChange={(e) => updateItem(index, e.target.value)}
+            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none font-mono"
+            placeholder="Enter value..."
+          />
+          <button
+            onClick={() => removeItem(index)}
+            className="p-2 text-red-500 hover:text-red-700 rounded transition-colors"
+            type="button"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      ))}
+
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={newItem}
+          onChange={(e) => setNewItem(e.target.value)}
+          placeholder='Enter value (use JSON for objects: {"key": "value"})'
+          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none font-mono"
+          onKeyPress={handleKeyPress}
+        />
+        <button
+          onClick={addItem}
+          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center"
+          type="button"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded border">
+        <strong>Tip:</strong> Use JSON format for objects and arrays. Example:{" "}
+        {"{"}"title": "Example"{"}"}
+      </div>
+    </div>
+  );
+};
+
+interface ObjectFieldEditorProps {
+  value: any;
+  onChange: (value: any) => void;
+}
+
+const ObjectFieldEditor: React.FC<ObjectFieldEditorProps> = ({
+  value,
+  onChange,
+}) => {
+  const [objectValue, setObjectValue] = useState(() => {
+    try {
+      return typeof value === "object" && value !== null
+        ? JSON.stringify(value, null, 2)
+        : "{}";
+    } catch {
+      return "{}";
+    }
+  });
+  const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (newValue: string) => {
+    setObjectValue(newValue);
+    setError(null);
+
+    try {
+      if (newValue.trim()) {
+        const parsed = JSON.parse(newValue);
+        onChange(parsed);
+      } else {
+        onChange({});
+      }
+    } catch (err) {
+      setError("Invalid JSON format");
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <textarea
+        value={objectValue}
+        onChange={(e) => handleChange(e.target.value)}
+        rows={6}
+        className={`w-full border rounded-lg px-3 py-2 text-sm font-mono outline-none ${
+          error ? "border-red-300" : "border-gray-300"
+        }`}
+        placeholder='{"key": "value"}'
+      />
+      {error && <p className="text-sm text-red-600">{error}</p>}
+    </div>
+  );
+};
+
+interface ModuleContentEditorProps {
+  content: any;
+  onChange: (content: any) => void;
+}
+
+const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
+  content,
+  onChange,
+}) => {
+  const [fields, setFields] = useState<ContentField[]>([]);
+  const [newFieldKey, setNewFieldKey] = useState("");
+  const [newFieldType, setNewFieldType] = useState<ContentFieldType>("text");
+
+  // Initialize fields from content
+  useEffect(() => {
+    if (content && typeof content === "object") {
+      const initialFields: ContentField[] = Object.entries(content).map(
+        ([key, value]) => {
+          let type: ContentFieldType = "text";
+
+          if (typeof value === "boolean") type = "boolean";
+          else if (typeof value === "number") type = "number";
+          else if (Array.isArray(value)) type = "array";
+          else if (typeof value === "object" && value !== null) type = "object";
+          else type = "text";
+
+          return {
+            key,
+            type,
+            value,
+          };
+        }
+      );
+      setFields(initialFields);
+    } else {
+      setFields([]);
+    }
+  }, [content]);
+
+  const updateFieldValue = useCallback(
+    (index: number, newValue: any) => {
+      setFields((prev) => {
+        const updatedFields = [...prev];
+        updatedFields[index].value = newValue;
+
+        // Convert fields back to object for parent
+        const newContent: any = {};
+        updatedFields.forEach((field) => {
+          newContent[field.key] = field.value;
+        });
+        onChange(newContent);
+
+        return updatedFields;
+      });
+    },
+    [onChange]
+  );
+
+  const addField = () => {
+    if (!newFieldKey.trim()) return;
+
+    const key = newFieldKey.trim();
+
+    // Check if key already exists
+    if (fields.some((field) => field.key === key)) {
+      alert("Field key must be unique");
+      return;
+    }
+
+    let defaultValue: any = "";
+    switch (newFieldType) {
+      case "number":
+        defaultValue = 0;
+        break;
+      case "boolean":
+        defaultValue = false;
+        break;
+      case "array":
+        defaultValue = [];
+        break;
+      case "object":
+        defaultValue = {};
+        break;
+      default:
+        defaultValue = "";
+    }
+
+    const newField: ContentField = {
+      key,
+      type: newFieldType,
+      value: defaultValue,
+    };
+
+    const updatedFields = [...fields, newField];
+    setFields(updatedFields);
+
+    const newContent: any = { ...content, [key]: defaultValue };
+    onChange(newContent);
+
+    // Reset form
+    setNewFieldKey("");
+  };
+
+  const removeField = (index: number) => {
+    const fieldToRemove = fields[index];
+    const updatedFields = fields.filter((_, i) => i !== index);
+    setFields(updatedFields);
+
+    const newContent = { ...content };
+    delete newContent[fieldToRemove.key];
+    onChange(newContent);
+  };
+
+  const getFieldIcon = (type: ContentFieldType) => {
+    const iconProps = { className: "w-4 h-4" };
+    switch (type) {
+      case "text":
+        return <Text {...iconProps} />;
+      case "number":
+        return <Hash {...iconProps} />;
+      case "boolean":
+        return <ToggleLeft {...iconProps} />;
+      case "array":
+        return <List {...iconProps} />;
+      case "object":
+        return <FileCode {...iconProps} />;
+      case "rich-text":
+        return <FileText {...iconProps} />;
+      case "image":
+        return <Image {...iconProps} />;
+      default:
+        return <Text {...iconProps} />;
+    }
+  };
+
+  const renderFieldInput = (field: ContentField, index: number) => {
+    const baseInputClasses =
+      "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none";
+
+    switch (field.type) {
+      case "text":
+        return (
+          <input
+            type="text"
+            value={field.value || ""}
+            onChange={(e) => updateFieldValue(index, e.target.value)}
+            className={baseInputClasses}
+            placeholder={`Enter ${field.key}...`}
+          />
+        );
+
+      case "rich-text":
+        return (
+          <textarea
+            value={field.value || ""}
+            onChange={(e) => updateFieldValue(index, e.target.value)}
+            rows={4}
+            className={baseInputClasses}
+            placeholder={`Enter ${field.key}...`}
+          />
+        );
+
+      case "number":
+        return (
+          <input
+            type="number"
+            value={field.value || 0}
+            onChange={(e) =>
+              updateFieldValue(index, parseFloat(e.target.value) || 0)
+            }
+            className={baseInputClasses}
+          />
+        );
+
+      case "boolean":
+        return (
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={field.value || false}
+              onChange={(e) => updateFieldValue(index, e.target.checked)}
+              className="w-4 h-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+            />
+            <span className="text-sm text-gray-700">
+              {field.value ? "True" : "False"}
+            </span>
+          </label>
+        );
+
+      case "array":
+        return (
+          <ArrayFieldEditor
+            value={Array.isArray(field.value) ? field.value : []}
+            onChange={(newValue) => updateFieldValue(index, newValue)}
+          />
+        );
+
+      case "object":
+        return (
+          <ObjectFieldEditor
+            value={field.value}
+            onChange={(newValue) => updateFieldValue(index, newValue)}
+          />
+        );
+
+      case "image":
+        return (
+          <div className="space-y-2">
+            <input
+              type="text"
+              value={field.value || ""}
+              onChange={(e) => updateFieldValue(index, e.target.value)}
+              placeholder="Enter image URL..."
+              className={baseInputClasses}
+            />
+            {field.value && (
+              <div className="mt-2">
+                <img
+                  src={field.value}
+                  alt="Preview"
+                  className="max-w-full h-32 object-cover rounded-lg border"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        );
+
+      default:
+        return (
+          <input
+            type="text"
+            value={field.value || ""}
+            onChange={(e) => updateFieldValue(index, e.target.value)}
+            className={baseInputClasses}
+          />
+        );
+    }
+  };
+
+  const handleAddFieldKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addField();
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Existing Fields */}
+      <div className="space-y-4">
+        {fields.map((field, index) => (
+          <div
+            key={field.key}
+            className="border border-gray-200 rounded-xl p-4 bg-white"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                {getFieldIcon(field.type)}
+                <span className="font-semibold text-gray-900 text-sm">
+                  {field.key}
+                </span>
+                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
+                  {field.type}
+                </span>
+              </div>
+              <button
+                onClick={() => removeField(index)}
+                className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
+                type="button"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+            {renderFieldInput(field, index)}
+          </div>
+        ))}
+
+        {fields.length === 0 && (
+          <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
+            <FileCode className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+            <p className="text-gray-500 text-sm">
+              No content fields defined yet
+            </p>
+            <p className="text-gray-400 text-xs mt-1">
+              Add your first field below
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Add New Field */}
+      <div className="border border-gray-200 rounded-xl p-4 bg-gray-50">
+        <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <Plus className="w-4 h-4" />
+          Add New Field
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+          <div className="md:col-span-6">
+            <input
+              type="text"
+              value={newFieldKey}
+              onChange={(e) => setNewFieldKey(e.target.value)}
+              onKeyPress={handleAddFieldKeyPress}
+              placeholder="Field key (e.g., title)"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none"
+            />
+            <p className="text-xs text-gray-500 mt-1">Unique identifier</p>
+          </div>
+
+          <div className="md:col-span-4">
+            <div className="relative">
+              <select
+                value={newFieldType}
+                onChange={(e) =>
+                  setNewFieldType(e.target.value as ContentFieldType)
+                }
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none bg-white appearance-none pr-10 transition-all duration-200 hover:border-gray-400"
+              >
+                <option value="text">📝 Text</option>
+                <option value="rich-text">📄 Rich Text</option>
+                <option value="number">🔢 Number</option>
+                <option value="boolean">✅ Boolean</option>
+                <option value="array">📋 Array</option>
+                <option value="object">⚙️ Object</option>
+                <option value="image">🖼️ Image URL</option>
+              </select>
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                <ChevronDown className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-2 font-medium">Data Type</p>
+          </div>
+
+          <div className="md:col-span-2">
+            <button
+              onClick={addField}
+              disabled={!newFieldKey.trim()}
+              className="w-full bg-primary-600 text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              type="button"
+            >
+              Add
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* JSON Preview */}
+      <div className="border border-gray-200 rounded-xl p-4 bg-white">
+        <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <Code className="w-4 h-4" />
+          JSON Preview
+        </h4>
+        <pre className="text-xs bg-gray-50 p-3 rounded-lg border border-gray-200 overflow-auto max-h-40">
+          {JSON.stringify(content, null, 2)}
+        </pre>
+      </div>
+    </div>
+  );
+};
+
+// ────────────────────────────────
 // Main Component
 // ────────────────────────────────
+
 export default function EditPage() {
   const params = useParams();
   const router = useRouter();
@@ -255,7 +851,7 @@ export default function EditPage() {
   );
 
   const [editingModuleId, setEditingModuleId] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState("");
+  const [editContent, setEditContent] = useState<any>({});
   const [savingModule, setSavingModule] = useState(false);
   const [moduleMsg, setModuleMsg] = useState<UpdateMessage | null>(null);
 
@@ -305,9 +901,7 @@ export default function EditPage() {
         metaDescription: page.metaDescription || "",
         canonicalUrl: page.canonicalUrl || "",
         status: (page.status as PageStatus) || "draft",
-        publishedAt: page.publishedAt
-          ? new Date(page.publishedAt).toISOString().slice(0, 16)
-          : "",
+        publishedAt: formatDateForInput(page.publishedAt),
       });
     } catch (err: any) {
       setError(err.message || "Failed to load page");
@@ -333,15 +927,12 @@ export default function EditPage() {
 
     if (!pageFields.slug.trim()) {
       errors.slug = "Slug is required";
-    } else if (!/^[a-z0-9-]+$/.test(pageFields.slug)) {
+    } else if (!isValidSlug(pageFields.slug)) {
       errors.slug =
         "Slug can only contain lowercase letters, numbers, and hyphens";
     }
 
-    if (
-      pageFields.canonicalUrl &&
-      !/^https?:\/\/.+\..+/.test(pageFields.canonicalUrl)
-    ) {
+    if (pageFields.canonicalUrl && !isValidUrl(pageFields.canonicalUrl)) {
       errors.canonicalUrl = "Please enter a valid URL";
     }
 
@@ -397,13 +988,13 @@ export default function EditPage() {
   // ────────────────────────────────
   const startEdit = (module: Module) => {
     setEditingModuleId(module._id);
-    setEditContent(JSON.stringify(module.content, null, 2));
+    setEditContent(module.content || {});
     setModuleMsg(null);
   };
 
   const cancelEdit = () => {
     setEditingModuleId(null);
-    setEditContent("");
+    setEditContent({});
   };
 
   const handleModuleUpdate = async (
@@ -415,29 +1006,43 @@ export default function EditPage() {
     setModuleMsg(null);
 
     try {
-      const parsed = JSON.parse(editContent);
-      await updateModule(moduleId, { type, title, content: parsed });
+      // Ensure we're sending valid JSON content
+      const contentToSave =
+        editContent && typeof editContent === "object" ? editContent : {};
+
+      await updateModule(moduleId, {
+        type,
+        title,
+        content: contentToSave,
+      });
+
       setModuleMsg({ type: "success", text: "Module updated successfully!" });
       setEditingModuleId(null);
       await getPageData();
     } catch (err: any) {
       setModuleMsg({
         type: "error",
-        text: err.message || "Failed to update module - check JSON format",
+        text: err.message || "Failed to update module",
       });
     } finally {
       setSavingModule(false);
     }
   };
 
+  const handleContentChange = useCallback((newContent: any) => {
+    setEditContent(newContent);
+  }, []);
+
   const toggleModuleExpansion = (moduleId: string) => {
-    const newExpanded = new Set(expandedModules);
-    if (newExpanded.has(moduleId)) {
-      newExpanded.delete(moduleId);
-    } else {
-      newExpanded.add(moduleId);
-    }
-    setExpandedModules(newExpanded);
+    setExpandedModules((prev) => {
+      const newExpanded = new Set(prev);
+      if (newExpanded.has(moduleId)) {
+        newExpanded.delete(moduleId);
+      } else {
+        newExpanded.add(moduleId);
+      }
+      return newExpanded;
+    });
   };
 
   // ────────────────────────────────
@@ -498,6 +1103,7 @@ export default function EditPage() {
             <button
               onClick={getPageData}
               className="px-8 py-3.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all duration-200 font-semibold flex items-center gap-3 shadow-lg shadow-primary-600/25"
+              type="button"
             >
               <RefreshCw className="w-5 h-5" />
               Try Again
@@ -505,6 +1111,7 @@ export default function EditPage() {
             <button
               onClick={() => router.back()}
               className="px-8 py-3.5 bg-white text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200 font-semibold flex items-center gap-3 border border-gray-300 shadow-sm"
+              type="button"
             >
               <ArrowLeft className="w-5 h-5" />
               Go Back
@@ -530,6 +1137,7 @@ export default function EditPage() {
           <button
             onClick={() => router.back()}
             className="px-8 py-3.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all duration-200 font-semibold"
+            type="button"
           >
             Return to Previous Page
           </button>
@@ -548,6 +1156,7 @@ export default function EditPage() {
               <button
                 onClick={() => router.back()}
                 className="p-3 hover:bg-white rounded-xl transition-all duration-200 border border-gray-200 bg-white/50 backdrop-blur-sm"
+                type="button"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </button>
@@ -590,6 +1199,7 @@ export default function EditPage() {
                     ? "bg-primary-500 text-white shadow-md shadow-primary-500/25"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
+                type="button"
               >
                 <Settings className="w-4 h-4" />
                 Page Settings
@@ -605,6 +1215,7 @@ export default function EditPage() {
                     ? "text-gray-400 cursor-not-allowed"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
+                type="button"
               >
                 <Layers className="w-4 h-4" />
                 Modules ({moduleCount})
@@ -633,6 +1244,7 @@ export default function EditPage() {
                 <button
                   onClick={getPageData}
                   className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-200 border border-gray-200"
+                  type="button"
                 >
                   <RefreshCw className="w-4 h-4" />
                   Refresh Data
@@ -641,6 +1253,7 @@ export default function EditPage() {
                 <button
                   className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-200 border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={pageFields.status !== "published"}
+                  type="button"
                 >
                   <Eye className="w-4 h-4" />
                   View Live Page
@@ -664,18 +1277,7 @@ export default function EditPage() {
                 <div>
                   <p className="text-sm text-gray-600">Last Updated</p>
                   <p className="text-sm font-medium text-gray-900">
-                    {pageData.updatedAt
-                      ? new Date(pageData.updatedAt).toLocaleDateString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }
-                        )
-                      : "Unknown"}
+                    {formatDisplayDate(pageData.updatedAt)}
                   </p>
                 </div>
 
@@ -925,6 +1527,7 @@ export default function EditPage() {
                           ? "bg-gray-400 cursor-not-allowed"
                           : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/25"
                       }`}
+                      type="button"
                     >
                       {updatingPage ? (
                         <>
@@ -978,7 +1581,7 @@ export default function EditPage() {
                             placeholder="Search modules by title, type, or content..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 w-80 transition-all duration-200 bg-white"
+                            className="pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm outline-none w-80 transition-all duration-200 bg-white"
                           />
                         </div>
                       </div>
@@ -1003,6 +1606,7 @@ export default function EditPage() {
                       <button
                         onClick={() => setActiveTab("settings")}
                         className="px-8 py-3.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
+                        type="button"
                       >
                         Go to Page Settings
                       </button>
@@ -1050,6 +1654,7 @@ export default function EditPage() {
                                         toggleModuleExpansion(moduleData._id)
                                       }
                                       className="flex items-center gap-2 px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 border border-gray-300"
+                                      type="button"
                                     >
                                       <Code className="w-3 h-3" />
                                       {isExpanded ? "Collapse" : "Expand"} JSON
@@ -1067,6 +1672,7 @@ export default function EditPage() {
                                     <button
                                       onClick={() => startEdit(moduleData)}
                                       className="flex items-center gap-2 px-5 py-2.5 text-sm bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
+                                      type="button"
                                     >
                                       <Edit3 className="w-4 h-4" />
                                       Edit Content
@@ -1075,6 +1681,7 @@ export default function EditPage() {
                                     <button
                                       onClick={cancelEdit}
                                       className="flex items-center gap-2 px-5 py-2.5 text-sm bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-all duration-200 font-semibold border border-gray-300"
+                                      type="button"
                                     >
                                       <X className="w-4 h-4" />
                                       Cancel
@@ -1104,23 +1711,20 @@ export default function EditPage() {
                                 </div>
                               )}
 
-                              {/* Edit Mode */}
+                              {/* Edit Mode - NEW FORM-BASED EDITOR */}
                               {isEditing && (
                                 <div className="mt-6 space-y-4">
                                   <div>
                                     <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
                                       <FileCode className="w-4 h-4" />
-                                      Module Content (JSON)
+                                      Module Content Editor
                                     </label>
-                                    <textarea
-                                      value={editContent}
-                                      onChange={(e) =>
-                                        setEditContent(e.target.value)
-                                      }
-                                      rows={12}
-                                      className="w-full font-mono text-sm rounded-xl border border-gray-300 p-4 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white resize-none"
-                                      placeholder="Enter valid JSON content..."
-                                    />
+                                    <div className="border border-gray-300 rounded-xl p-4 bg-white">
+                                      <ModuleContentEditor
+                                        content={editContent}
+                                        onChange={handleContentChange}
+                                      />
+                                    </div>
                                   </div>
 
                                   {moduleMsg && (
@@ -1146,6 +1750,7 @@ export default function EditPage() {
                                     <button
                                       onClick={cancelEdit}
                                       className="px-6 py-3 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all duration-200 font-semibold border border-gray-300"
+                                      type="button"
                                     >
                                       Cancel
                                     </button>
@@ -1163,6 +1768,7 @@ export default function EditPage() {
                                           ? "bg-gray-400 cursor-not-allowed"
                                           : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
                                       }`}
+                                      type="button"
                                     >
                                       {savingModule ? (
                                         <>
@@ -1200,6 +1806,7 @@ export default function EditPage() {
                           <button
                             onClick={() => setSearchTerm("")}
                             className="px-6 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
+                            type="button"
                           >
                             Clear Search
                           </button>

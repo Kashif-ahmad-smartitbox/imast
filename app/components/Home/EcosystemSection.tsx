@@ -21,8 +21,6 @@ import {
   Target,
   Star,
   LucideIcon,
-  Play,
-  Pause,
   ArrowRight,
 } from "lucide-react";
 
@@ -34,6 +32,12 @@ interface EcosystemItem {
   description?: string;
 }
 
+interface EcosystemData {
+  core: EcosystemItem[];
+  channels: EcosystemItem[];
+  touchpoints: EcosystemItem[];
+}
+
 interface EcosystemCircleProps {
   item: EcosystemItem;
   radius: number;
@@ -43,6 +47,19 @@ interface EcosystemCircleProps {
   scale: number;
   isActive: boolean;
   onHover: (item: EcosystemItem | null) => void;
+}
+
+interface EcosystemSectionProps {
+  ecosystemData: EcosystemData;
+  title: string;
+  description: string;
+  subtitle: string;
+  imast360Logo: string;
+  button: { text: string; link: string };
+}
+
+interface IDATA {
+  data: EcosystemSectionProps;
 }
 
 // -------------------- Icon Map --------------------
@@ -74,10 +91,14 @@ const useResponsiveScale = (): number => {
 
   useEffect(() => {
     const updateScale = () => {
-      if (window.innerWidth < 640) {
+      if (window.innerWidth < 480) {
         setScale(0.6);
+      } else if (window.innerWidth < 640) {
+        setScale(0.75);
+      } else if (window.innerWidth < 768) {
+        setScale(0.85);
       } else if (window.innerWidth < 1024) {
-        setScale(0.8);
+        setScale(0.9);
       } else {
         setScale(1);
       }
@@ -135,9 +156,9 @@ const EcosystemCircle: React.FC<EcosystemCircleProps> = ({
             className.includes("bg-gradient") ? "bg-inherit" : "bg-white/30"
           }`}
         />
-        <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-2 shadow-lg">
+        <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-3 shadow-lg">
           <Icon
-            size={Math.max(14, size * scale * 0.35)}
+            size={Math.max(16, size * scale * 0.4)}
             className={`transition-colors duration-300 ${
               isActive ? "text-white" : "text-white/80"
             }`}
@@ -145,14 +166,14 @@ const EcosystemCircle: React.FC<EcosystemCircleProps> = ({
         </div>
       </div>
       <div
-        className={`absolute text-center font-semibold whitespace-nowrap px-2 py-1 rounded-lg backdrop-blur-sm border border-white/20 transition-all duration-300 ${
+        className={`absolute text-center font-semibold whitespace-nowrap px-3 py-1 rounded-lg backdrop-blur-sm border border-white/20 transition-all duration-300 ${
           isActive
             ? "bg-white/20 text-white scale-110"
             : "bg-black/20 text-white/80 scale-100"
         }`}
         style={{
           top: `${size * scale + 12}px`,
-          fontSize: `${Math.max(10, 11 * scale)}px`,
+          fontSize: `${Math.max(10, 12 * scale)}px`,
         }}
       >
         {item.name}
@@ -192,7 +213,7 @@ const CentralHub: React.FC<{ scale: number; isActive: boolean }> = ({
 
       {/* Main hub */}
       <div
-        className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-red-600 to-from-primary-600 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
+        className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-red-600 to-primary-600 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
           isActive ? "scale-110 shadow-2xl" : "scale-100 shadow-lg"
         }`}
         style={{
@@ -226,10 +247,6 @@ const DataFlowLines: React.FC<{ isActive: boolean }> = ({ isActive }) => (
         <stop offset="0%" stopColor="rgba(239, 68, 68, 0.8)" />
         <stop offset="50%" stopColor="rgba(147, 51, 234, 0.9)" />
         <stop offset="100%" stopColor="rgba(239, 68, 68, 0.6)" />
-      </linearGradient>
-      <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="rgba(239, 68, 68, 1)" />
-        <stop offset="100%" stopColor="rgba(147, 51, 234, 1)" />
       </linearGradient>
       <pattern
         id="flowPattern"
@@ -276,13 +293,13 @@ const DataFlowLines: React.FC<{ isActive: boolean }> = ({ isActive }) => (
   </svg>
 );
 
-const FeatureDescription: React.FC<{ item: EcosystemItem | null }> = ({
-  item,
-}) => {
+const FeatureDescription: React.FC<{
+  item: EcosystemItem | null;
+}> = ({ item }) => {
   if (!item) return null;
 
   return (
-    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/30 backdrop-blur-lg border border-white/20 rounded-2xl p-4 max-w-sm mx-4 transition-all duration-500 animate-fadeIn">
+    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/30 backdrop-blur-lg border border-white/20 rounded-2xl p-4 max-w-sm mx-4 transition-all duration-500 animate-fadeIn z-30">
       <div className="flex items-center gap-3 mb-2">
         <div className="p-2 bg-white/10 rounded-lg">
           {React.createElement(ICONS[item.icon], {
@@ -301,127 +318,12 @@ const FeatureDescription: React.FC<{ item: EcosystemItem | null }> = ({
 };
 
 // -------------------- Main Section --------------------
-export default function EcosystemSection() {
+export default function EcosystemSection(props: IDATA) {
   const scale = useResponsiveScale();
   const [activeItem, setActiveItem] = useState<EcosystemItem | null>(null);
-  const [isAnimating, setIsAnimating] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const core: EcosystemItem[] = [
-    {
-      name: "Warehouse",
-      icon: "Box",
-      angle: -90,
-      description:
-        "Smart inventory management with real-time tracking and AI-powered optimization.",
-    },
-    {
-      name: "Inventory",
-      icon: "Briefcase",
-      angle: -18,
-      description: "Automated stock control and predictive inventory planning.",
-    },
-    {
-      name: "Automation",
-      icon: "Zap",
-      angle: 54,
-      description:
-        "Streamline operations with intelligent workflow automation.",
-    },
-    {
-      name: "QR Code",
-      icon: "Target",
-      angle: 126,
-      description:
-        "Digital product identification and seamless tracking solutions.",
-    },
-    {
-      name: "Logistics",
-      icon: "TrendingUp",
-      angle: 198,
-      description: "End-to-end logistics management with route optimization.",
-    },
-  ];
-
-  const channels: EcosystemItem[] = [
-    {
-      name: "SFA",
-      icon: "Users",
-      angle: -90,
-      description: "Sales Force Automation for enhanced field operations.",
-    },
-    {
-      name: "DMS",
-      icon: "Briefcase",
-      angle: -18,
-      description:
-        "Distribution Management System for efficient channel operations.",
-    },
-    {
-      name: "Retail",
-      icon: "Store",
-      angle: 54,
-      description: "Unified retail management across all touchpoints.",
-    },
-    {
-      name: "Loyalty",
-      icon: "Star",
-      angle: 126,
-      description:
-        "Customer loyalty programs that drive engagement and retention.",
-    },
-    {
-      name: "Leads",
-      icon: "Target",
-      angle: 198,
-      description: "Intelligent lead management and conversion optimization.",
-    },
-  ];
-
-  const touchpoints: EcosystemItem[] = [
-    {
-      name: "Service",
-      icon: "Headphones",
-      angle: 0,
-      description: "24/7 customer service with AI-powered support.",
-    },
-    {
-      name: "After Sales",
-      icon: "Handshake",
-      angle: 51.43,
-      description: "Comprehensive after-sales service and support.",
-    },
-    {
-      name: "CRM",
-      icon: "Users",
-      angle: 102.86,
-      description: "Customer Relationship Management for lasting partnerships.",
-    },
-    {
-      name: "Vendors",
-      icon: "Store",
-      angle: 154.29,
-      description: "Vendor management and collaboration platform.",
-    },
-    {
-      name: "HRMS",
-      icon: "Users",
-      angle: 205.71,
-      description: "Human Resource Management System for your team.",
-    },
-    {
-      name: "Customer Engagement",
-      icon: "MessageSquare",
-      angle: 257.14,
-      description: "Multi-channel customer engagement solutions.",
-    },
-    {
-      name: "E-commerce",
-      icon: "ShoppingCart",
-      angle: 308.57,
-      description: "Integrated e-commerce platform with AI recommendations.",
-    },
-  ];
+  const { core, channels, touchpoints } = props.data.ecosystemData;
 
   return (
     <>
@@ -479,46 +381,50 @@ export default function EcosystemSection() {
         }
       `}</style>
 
-      <section className="bg-gradient-to-br from-slate-900 to-red-900 relative overflow-hidden">
-        <div className="absolute top-6 right-6 bg-black/30 backdrop-blur-lg border border-white/20 px-4 py-2 rounded-full flex items-center gap-3 shadow-lg">
-          <img className="w-16" src="/imast360.png" alt="Imast 360 Logo" />
+      <section className="bg-gradient-to-br from-slate-900 to-red-900 relative overflow-hidden py-10">
+        {/* Header Badge */}
+        <div className="absolute top-6 right-6 bg-black/30 backdrop-blur-lg border border-white/20 px-4 py-2 rounded-full flex items-center gap-3 shadow-lg z-20">
+          <img
+            className="w-16"
+            src={props.data.imast360Logo}
+            alt="Imast 360 Logo"
+          />
           <span className="text-white font-semibold text-sm">Ecosystem</span>
         </div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Left Content */}
-            <div className="text-center lg:text-left">
-              <div>
+            {/* Left Content - Improved Alignment */}
+            <div className="text-center lg:text-left space-y-6">
+              <div className="space-y-4">
                 <h3 className="text-3xl font-semibold text-white">
-                  AI-Enabled Digital Ecosystem
+                  {props.data.subtitle}
                 </h3>
-                <h2 className="mt-2 text-xl sm:text-2xl font-extrabold text-primary-600">
-                  Do you have your own AI-enabled Integrated Digital Ecosystem?
+                <h2 className="text-2xl font-extrabold text-primary-600">
+                  {props.data.title}
                 </h2>
-                <p className="mt-2 text-sm text-red-50 max-w-xl">
-                  With IMAST, you can seamlessly connect your warehouse, sales
-                  channels, and customers. We empower you to build a unique
-                  AI-enabled digital ecosystem that is fully integrated,
-                  resilient, and scalable.
+                <p className="text-lg text-red-50 max-w-xl leading-relaxed">
+                  {props.data.description}
                 </p>
               </div>
               <a
-                href="/contact"
-                className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                href={props.data.button.link}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 hover:shadow-xl group"
               >
-                <span>Discover How</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                <span>{props.data.button.text}</span>
+                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
 
             {/* Right Content - Ecosystem Visualization */}
-            <div className="flex justify-center lg:justify-end">
+            <div className="flex justify-center lg:justify-end items-center">
               <div
                 ref={containerRef}
-                className="relative rounded-3xl"
+                className="relative"
                 style={{
-                  width: `${Math.min(550 * scale, 550)}px`,
-                  height: `${Math.min(550 * scale, 550)}px`,
+                  width: `${500 * scale}px`,
+                  height: `${500 * scale}px`,
+                  minWidth: "350px",
                   minHeight: "350px",
                 }}
               >
@@ -531,8 +437,8 @@ export default function EcosystemSection() {
                       key={item.name}
                       item={item}
                       radius={120}
-                      size={40}
-                      className="bg-gradient-to-br from-red-600 from-primary-600 rounded-2xl shadow-xl ecosystem-core"
+                      size={35}
+                      className="bg-gradient-to-br from-red-600 to-primary-600 rounded-2xl shadow-xl ecosystem-core"
                       index={index}
                       scale={scale}
                       isActive={activeItem?.name === item.name}
@@ -549,7 +455,7 @@ export default function EcosystemSection() {
                       item={item}
                       radius={190}
                       size={45}
-                      className="bg-gradient-to-br from-red-500 to-from-primary-600 rounded-xl shadow-lg ecosystem-channel"
+                      className="bg-gradient-to-br from-red-500 to-primary-500 rounded-xl shadow-lg ecosystem-channel"
                       index={index}
                       scale={scale}
                       isActive={activeItem?.name === item.name}
@@ -565,7 +471,7 @@ export default function EcosystemSection() {
                       key={item.name}
                       item={item}
                       radius={240}
-                      size={50}
+                      size={55}
                       className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl ecosystem-touchpoint"
                       index={index}
                       scale={scale}

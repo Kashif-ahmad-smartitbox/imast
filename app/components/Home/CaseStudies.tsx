@@ -71,7 +71,7 @@ const CASE_STUDIES: CaseStudy[] = [
   },
 ];
 
-export default function CaseStudies() {
+export default function CaseStudies(props: any) {
   const [open, setOpen] = useState<CaseStudy | null>(null);
 
   const featured = useMemo(

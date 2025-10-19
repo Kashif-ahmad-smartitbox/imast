@@ -3,13 +3,7 @@ import React from "react";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 
-interface ImastTrialProps {
-  illustrationSrc?: string;
-}
-
-export default function ImastTrial({
-  illustrationSrc = "/imast-try-free.png",
-}: ImastTrialProps) {
+export default function ImastTrial(props: any) {
   // Enhanced floating animation with proper typing
   const floatAnimation: Variants = {
     initial: {
@@ -242,7 +236,7 @@ export default function ImastTrial({
 
               {/* Main illustration */}
               <motion.img
-                src={illustrationSrc}
+                src={props.illustrationSrc || "/imast-try-free.png"}
                 alt="IMAST product preview"
                 loading="lazy"
                 className="w-full h-auto object-contain rounded-lg relative z-10"

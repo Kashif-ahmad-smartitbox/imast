@@ -229,7 +229,7 @@ const NewsletterForm: React.FC<NewsletterFormProps> = ({
 // Main Footer Component
 // =============================================================================
 
-const Footer: React.FC = () => {
+const Footer = (props: any) => {
   const [email, setEmail] = useState<string>("");
   const [status, setStatus] = useState<"idle" | "error" | "success">("idle");
   const [message, setMessage] = useState<string>("");

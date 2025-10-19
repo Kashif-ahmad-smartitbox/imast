@@ -12,17 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-type ImastPromoSectionProps = {
-  posterSrc?: string;
-  videoSrc?: string;
-  theme?: "orange" | "blue";
-};
-
-export default function ImastPromoSection({
-  posterSrc = "/Thumbnail22.png",
-  videoSrc = "/imast.mp4",
-  theme = "orange",
-}: ImastPromoSectionProps) {
+export default function ImastPromoSection(props: any) {
   const [open, setOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -87,7 +77,7 @@ export default function ImastPromoSection({
     },
   };
 
-  const currentTheme = themeConfig[theme];
+  const currentTheme = themeConfig[props.data.theme];
 
   return (
     <section
@@ -194,7 +184,11 @@ export default function ImastPromoSection({
                   <div className="relative w-full aspect-[16/10] bg-gradient-to-br from-gray-100 to-gray-200">
                     {/* Demo dashboard image */}
                     <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900">
-                      <img src={posterSrc} className="h-full" alt="" />
+                      <img
+                        src={props.data.posterSrc}
+                        className="h-full"
+                        alt=""
+                      />
                       {/* Play button overlay */}
                       <button
                         aria-label="Play IMAST360 demo video"
@@ -282,7 +276,7 @@ export default function ImastPromoSection({
             onClick={(e) => e.stopPropagation()}
           >
             <video
-              src={videoSrc}
+              src={props.data.videoSrc}
               controls
               autoPlay
               className="w-full h-[70vh] max-h-[80vh] object-contain bg-black"

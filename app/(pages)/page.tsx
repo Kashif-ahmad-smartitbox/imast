@@ -1,46 +1,48 @@
 import React from "react";
-import Proof from "@/components/Home/Proof";
-import Hero from "@/app/components/Home/Hero";
-import Header from "@/components/layout/Header";
-import Modules from "@/components/Home/Modules";
-import Footer from "@/components/layout/Footer";
-import KeyValue from "@/components/Home/KeyValue";
-import Resources from "@/components/Home/Resources";
-import HowItWorks from "@/components/Home/HowItWorks";
-import ImastTrial from "../components/Home/ImastTrial";
-import CaseStudies from "@/components/Home/CaseStudies";
-import CallToAction from "@/components/Home/CallToAction";
-import ImpactSection from "@/components/Home/ImpactSection";
-import ImastAISection from "@/components/Home/ImastAISection";
-import WhyChooseIMAST from "@/components/Home/WhyChooseIMAST";
-import EcosystemSection from "@/components/Home/EcosystemSection";
-import ImastImpactSection from "@/components/Home/ImastImpactSection";
-import ImastValuesSection from "@/components/Home/ImastValuesSection";
-import ImastPromoSection from "@/components/Home/ImastPromoSection";
+import ModuleRenderer from "@/components/modules/ModuleRenderer";
 
-function HomePage() {
-  return (
-    <>
-      <Header />
-      <Hero />
-      <KeyValue />
-      <EcosystemSection />
-      <ImastImpactSection />
-      <ImastPromoSection />
-      <ImastValuesSection />
-      <Modules />
-      <ImastAISection />
-      <ImpactSection />
-      <HowItWorks />
-      <ImastTrial />
-      <Proof />
-      <WhyChooseIMAST />
-      <CaseStudies />
-      <Resources />
-      <CallToAction />
-      <Footer />
-    </>
-  );
+interface PageApiResponse {
+  page?: {
+    title?: string;
+    slug?: string;
+    layout?: any[];
+    [k: string]: any;
+  };
 }
 
-export default HomePage;
+const API_BASE = process.env.API_URL || "http://localhost:4000/api";
+
+export default async function HomePage() {
+  const slug = "home";
+
+  const response = await fetch(`${API_BASE}/admin/pages/slug/${slug}`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return <div className="p-8">Home page not found</div>;
+  }
+
+  const data: PageApiResponse = await response.json();
+  const page = data.page;
+
+  if (!page?.layout) {
+    return <div className="p-8">No modules configured for home</div>;
+  }
+
+  const layout = page.layout
+    .slice()
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  return (
+    <main>
+      {layout.map((item, index) => (
+        <ModuleRenderer
+          item={item}
+          index={index}
+          key={item.module?._id || index}
+        />
+      ))}
+    </main>
+  );
+}

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ArrowRight, Play } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function ImastCreativeHero() {
+export default function ImastCreativeHero(props: any) {
   return (
     <section className="relative overflow-hidden bg-white">
       {/* Subtle radial backdrop */}

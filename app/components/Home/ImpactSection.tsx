@@ -3,7 +3,7 @@ import React from "react";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 
-export default function ImpactSection() {
+export default function ImpactSection(props: any) {
   const stats = [
     { value: "300+", label: "Staff from India" },
     { value: "1 Million+", label: "Active Indian Customer" },
