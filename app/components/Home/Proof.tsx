@@ -8,7 +8,9 @@ import React, {
 } from "react";
 import { Award, CheckCircle, ArrowRight, Star, Quote } from "lucide-react";
 import StatCard from "../StatCard";
+import Link from "next/link";
 
+// --- Interfaces
 interface ClientLogo {
   src: string;
   alt: string;
@@ -29,81 +31,44 @@ interface Testimonial {
   rating?: number;
 }
 
+interface TrustIndicator {
+  icon: "check" | "caseStudy" | "support";
+  title: string;
+  description: string;
+}
+
+interface ProofData {
+  header: {
+    subtitle: string;
+    title: string;
+    description: string;
+  };
+  clientLogos: ClientLogo[];
+  stats: {
+    title: string;
+    description: string;
+    stats: Stat[];
+    caseStudyLink: string;
+    caseStudyText: string;
+  };
+  testimonials: {
+    title: string;
+    description: string;
+    testimonials: Testimonial[];
+    trustIndicators: TrustIndicator[];
+  };
+  styling: {
+    logoSliderGradient: string;
+    statsGradient: string;
+  };
+}
+
 interface UseCountToOptions {
   duration?: number;
   precision?: number;
 }
 
 // --- Constants
-const CLIENT_LOGOS: ClientLogo[] = Array.from({ length: 45 }, (_, i) => ({
-  src: `/client/${String(i + 1).padStart(2, "0")}.jpg`,
-  alt: `Client logo ${i + 1}`,
-}));
-
-const STATS: Stat[] = [
-  { key: "brands", label: "Brands", value: 500 },
-  { key: "users", label: "Users", value: 2_000_000 },
-  { key: "uptime", label: "Uptime", value: 99.95 },
-  { key: "retention", label: "Retention", value: 95 },
-];
-
-const TESTIMONIALS: Testimonial[] = [
-  {
-    id: "1",
-    quote:
-      "IMAST improved our route efficiency by 32% — the analytics make decisions simple.",
-    author: "Sarah Chen",
-    role: "Logistics Head",
-    company: "Regional Distributor",
-    rating: 5,
-  },
-  {
-    id: "2",
-    quote:
-      "Integration was frictionless. We were live in 6 weeks and saw measurable uplift.",
-    author: "Michael Rodriguez",
-    role: "Head of Operations",
-    company: "Retail Chain",
-    rating: 5,
-  },
-  {
-    id: "3",
-    quote:
-      "Campaign ROI jumped — the loyalty module paid for itself within two quarters.",
-    author: "Priya Sharma",
-    role: "Head of CRM",
-    company: "FMCG Brand",
-    rating: 4,
-  },
-  {
-    id: "4",
-    quote:
-      "Customer satisfaction scores increased by 45% after implementing IMAST's solutions.",
-    author: "James Wilson",
-    role: "Customer Service Director",
-    company: "E-commerce Platform",
-    rating: 5,
-  },
-  {
-    id: "5",
-    quote:
-      "The platform reduced our operational costs by 28% while improving service quality.",
-    author: "Lisa Thompson",
-    role: "COO",
-    company: "Logistics Company",
-    rating: 5,
-  },
-  {
-    id: "6",
-    quote:
-      "Real-time analytics helped us identify new market opportunities we had missed.",
-    author: "David Park",
-    role: "Business Analyst",
-    company: "Retail Group",
-    rating: 4,
-  },
-];
-
 const TESTIMONIAL_INTERVAL = 6000;
 const DEFAULT_COUNT_DURATION = 1200;
 const LOGO_SLIDER_PLAY_DURATION = 15000;
@@ -371,18 +336,81 @@ function chunkArray<T>(arr: T[], size: number) {
   return out;
 }
 
+// Trust Indicator Component
+function TrustIndicator({ indicator }: { indicator: TrustIndicator }) {
+  switch (indicator.icon) {
+    case "check":
+      return (
+        <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
+          <CheckCircle
+            className="text-green-600"
+            size={24}
+            aria-hidden="true"
+          />
+          <div>
+            <div className="font-semibold text-gray-800">{indicator.title}</div>
+            <div className="text-sm text-gray-600 mt-1">
+              {indicator.description}
+            </div>
+          </div>
+        </div>
+      );
+
+    case "caseStudy":
+      return (
+        <Link
+          href="/case-studies"
+          className="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-primary-200 transition-all group"
+          aria-label="Read case studies"
+        >
+          <div className="flex-none w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center font-bold text-primary-600 group-hover:scale-110 transition-transform">
+            CS
+          </div>
+          <div className="text-left flex-1">
+            <div className="font-semibold text-gray-900">{indicator.title}</div>
+            <div className="text-sm text-gray-600">{indicator.description}</div>
+          </div>
+          <ArrowRight
+            className="text-primary-600 group-hover:translate-x-1 transition-transform"
+            size={16}
+          />
+        </Link>
+      );
+
+    case "support":
+      return (
+        <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
+          <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+            <span className="text-white text-xs font-bold">✓</span>
+          </div>
+          <div>
+            <div className="font-semibold text-gray-800">{indicator.title}</div>
+            <div className="text-sm text-gray-600 mt-1">
+              {indicator.description}
+            </div>
+          </div>
+        </div>
+      );
+
+    default:
+      return null;
+  }
+}
+
 // --- Main Component
-export default function Proof(props: any) {
+export default function Proof({ data }: { data: ProofData }) {
   const reduced = usePrefersReducedMotion();
 
-  // Stats counters
-  const brandsCount = useCountTo(STATS[0].value, { duration: 1200 });
-  const usersCount = useCountTo(STATS[1].value, { duration: 1400 });
-  const uptimeCount = useCountTo(STATS[2].value, {
+  // Stats counters - call hooks at top level
+  const brandsCount = useCountTo(data.stats.stats[0].value, { duration: 1200 });
+  const usersCount = useCountTo(data.stats.stats[1].value, { duration: 1400 });
+  const uptimeCount = useCountTo(data.stats.stats[2].value, {
     duration: 1000,
     precision: 2,
   });
-  const retentionCount = useCountTo(STATS[3].value, { duration: 1000 });
+  const retentionCount = useCountTo(data.stats.stats[3].value, {
+    duration: 1000,
+  });
 
   const statValues = useMemo(
     () => [brandsCount, usersCount, uptimeCount, retentionCount],
@@ -405,8 +433,8 @@ export default function Proof(props: any) {
   }, []);
 
   const testimonialGroups = useMemo(
-    () => chunkArray(TESTIMONIALS, testimonialsPerPage),
-    [testimonialsPerPage]
+    () => chunkArray(data.testimonials.testimonials, testimonialsPerPage),
+    [data.testimonials.testimonials, testimonialsPerPage]
   );
 
   const totalTestimonialGroups = testimonialGroups.length;
@@ -462,269 +490,215 @@ export default function Proof(props: any) {
     return () => window.removeEventListener("keydown", handler);
   }, [handleNav]);
 
-  // Current group testimonials (for aria-live)
-  const currentTestimonials = testimonialGroups[activeTestimonialGroup] || [];
-
   return (
-    <>
-      <section
-        className="py-8 lg:py-12 bg-gray-50"
-        aria-labelledby="proof-title"
+    <section className="py-8 lg:py-12 bg-gray-50" aria-labelledby="proof-title">
+      <header className="w-full text-center mb-8">
+        <p className="text-2xl font-semibold text-primary-600 uppercase">
+          {data.header.subtitle}
+        </p>
+        <h2
+          id="proof-title"
+          className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
+        >
+          {data.header.title}
+        </h2>
+        <p className="mt-3 text-gray-600">{data.header.description}</p>
+      </header>
+
+      {/* Client Logos */}
+      <div className="rounded-2xl mb-8">
+        <div
+          className="py-3"
+          style={{ background: data.styling.logoSliderGradient }}
+        >
+          <LogoSlider logos={data.clientLogos} />
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div
+        className="p-6 lg:p-8 mb-12"
+        style={{ background: data.styling.statsGradient }}
       >
-        <header className="w-full text-center mb-8">
-          <p className="text-2xl font-semibold text-primary-600 uppercase">
-            Our Esteemed Clients
-          </p>
-          <h2
-            id="proof-title"
-            className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
-          >
-            Trusted by businesses across India & beyond
-          </h2>
-          <p className="mt-3 text-gray-600">
-            Proven at scale — from local distributors to national retail chains.
-          </p>
-        </header>
-        <div className="rounded-2xl mb-8">
-          <div className="bg-gradient-to-r from-[#AB4092] to-[#e10101] py-3">
-            <LogoSlider logos={CLIENT_LOGOS} />
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <Award className="text-primary-600" size={22} aria-hidden="true" />
+            <h3 className="text-lg lg:text-xl font-bold text-gray-900">
+              {data.stats.title}
+            </h3>
           </div>
-        </div>
-        {/* Stats */}
-        <div className="bg-gradient-to-br from-[#EC7242] to-primary-100  p-6 lg:p-8 mb-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <Award
-                className="text-primary-600"
-                size={22}
-                aria-hidden="true"
+          <p className="text-gray-600">{data.stats.description}</p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+            {data.stats.stats.map((stat, index) => (
+              <StatCard
+                key={stat.key}
+                label={stat.label}
+                value={formatStat(stat.key, statValues[index])}
+                sub={getStatSubtext(stat.key)}
               />
-              <h3 className="text-lg lg:text-xl font-bold text-gray-900">
-                Proven at scale
-              </h3>
-            </div>
-            <p className="text-gray-600">Numbers that matter</p>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-              {STATS.map((stat, index) => (
-                <StatCard
-                  key={stat.key}
-                  label={stat.label}
-                  value={formatStat(stat.key, statValues[index])}
-                  sub={getStatSubtext(stat.key)}
-                />
-              ))}
-            </div>
-
-            <div className="text-center mt-6">
-              <a
-                href="/case-studies"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-md px-2 py-1"
-                aria-label="View case studies"
-              >
-                See case studies <ArrowRight size={14} aria-hidden="true" />
-              </a>
-            </div>
+            ))}
           </div>
-        </div>
 
-        {/* Testimonials Slider */}
-        <div className="rounded-2xl">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-6">
-              <h3 className="text-lg lg:text-xl font-bold text-primary-600">
-                What Our Customers Say
-              </h3>
-              <p className="text-gray-600">
-                Real stories from businesses that transformed their operations
-              </p>
-            </div>
-
-            <div
-              ref={carouselRef}
-              className="relative"
-              aria-live="polite"
-              aria-atomic="true"
+          <div className="text-center mt-6">
+            <a
+              href={data.stats.caseStudyLink}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-md px-2 py-1"
+              aria-label="View case studies"
             >
-              {/* Slider viewport */}
-              <div className="overflow-hidden">
-                <div
-                  className="flex transition-transform duration-700 ease-in-out"
-                  style={{
-                    width: `${testimonialGroups.length * 100}%`,
-                    transform: `translateX(-${
-                      activeTestimonialGroup * (100 / testimonialGroups.length)
-                    }%)`,
-                  }}
-                >
-                  {testimonialGroups.map((group, gIdx) => (
-                    <div
-                      key={`group-${gIdx}`}
-                      className="flex-shrink-0 px-4 py-6"
-                      style={{ width: `${100 / testimonialGroups.length}%` }}
-                      aria-hidden={gIdx !== activeTestimonialGroup}
-                    >
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {group.map((t) => (
-                          <figure
-                            key={t.id}
-                            className="bg-white rounded-2xl p-6 h-full flex flex-col justify-between border border-gray-100"
-                          >
-                            <div className="flex items-start gap-4">
-                              <div className="flex flex-col items-center gap-3">
-                                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center text-primary-700 font-bold text-lg flex-shrink-0 shadow-md">
-                                  {initialsFromName(t.author)}
-                                </div>
-                                {t.rating && <StarRating rating={t.rating} />}
-                              </div>
+              {data.stats.caseStudyText}{" "}
+              <ArrowRight size={14} aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+      </div>
 
-                              <figcaption className="flex-1">
-                                <Quote
-                                  className="text-primary-200 mb-2 transform -scale-x-100"
-                                  size={20}
-                                />
-                                <blockquote className="text-sm lg:text-base text-gray-800 leading-relaxed mb-4 font-medium">
-                                  “{t.quote}”
-                                </blockquote>
+      {/* Testimonials Slider */}
+      <div className="rounded-2xl">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-6">
+            <h3 className="text-lg lg:text-xl font-bold text-primary-600">
+              {data.testimonials.title}
+            </h3>
+            <p className="text-gray-600">{data.testimonials.description}</p>
+          </div>
 
-                                <div className="border-t border-gray-100 pt-4">
-                                  <div className="font-bold text-gray-900 text-sm">
-                                    {t.author}
-                                  </div>
-                                  <div className="text-xs text-primary-600 font-semibold mt-1">
-                                    {t.role}
-                                  </div>
-                                  {t.company && (
-                                    <div className="text-xs text-gray-500 mt-1">
-                                      {t.company}
-                                    </div>
-                                  )}
-                                </div>
-                              </figcaption>
-                            </div>
-                          </figure>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Controls */}
-              <div className="flex items-center justify-center mt-6">
-                <button
-                  onClick={() => handleNav("prev")}
-                  aria-label="Previous testimonials"
-                  className="p-2 rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors mr-2"
-                >
-                  <ArrowRight size={16} className="rotate-180" />
-                </button>
-
-                <div className="flex items-center gap-2">
-                  {testimonialGroups.map((_, i) => (
-                    <button
-                      key={`dot-${i}`}
-                      onClick={() => {
-                        setActiveTestimonialGroup(i);
-                        setTestimonialPaused(true);
-                      }}
-                      aria-label={`Show testimonials page ${i + 1}`}
-                      className={`w-3 h-3 rounded-full ${
-                        i === activeTestimonialGroup
-                          ? "bg-primary-600"
-                          : "bg-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => handleNav("next")}
-                  aria-label="Next testimonials"
-                  className="p-2 rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors ml-2"
-                >
-                  <ArrowRight size={16} />
-                </button>
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="mt-12 pt-8 border-t border-gray-100">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                  <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
-                    <CheckCircle
-                      className="text-green-600"
-                      size={24}
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <div className="font-semibold text-gray-800">
-                        Enterprise Security
-                      </div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        SOC2, TLS, role-based access
-                      </div>
-                    </div>
-                  </div>
-
-                  <a
-                    href="/case-studies"
-                    className="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-primary-200 transition-all group"
-                    aria-label="Read case studies"
+          <div
+            ref={carouselRef}
+            className="relative"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {/* Slider viewport */}
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-700 ease-in-out"
+                style={{
+                  width: `${testimonialGroups.length * 100}%`,
+                  transform: `translateX(-${
+                    activeTestimonialGroup * (100 / testimonialGroups.length)
+                  }%)`,
+                }}
+              >
+                {testimonialGroups.map((group, gIdx) => (
+                  <div
+                    key={`group-${gIdx}`}
+                    className="flex-shrink-0 px-4 py-6"
+                    style={{ width: `${100 / testimonialGroups.length}%` }}
+                    aria-hidden={gIdx !== activeTestimonialGroup}
                   >
-                    <div className="flex-none w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center font-bold text-primary-600 group-hover:scale-110 transition-transform">
-                      CS
-                    </div>
-                    <div className="text-left flex-1">
-                      <div className="font-semibold text-gray-900">
-                        See the impact
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Case studies & outcomes — 3 min reads
-                      </div>
-                    </div>
-                    <ArrowRight
-                      className="text-primary-600 group-hover:translate-x-1 transition-transform"
-                      size={16}
-                    />
-                  </a>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {group.map((t) => (
+                        <figure
+                          key={t.id}
+                          className="bg-white rounded-2xl p-6 h-full flex flex-col justify-between border border-gray-100"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="flex flex-col items-center gap-3">
+                              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center text-primary-700 font-bold text-lg flex-shrink-0 shadow-md">
+                                {initialsFromName(t.author)}
+                              </div>
+                              {t.rating && <StarRating rating={t.rating} />}
+                            </div>
 
-                  <div className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors">
-                    <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-800">
-                        24/7 Support
-                      </div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        Dedicated customer success
-                      </div>
+                            <figcaption className="flex-1">
+                              <Quote
+                                className="text-primary-200 mb-2 transform -scale-x-100"
+                                size={20}
+                              />
+                              <blockquote className="text-sm lg:text-base text-gray-800 leading-relaxed mb-4 font-medium">
+                                &quot;{t.quote}&quot;
+                              </blockquote>
+
+                              <div className="border-t border-gray-100 pt-4">
+                                <div className="font-bold text-gray-900 text-sm">
+                                  {t.author}
+                                </div>
+                                <div className="text-xs text-primary-600 font-semibold mt-1">
+                                  {t.role}
+                                </div>
+                                {t.company && (
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {t.company}
+                                  </div>
+                                )}
+                              </div>
+                            </figcaption>
+                          </div>
+                        </figure>
+                      ))}
                     </div>
                   </div>
-                </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="flex items-center justify-center mt-6">
+              <button
+                onClick={() => handleNav("prev")}
+                aria-label="Previous testimonials"
+                className="p-2 rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors mr-2"
+              >
+                <ArrowRight size={16} className="rotate-180" />
+              </button>
+
+              <div className="flex items-center gap-2">
+                {testimonialGroups.map((_, i) => (
+                  <button
+                    key={`dot-${i}`}
+                    onClick={() => {
+                      setActiveTestimonialGroup(i);
+                      setTestimonialPaused(true);
+                    }}
+                    aria-label={`Show testimonials page ${i + 1}`}
+                    className={`w-3 h-3 rounded-full ${
+                      i === activeTestimonialGroup
+                        ? "bg-primary-600"
+                        : "bg-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={() => handleNav("next")}
+                aria-label="Next testimonials"
+                className="p-2 rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors ml-2"
+              >
+                <ArrowRight size={16} />
+              </button>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="mt-12 pt-8 border-t border-gray-100">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                {data.testimonials.trustIndicators.map((indicator, index) => (
+                  <TrustIndicator key={index} indicator={indicator} />
+                ))}
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <style jsx>{`
-          @keyframes logo-slide {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(-33.33%);
-            }
+      <style jsx>{`
+        @keyframes logo-slide {
+          0% {
+            transform: translateX(0);
           }
+          100% {
+            transform: translateX(-33.33%);
+          }
+        }
 
-          /* Small responsive tweak */
-          @media (max-width: 640px) {
-            .overflow-hidden img {
-              max-height: 28px;
-            }
+        /* Small responsive tweak */
+        @media (max-width: 640px) {
+          .overflow-hidden img {
+            max-height: 28px;
           }
-        `}</style>
-      </section>
-    </>
+        }
+      `}</style>
+    </section>
   );
 }

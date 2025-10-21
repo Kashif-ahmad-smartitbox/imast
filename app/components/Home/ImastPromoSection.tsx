@@ -60,31 +60,12 @@ export default function ImastPromoSection(props: any) {
     if (open && modalRef.current) modalRef.current.focus();
   }, [open]);
 
-  const themeConfig = {
-    orange: {
-      cta: "bg-gradient-to-r from-primary-600 to-orange-500 hover:from-primary-700 hover:to-orange-600 focus-visible:ring-primary-300",
-      sectionBg: "bg-gradient-to-br from-white to-slate-50",
-      accent: "text-primary-600",
-      badge: "bg-primary-100 text-primary-700",
-      gradientText: "from-primary-600 to-primary-400",
-    },
-    blue: {
-      cta: "bg-gradient-to-r from-sky-600 to-blue-500 hover:from-sky-700 hover:to-blue-600 focus-visible:ring-sky-300",
-      sectionBg: "bg-gradient-to-br from-sky-50 via-blue-50 to-white",
-      accent: "text-sky-600",
-      badge: "bg-sky-100 text-sky-700",
-      gradientText: "from-sky-600 to-blue-500",
-    },
-  };
-
-  const currentTheme = themeConfig[props.data.theme];
-
   return (
     <section
       ref={sectionRef}
-      className={`${currentTheme.sectionBg} px-10 py-20 lg:py-28 overflow-hidden`}
+      className={`${props.data.sectionBg} px-4 py-20 lg:py-28 overflow-hidden`}
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           <div
             className={`lg:col-span-6 transition-all duration-700 ${
@@ -93,78 +74,50 @@ export default function ImastPromoSection(props: any) {
                 : "opacity-0 translate-y-8"
             }`}
           >
-            <p className="text-lg font-semibold text-gray-600 uppercase tracking-wider mb-3">
-              Promotional
+            <p className="text-lg font-semibold text-primary-600 uppercase tracking-wider mb-3">
+              {props.data.badgeText}
             </p>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-6">
-              <span className="block">IMAST360 for MSMEs &amp; SMBs</span>
+              <span className="block">{props.data.title}</span>
               <span
-                className={`block text-transparent bg-clip-text bg-gradient-to-r ${currentTheme.gradientText} mt-4`}
+                className={`block text-transparent bg-clip-text bg-gradient-to-r ${props.data.gradientText} mt-4`}
               >
-                Flat 50% Off
+                {props.data.discountText}
               </span>
             </h1>
 
             {/* Features Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-              <div className="flex items-center gap-3">
-                <CheckCircle className={`w-5 h-5 ${currentTheme.accent}`} />
-                <span className="text-sm font-medium text-gray-700">
-                  50% Discount
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Clock className={`w-5 h-5 ${currentTheme.accent}`} />
-                <span className="text-sm font-medium text-gray-700">
-                  3 Weeks Deployment
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Users className={`w-5 h-5 ${currentTheme.accent}`} />
-                <span className="text-sm font-medium text-gray-700">
-                  Dedicated Support
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <CheckCircle className={`w-5 h-5 ${currentTheme.accent}`} />
-                <span className="text-sm font-medium text-gray-700">
-                  Zero Third-Party
-                </span>
-              </div>
+              {props.data.features.map((feature: any, index: number) => (
+                <div key={index} className="flex items-center gap-3">
+                  <CheckCircle
+                    className={`w-5 h-5 ${props.data.accentColor}`}
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    {feature.text}
+                  </span>
+                </div>
+              ))}
             </div>
 
             <div className="text-md text-gray-700 space-y-4 leading-relaxed mb-8">
-              <p>
-                For the first time, IMAST is making it easier than ever for
-                Indian MSMEs &amp; SMBs to digitize their entire supply chain.
-              </p>
-
-              <p>
-                With this limited-time offer, get <strong>50% off</strong> on
-                IMAST360 flagship solutions — including Distributor Management
-                System (DMS), Sales Force Automation (SFA), Lead Management,
-                Loyalty &amp; Rewards Platform, and more.
-              </p>
-
-              <p>
-                Go live in just <strong>3 weeks</strong> with our dedicated
-                in-house implementation team, ensuring a smooth rollout with
-                zero dependency on third-party implementers.
-              </p>
-
-              <p>
-                Empower your distribution, sales, and customer engagement on one
-                integrated SaaS platform — only with IMAST360.
-              </p>
+              {props.data.descriptionParagraphs.map(
+                (paragraph: string, index: number) => (
+                  <p
+                    key={index}
+                    dangerouslySetInnerHTML={{ __html: paragraph }}
+                  />
+                )
+              )}
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <a
-                href="/contact"
+                href={props.data.ctaLink}
                 className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
               >
-                <span>Get Special Pricing</span>
+                <span>{props.data.ctaText}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
@@ -191,7 +144,7 @@ export default function ImastPromoSection(props: any) {
                       />
                       {/* Play button overlay */}
                       <button
-                        aria-label="Play IMAST360 demo video"
+                        aria-label={props.data.playButtonAriaLabel}
                         onClick={() => setOpen(true)}
                         className="absolute inset-0 flex items-center justify-center group focus:outline-none"
                       >
@@ -210,24 +163,22 @@ export default function ImastPromoSection(props: any) {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h3 className="text-lg font-bold text-gray-900 mb-2">
-                          IMAST360 Platform Demo
+                          {props.data.cardTitle}
                         </h3>
                         <p className="text-gray-600 leading-relaxed text-sm">
-                          See how IMAST360 transforms distribution, sales, and
-                          customer engagement with real-time analytics and
-                          seamless integration.
+                          {props.data.cardDescription}
                         </p>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-500 ml-4">
                         <Clock className="w-4 h-4" />
-                        <span>2:05</span>
+                        <span>{props.data.videoDuration}</span>
                       </div>
                     </div>
 
                     <div className="mt-4 w-full bg-gray-200 rounded-full h-1.5">
                       <div
-                        className={`h-1.5 rounded-full bg-gradient-to-r ${currentTheme.gradientText}`}
-                        style={{ width: "35%" }}
+                        className={`h-1.5 rounded-full bg-gradient-to-r ${props.data.gradientText}`}
+                        style={{ width: props.data.progressWidth }}
                       ></div>
                     </div>
                   </div>
@@ -237,9 +188,11 @@ export default function ImastPromoSection(props: any) {
                 <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-lg p-4 border border-gray-300">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-primary-600">
-                      50%
+                      {props.data.floatingDiscount.value}
                     </div>
-                    <div className="text-xs font-medium text-gray-600">OFF</div>
+                    <div className="text-xs font-medium text-gray-600">
+                      {props.data.floatingDiscount.label}
+                    </div>
                   </div>
                 </div>
 
@@ -249,7 +202,7 @@ export default function ImastPromoSection(props: any) {
                       <CheckCircle className="w-4 h-4 text-green-600" />
                     </div>
                     <div className="text-sm font-semibold text-gray-700">
-                      3 Weeks
+                      {props.data.floatingTimeline.value}
                     </div>
                   </div>
                 </div>
@@ -264,7 +217,7 @@ export default function ImastPromoSection(props: any) {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="IMAST360 demo video"
+          aria-label={props.data.modalAriaLabel}
           tabIndex={-1}
           ref={modalRef}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-300"
@@ -292,10 +245,10 @@ export default function ImastPromoSection(props: any) {
 
             <div className="absolute bottom-6 left-6 right-6 bg-gradient-to-t from-black/80 to-transparent p-6 pt-16 pointer-events-none">
               <h3 className="text-white text-xl font-bold mb-2">
-                IMAST360 Platform Overview
+                {props.data.modalTitle}
               </h3>
               <p className="text-white/80 text-sm">
-                Complete supply chain digitization for MSMEs & SMBs
+                {props.data.modalDescription}
               </p>
             </div>
           </div>

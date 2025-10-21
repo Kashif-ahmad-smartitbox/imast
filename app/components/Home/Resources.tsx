@@ -340,16 +340,17 @@ export default function Resources(props: any) {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="mb-8 text-center">
-          <p className="text-3xl font-semibold text-primary-600">Resources</p>
+          <p className="text-3xl font-semibold text-primary-600">
+            {props.data.subtitle}
+          </p>
           <h2
             id="case-studies-title"
             className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
           >
-            Insights, guides and product updates
+            {props.data.title}
           </h2>
           <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-            Actionable articles and playbooks from the IMAST team — practical,
-            no-nonsense advice for operators.
+            {props.data.description}
           </p>
         </header>
 

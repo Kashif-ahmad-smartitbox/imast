@@ -188,14 +188,17 @@ export default function ModulesImproved(props: any) {
           <div className="flex items-center gap-4">
             <div>
               <div className="bg-white rounded my-3 p-3 shadow-md inline-block">
-                <img src="/imast360.png" alt="IMAST360" className="h-6" />
+                <img
+                  src={props.data.imast360Logo}
+                  alt="IMAST360"
+                  className="h-6"
+                />
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-                Modules that Power Your Business
+                {props.data.title}
               </h2>
               <p className="mt-1 text-[#F8EFEF] text-sm sm:text-base max-w-xl">
-                Start small, scale fast — a modular suite to digitize sales,
-                distribution, retail and service in one place.
+                {props.data.description}
               </p>
             </div>
           </div>

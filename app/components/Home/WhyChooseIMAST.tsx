@@ -11,61 +11,57 @@ import {
   X,
 } from "lucide-react";
 import ImastAwardsSection from "./ImastAwardsSection";
+import Link from "next/link";
 
-type Differentiator = {
+// --- Interfaces
+interface Differentiator {
   icon: React.ReactNode;
   title: string;
   desc: string;
   accent: string;
   color: string;
-};
+}
 
-const differentiatorsData = (props: any): Differentiator[] =>
-  [
-    {
-      icon: <ShieldCheck className="w-6 h-6" />,
-      title: "Enterprise-grade security",
-      desc: "TLS, RBAC, audit logs, and compliance-ready controls.",
-      accent: "from-green-50 to-green-100",
-      color: "text-green-600",
-    },
-    {
-      icon: <Zap className="w-6 h-6" />,
-      title: "Fast to deploy",
-      desc: "MVP-first delivery — production-capable in weeks, not months.",
-      accent: "from-amber-50 to-amber-100",
-      color: "text-amber-600",
-    },
-    {
-      icon: <Users className="w-6 h-6" />,
-      title: "On-ground support",
-      desc: "Local implementation teams and training to make rollouts stick.",
-      accent: "from-sky-50 to-sky-100",
-      color: "text-sky-600",
-    },
-    {
-      icon: <Layers className="w-6 h-6" />,
-      title: "Modular & extensible",
-      desc: "Pick modules now and integrate systems later — future-proof.",
-      accent: "from-violet-50 to-violet-100",
-      color: "text-violet-600",
-    },
-    {
-      icon: <Award className="w-6 h-6" />,
-      title: "Proven outcomes",
-      desc: "Measured lift in revenue, retention and operational efficiency.",
-      accent: "from-primary-50 to-primary-100",
-      color: "text-primary-600",
-    },
-    {
-      icon: <Globe className="w-6 h-6" />,
-      title: "Scalable globally",
-      desc: "Deploy once, expand seamlessly across regions with localization support.",
-      accent: "from-indigo-50 to-indigo-100",
-      color: "text-indigo-600",
-    },
-  ] as Differentiator[];
+interface ComparisonPoint {
+  text: string;
+}
 
+interface WhyChooseIMASTData {
+  header: {
+    subtitle: string;
+    title: string;
+    description: string;
+  };
+  awardHeader: {
+    title: string;
+    description: string;
+  };
+  backgroundGradient: string;
+  differentiators: Differentiator[];
+  comparison: {
+    title: string;
+    subtitle: string;
+    tagline: string;
+    imast: {
+      label: string;
+      points: ComparisonPoint[];
+    };
+    competitor: {
+      label: string;
+      points: ComparisonPoint[];
+    };
+    cta: {
+      text: string;
+      link: string;
+    };
+  };
+  ctaButton: {
+    text: string;
+    link: string;
+  };
+}
+
+// --- UI Components
 function BlinkBullet({ className = "" }: { className?: string }) {
   return (
     <span
@@ -94,29 +90,30 @@ function RedCrossBullet({ className = "" }: { className?: string }) {
   );
 }
 
-export default function WhyChooseIMAST(props: any) {
-  const differentiators = useMemo(() => differentiatorsData(), []);
+// Icon mapping function
+const getIconComponent = (iconName: string) => {
+  const iconMap = {
+    ShieldCheck: <ShieldCheck className="w-6 h-6" />,
+    Zap: <Zap className="w-6 h-6" />,
+    Users: <Users className="w-6 h-6" />,
+    Layers: <Layers className="w-6 h-6" />,
+    Award: <Award className="w-6 h-6" />,
+    Globe: <Globe className="w-6 h-6" />,
+  };
 
-  const quickPoints = useMemo(
-    () => [
-      "Deployed directly by the IMAST team — no third-party dependency, no extra cost.",
-      "Delivers 50%+ ROI compared to other players.",
-      "Simple, user-friendly, and feature-rich platform unlike complex alternatives.",
-      "No charges for small changes or new learnings — improvements are client-driven.",
-      "Made in India & fastest-growing SaaS leader with 200+ brands and 95% client retention.",
-    ],
-    []
+  return (
+    iconMap[iconName as keyof typeof iconMap] || <Award className="w-6 h-6" />
   );
+};
 
-  const quickPoints2 = useMemo(
-    () => [
-      "Depend heavily on third-party implementers, causing delays and high additional costs.",
-      "Struggle to provide measurable ROI due to hidden costs, fragmented tools, and heavy license fees.",
-      "Offer complex, siloed systems with limited features and higher training needs.",
-      "Charge for every small customization or update, adding client burden.",
-      "Often slower, imported solutions not aligned with Indian MSME/SMB realities.",
-    ],
-    []
+export default function WhyChooseIMAST({ data }: { data: WhyChooseIMASTData }) {
+  const differentiators = useMemo(
+    () =>
+      data.differentiators.map((diff) => ({
+        ...diff,
+        icon: getIconComponent(diff.icon as string),
+      })),
+    [data.differentiators]
   );
 
   return (
@@ -126,16 +123,17 @@ export default function WhyChooseIMAST(props: any) {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
         <header className="text-center mb-8">
-          <p className="text-3xl font-semibold text-primary-100">Why IMAST?</p>
+          <p className="text-3xl font-semibold text-primary-100">
+            {data.header.subtitle}
+          </p>
           <h2
             id="why-imast-title"
             className="mt-3 text-xl sm:text-4xl font-extrabold tracking-tight text-white"
           >
-            Practical engineering that delivers — secure, fast, and field-proven
+            {data.header.title}
           </h2>
           <p className="mt-3 max-w-3xl mx-auto text-primary-100">
-            No fluff — we build what moves the business. Simple contracts,
-            hands-on onboarding, and outcomes that show up on your P&amp;L.
+            {data.header.description}
           </p>
         </header>
 
@@ -161,13 +159,13 @@ export default function WhyChooseIMAST(props: any) {
                     <p className="mt-2 text-sm text-gray-600">{d.desc}</p>
 
                     <div className="mt-4 flex items-center gap-3">
-                      <a
+                      <Link
                         href="/contact"
                         className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-primary-600 text-white text-sm font-medium shadow-sm hover:opacity-95 transition"
                       >
                         Discuss
                         <ArrowRight className="w-4 h-4" />
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -180,29 +178,32 @@ export default function WhyChooseIMAST(props: any) {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm font-bold text-gray-500">
-                    IMAST vs Typical Competitor
+                    {data.comparison.title}
                   </div>
                   <div className="mt-2 text-lg font-semibold text-gray-900">
-                    Clear differences — side by side
+                    {data.comparison.subtitle}
                   </div>
                 </div>
                 <div className="inline-flex items-center gap-2 text-xs text-gray-400">
-                  Practical comparison
+                  {data.comparison.tagline}
                 </div>
               </div>
 
               {/* IMAST section */}
               <div className="mt-6">
                 <div className="text-xs font-medium text-green-700 mb-3">
-                  IMAST
+                  {data.comparison.imast.label}
                 </div>
                 <ul className="space-y-3 text-sm text-gray-700">
-                  {quickPoints.map((p) => (
-                    <li key={`imast-${p}`} className="flex items-start gap-3">
+                  {data.comparison.imast.points.map((point, index) => (
+                    <li
+                      key={`imast-${index}`}
+                      className="flex items-start gap-3"
+                    >
                       <span className="flex-shrink-0 mt-1 flex items-center justify-center">
                         <BlinkBullet />
                       </span>
-                      <span className="leading-tight">{p}</span>
+                      <span className="leading-tight">{point.text}</span>
                     </li>
                   ))}
                 </ul>
@@ -211,15 +212,18 @@ export default function WhyChooseIMAST(props: any) {
               {/* Competitor section */}
               <div className="mt-4">
                 <div className="text-xs font-medium text-red-700 mb-3">
-                  Typical Competitor
+                  {data.comparison.competitor.label}
                 </div>
                 <ul className="space-y-3 text-sm text-gray-700">
-                  {quickPoints2.map((p, idx) => (
-                    <li key={`comp-${idx}`} className="flex items-start gap-3">
+                  {data.comparison.competitor.points.map((point, index) => (
+                    <li
+                      key={`comp-${index}`}
+                      className="flex items-start gap-3"
+                    >
                       <span className="flex-shrink-0 mt-1 flex items-center justify-center">
                         <RedCrossBullet />
                       </span>
-                      <span className="leading-tight">{p}</span>
+                      <span className="leading-tight">{point.text}</span>
                     </li>
                   ))}
                 </ul>
@@ -227,17 +231,17 @@ export default function WhyChooseIMAST(props: any) {
 
               <div className="mt-6 flex items-center justify-end gap-3">
                 <a
-                  href="/start-trial"
+                  href={data.comparison.cta.link}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary-600 text-white text-sm font-medium shadow-sm hover:opacity-95 transition"
                 >
-                  Start trial
+                  {data.comparison.cta.text}
                   <ArrowRight className="w-4 h-4" />
                 </a>
               </div>
             </div>
           </aside>
         </div>
-        <ImastAwardsSection />
+        <ImastAwardsSection awardHeader={data.awardHeader} />
       </div>
     </section>
   );

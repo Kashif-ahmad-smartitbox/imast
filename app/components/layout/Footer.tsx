@@ -29,12 +29,51 @@ interface SocialLink {
   id: string;
   label: string;
   href: string;
-  icon: React.ComponentType<{ className?: string; size?: number }>;
+  icon: string;
 }
 
 interface NavigationLink {
   href: string;
   label: string;
+}
+
+interface ContactInfo {
+  type: string;
+  label: string;
+  value: string;
+  icon: string;
+}
+
+interface FooterData {
+  logo: {
+    src: string;
+    alt: string;
+  };
+  company: {
+    description: string;
+    contact: ContactInfo[];
+  };
+  socialLinks: SocialLink[];
+  quickLinks: NavigationLink[];
+  services: NavigationLink[];
+  legalLinks: NavigationLink[];
+  newsletter: {
+    title: string;
+    description: string;
+    placeholder: string;
+    submitText: string;
+    submittingText: string;
+    successMessage: string;
+    errorMessages: {
+      empty: string;
+      invalid: string;
+      generic: string;
+    };
+  };
+  copyright: {
+    text: string;
+    year: number;
+  };
 }
 
 interface FooterColumnProps {
@@ -54,45 +93,31 @@ interface SocialButtonProps {
 }
 
 // =============================================================================
-// Constants
+// Icon Mapping
 // =============================================================================
 
-const SOCIAL_LINKS: SocialLink[] = [
-  { id: "facebook", label: "Facebook", href: "#", icon: FaFacebookF },
-  { id: "twitter", label: "X / Twitter", href: "#", icon: FaTwitter },
-  { id: "instagram", label: "Instagram", href: "#", icon: FaInstagram },
-  { id: "linkedin", label: "LinkedIn", href: "#", icon: FaLinkedinIn },
-  { id: "youtube", label: "YouTube", href: "#", icon: FaYoutube },
-  { id: "blogger", label: "Blogger", href: "#", icon: FaBloggerB },
-  { id: "pinterest", label: "Pinterest", href: "#", icon: FaPinterestP },
-  { id: "tumblr", label: "Tumblr", href: "#", icon: FaTumblr },
-  { id: "threads", label: "Threads", href: "#", icon: SiThreads },
-];
+const getIconComponent = (iconName: string) => {
+  const iconMap = {
+    FaMapMarkerAlt,
+    FaPhone,
+    FaEnvelope,
+    FaPaperPlane,
+    FaHeart,
+    FaArrowRight,
+    FaFacebookF,
+    FaTwitter,
+    FaInstagram,
+    FaLinkedinIn,
+    FaYoutube,
+    FaBloggerB,
+    FaPinterestP,
+    FaTumblr,
+    FaComments,
+    SiThreads,
+  };
 
-const QUICK_LINKS: NavigationLink[] = [
-  { href: "/about", label: "About Us" },
-  { href: "/services", label: "Services" },
-  { href: "/portfolio", label: "Portfolio" },
-  { href: "/careers", label: "Careers" },
-  { href: "/blog", label: "Blog" },
-  { href: "/contact", label: "Contact" },
-];
-
-const SERVICES: NavigationLink[] = [
-  { href: "/solutions/retail-point", label: "Retail & POS" },
-  { href: "/solutions/distributor", label: "Distributor" },
-  { href: "/solutions/sales-force", label: "Sales Force" },
-  { href: "/solutions/loyalty", label: "Loyalty" },
-  { href: "/solutions/partner-loyalty", label: "Partner Loyalty" },
-  { href: "/services/on-ground", label: "On-Ground Services" },
-];
-
-const LEGAL_LINKS: NavigationLink[] = [
-  { href: "/privacy", label: "Privacy Policy" },
-  { href: "/terms", label: "Terms of Service" },
-  { href: "/cookie", label: "Cookie Policy" },
-  { href: "/disclaimer", label: "Disclaimer" },
-];
+  return iconMap[iconName as keyof typeof iconMap] || FaEnvelope;
+};
 
 // =============================================================================
 // Helper Components
@@ -162,6 +187,9 @@ interface NewsletterFormProps {
   status: "idle" | "error" | "success";
   message: string;
   isSubmitting: boolean;
+  placeholder: string;
+  submitText: string;
+  submittingText: string;
   onEmailChange: (email: string) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
@@ -171,6 +199,9 @@ const NewsletterForm: React.FC<NewsletterFormProps> = ({
   status,
   message,
   isSubmitting,
+  placeholder,
+  submitText,
+  submittingText,
   onEmailChange,
   onSubmit,
 }) => {
@@ -196,7 +227,7 @@ const NewsletterForm: React.FC<NewsletterFormProps> = ({
           type="email"
           value={email}
           onChange={handleChange}
-          placeholder="Enter your email"
+          placeholder={placeholder}
           className={`w-full px-4 py-3 bg-white border rounded-xl text-gray-900 placeholder-gray-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent ${
             status === "error"
               ? "border-primary-400 shadow-sm"
@@ -219,7 +250,7 @@ const NewsletterForm: React.FC<NewsletterFormProps> = ({
         ) : (
           <FaPaperPlane className="w-3 h-3" />
         )}
-        {isSubmitting ? "Subscribing..." : "Subscribe"}
+        {isSubmitting ? submittingText : submitText}
       </button>
     </form>
   );
@@ -229,7 +260,7 @@ const NewsletterForm: React.FC<NewsletterFormProps> = ({
 // Main Footer Component
 // =============================================================================
 
-const Footer = (props: any) => {
+const Footer = ({ data }: { data: FooterData }) => {
   const [email, setEmail] = useState<string>("");
   const [status, setStatus] = useState<"idle" | "error" | "success">("idle");
   const [message, setMessage] = useState<string>("");
@@ -251,14 +282,14 @@ const Footer = (props: any) => {
       // Validation
       if (!email.trim()) {
         setStatus("error");
-        setMessage("Please enter your email address.");
+        setMessage(data.newsletter.errorMessages.empty);
         setIsSubmitting(false);
         return;
       }
 
       if (!validateEmail(email)) {
         setStatus("error");
-        setMessage("Please enter a valid email address.");
+        setMessage(data.newsletter.errorMessages.invalid);
         setIsSubmitting(false);
         return;
       }
@@ -268,18 +299,17 @@ const Footer = (props: any) => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         setStatus("success");
-        setMessage(
-          "🎉 Successfully subscribed! Check your inbox for confirmation."
-        );
+        setMessage(data.newsletter.successMessage);
         setEmail("");
-      } catch (error) {
+      } catch (error: any) {
         setStatus("error");
-        setMessage("Something went wrong. Please try again.");
+        console.log("error", error);
+        setMessage(data.newsletter.errorMessages.generic);
       } finally {
         setIsSubmitting(false);
       }
     },
-    [email, validateEmail]
+    [email, validateEmail, data.newsletter]
   );
 
   const handleEmailChange = useCallback(
@@ -293,6 +323,35 @@ const Footer = (props: any) => {
     },
     [status]
   );
+
+  // Format contact info for display
+  const formatContactInfo = (contact: ContactInfo) => {
+    switch (contact.type) {
+      case "address":
+        return (
+          <>
+            <strong className="text-gray-900">{contact.label}:</strong>{" "}
+            {contact.value}
+          </>
+        );
+      case "phone":
+        return (
+          <>
+            <strong className="text-gray-900">{contact.label}:</strong>{" "}
+            {contact.value}
+          </>
+        );
+      case "email":
+        return (
+          <>
+            <strong className="text-gray-900">{contact.label}:</strong>{" "}
+            {contact.value}
+          </>
+        );
+      default:
+        return contact.value;
+    }
+  };
 
   return (
     <footer className="bg-white text-gray-900 relative overflow-hidden border-t border-gray-100">
@@ -319,35 +378,36 @@ const Footer = (props: any) => {
               href="/"
               className="inline-block transition-transform hover:scale-105"
             >
-              <img src="/logo.svg" alt="Imast Logo" />
+              <img src={data.logo.src} alt={data.logo.alt} />
             </Link>
 
             <p className="text-gray-600 max-w-md text-base leading-relaxed">
-              Empowering innovation through practical, outcome-focused
-              technology for retail, distribution, and loyalty solutions that
-              drive real business growth.
+              {data.company.description}
             </p>
 
             <div className="flex flex-wrap gap-3">
-              {SOCIAL_LINKS.map((social) => (
-                <SocialButton
-                  key={social.id}
-                  href={social.href}
-                  label={social.label}
-                  icon={social.icon}
-                />
-              ))}
+              {data.socialLinks.map((social) => {
+                const IconComponent = getIconComponent(social.icon);
+                return (
+                  <SocialButton
+                    key={social.id}
+                    href={social.href}
+                    label={social.label}
+                    icon={IconComponent}
+                  />
+                );
+              })}
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <FooterColumn title="Quick Links" items={QUICK_LINKS} />
+            <FooterColumn title="Quick Links" items={data.quickLinks} />
           </div>
 
           {/* Services */}
           <div>
-            <FooterColumn title="Services" items={SERVICES} />
+            <FooterColumn title="Services" items={data.services} />
           </div>
 
           {/* Contact Information */}
@@ -358,33 +418,16 @@ const Footer = (props: any) => {
             </h3>
 
             <div className="space-y-4">
-              <ContactRow
-                icon={FaMapMarkerAlt}
-                label={
-                  <>
-                    <strong className="text-gray-900">Address:</strong> 123
-                    Innovation Street, Tech City
-                  </>
-                }
-              />
-              <ContactRow
-                icon={FaPhone}
-                label={
-                  <>
-                    <strong className="text-gray-900">Phone:</strong> +1 (555)
-                    123-4567
-                  </>
-                }
-              />
-              <ContactRow
-                icon={FaEnvelope}
-                label={
-                  <>
-                    <strong className="text-gray-900">Email:</strong>{" "}
-                    hello@imast.com
-                  </>
-                }
-              />
+              {data.company.contact.map((contact) => {
+                const IconComponent = getIconComponent(contact.icon);
+                return (
+                  <ContactRow
+                    key={contact.type}
+                    icon={IconComponent}
+                    label={formatContactInfo(contact)}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>
@@ -394,11 +437,10 @@ const Footer = (props: any) => {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="text-center lg:text-left space-y-3">
               <h3 className="text-2xl font-semibold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                Stay Updated
+                {data.newsletter.title}
               </h3>
               <p className="text-gray-600 text-base max-w-md">
-                Subscribe for product updates, practical playbooks, and
-                exclusive events.
+                {data.newsletter.description}
               </p>
             </div>
 
@@ -408,6 +450,9 @@ const Footer = (props: any) => {
                 status={status}
                 message={message}
                 isSubmitting={isSubmitting}
+                placeholder={data.newsletter.placeholder}
+                submitText={data.newsletter.submitText}
+                submittingText={data.newsletter.submittingText}
                 onEmailChange={handleEmailChange}
                 onSubmit={handleSubscribe}
               />
@@ -433,11 +478,14 @@ const Footer = (props: any) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-gray-500 text-sm flex items-center flex-wrap gap-2 justify-center md:justify-start">
-              © {new Date().getFullYear()} IMAST. All rights reserved.
+              {data.copyright.text.replace(
+                "{year}",
+                data.copyright.year.toString()
+              )}
             </div>
 
             <div className="flex flex-wrap justify-center gap-6 text-sm">
-              {LEGAL_LINKS.map((link) => (
+              {data.legalLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}

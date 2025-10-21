@@ -46,7 +46,10 @@ type AwardItem = {
 };
 
 interface ImastAwardsSectionProps {
-  title?: string;
+  awardHeader: {
+    title: string;
+    description: string;
+  };
   awards?: AwardItem[];
 }
 
@@ -393,7 +396,7 @@ function AwardCard({
 /* ====== New: Auto-slider (one card at a time) ====== */
 
 export default memo(function ImastAwardsSection({
-  title = "Awards & Accolades",
+  awardHeader,
   awards = DEFAULT_AWARDS,
 }: ImastAwardsSectionProps) {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -605,11 +608,10 @@ export default memo(function ImastAwardsSection({
       <div className="max-w-7xl mx-auto">
         <div className="mb-10">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-primary-100">
-            {title}
+            {awardHeader.title}
           </h2>
           <p className="mt-2 text-sm text-gray-50 max-w-xl">
-            A steady record of recognition — built the old fashioned way: hard
-            work, discipline and a long-term view.
+            {awardHeader.description}
           </p>
         </div>
 

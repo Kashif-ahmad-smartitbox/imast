@@ -3,100 +3,108 @@ import React from "react";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 
-export default function ImastTrial(props: any) {
-  // Enhanced floating animation with proper typing
-  const floatAnimation: Variants = {
-    initial: {
-      y: 0,
-      rotate: 0,
-      scale: 1,
-    },
-    float: {
-      y: [0, -12, 2, -8, 0],
-      rotate: [-0.5, 0.5, -0.3, 0.3, -0.5],
-      scale: [1, 1.002, 0.998, 1.001, 1],
-      transition: {
-        duration: 8,
-        ease: "easeInOut",
-        repeat: Infinity,
-        repeatType: "reverse",
-      },
-    },
-    hover: {
-      y: -8,
-      scale: 1.03,
-      rotate: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeOut",
-      },
-    },
-    tap: {
-      scale: 0.98,
-      transition: { duration: 0.1 },
-    },
+export type ImastTrialData = {
+  brandLogoSrc?: string;
+  headline?: {
+    pre?: string;
+    highlight?: string;
+    post?: string;
   };
-
-  // Background elements animation with proper typing
-  const backgroundFloat: Variants = {
-    initial: {
-      y: 0,
-      opacity: 0.1,
-    },
-    animate: {
-      y: [0, -20, 0],
-      opacity: [0.1, 0.15, 0.1],
-      transition: {
-        duration: 10,
-        ease: "easeInOut",
-        repeat: Infinity,
-        repeatType: "reverse",
-      },
-    },
+  subheadline?: string;
+  features: string[];
+  cta: {
+    text: string;
+    href: string;
   };
-
-  // Sparkle animation with proper typing
-  const sparkleAnimation: Variants = {
-    initial: {
-      opacity: 0,
-      scale: 0.9,
-    },
-    animate: {
-      opacity: [0, 0.15, 0.05, 0.12, 0],
-      scale: [0.9, 1.1, 0.95, 1.05, 0.9],
-      transition: {
-        duration: 9,
-        repeat: Infinity,
-        ease: "easeInOut",
-      },
-    },
+  trust?: {
+    brandsLabel?: string;
+    brandsCount?: string;
+    usersLabel?: string;
+    usersCount?: string;
   };
-
-  // Features list animation
-  const featureItem: Variants = {
-    initial: { opacity: 0, x: -10 },
-    animate: { opacity: 1, x: 0 },
+  illustrationSrc?: string;
+  accent?: {
+    from?: string;
+    to?: string;
   };
+};
 
-  const containerVariants: Variants = {
-    initial: { opacity: 0 },
-    animate: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
+type Props = {
+  data: ImastTrialData;
+};
+
+const floatAnimation: Variants = {
+  initial: { y: 0, rotate: 0, scale: 1 },
+  float: {
+    y: [0, -12, 2, -8, 0],
+    rotate: [-0.5, 0.5, -0.3, 0.3, -0.5],
+    scale: [1, 1.002, 0.998, 1.001, 1],
+    transition: {
+      duration: 8,
+      ease: "easeInOut",
+      repeat: Infinity,
+      repeatType: "reverse",
     },
-  };
+  },
+  hover: {
+    y: -8,
+    scale: 1.03,
+    rotate: 0,
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+  tap: { scale: 0.98, transition: { duration: 0.1 } },
+};
 
-  const features = [
-    "Unified platform for retail, distribution & loyalty",
-    "Fast setup with enterprise-grade controls",
-    "Measurable outcomes from day one",
-  ];
+const backgroundFloat: Variants = {
+  initial: { y: 0, opacity: 0.1 },
+  animate: {
+    y: [0, -20, 0],
+    opacity: [0.1, 0.15, 0.1],
+    transition: {
+      duration: 10,
+      ease: "easeInOut",
+      repeat: Infinity,
+      repeatType: "reverse",
+    },
+  },
+};
+
+const sparkleAnimation: Variants = {
+  initial: { opacity: 0, scale: 0.9 },
+  animate: {
+    opacity: [0, 0.15, 0.05, 0.12, 0],
+    scale: [0.9, 1.1, 0.95, 1.05, 0.9],
+    transition: { duration: 9, repeat: Infinity, ease: "easeInOut" },
+  },
+};
+
+const featureItem: Variants = {
+  initial: { opacity: 0, x: -10 },
+  animate: { opacity: 1, x: 0 },
+};
+const containerVariants: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { staggerChildren: 0.1 } },
+};
+
+export default function ImastTrial({ data }: Props) {
+  const {
+    brandLogoSrc = "/logo.svg",
+    headline = { pre: "Try", highlight: "IMAST", post: "Free" },
+    subheadline = "No credit card required. No software to install. Start in minutes.",
+    features = [],
+    cta,
+    trust = {
+      brandsLabel: "Trusted by",
+      brandsCount: "500+",
+      usersLabel: "users",
+      usersCount: "2M+",
+    },
+    illustrationSrc = "/imast-try-free.png",
+  } = data;
 
   return (
     <section className="w-full py-16 lg:py-24 px-6 lg:px-12 bg-gradient-to-br from-slate-900 to-red-900 relative overflow-hidden">
-      {/* Animated background elements */}
       <motion.div
         variants={backgroundFloat}
         initial="initial"
@@ -112,7 +120,6 @@ export default function ImastTrial(props: any) {
         className="absolute bottom-0 right-0 w-96 h-96 bg-primary-300/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"
       />
 
-      {/* Enhanced sparkle effect */}
       <motion.div
         aria-hidden="true"
         variants={sparkleAnimation}
@@ -123,42 +130,38 @@ export default function ImastTrial(props: any) {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Content Section */}
           <motion.div
             className="p-6 lg:p-8 text-white space-y-6"
             initial="initial"
             animate="animate"
             variants={containerVariants}
           >
-            {/* Logo/Brand */}
             <div className="flex items-center gap-3 mb-2">
               <img
-                src="/logo.svg"
-                alt="IMAST"
+                src={brandLogoSrc}
+                alt="brand"
                 className="w-8 h-8 lg:w-44 lg:h-20"
                 loading="eager"
               />
             </div>
 
-            {/* Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-              Try{" "}
+              {headline.pre ? <>{headline.pre} </> : null}
               <span className="relative inline-block">
-                <span className="relative z-10">IMAST</span>
+                <span className="relative z-10">{headline.highlight}</span>
                 <div className="absolute bottom-2 left-0 w-full h-3 bg-primary-300/30 -rotate-1 z-0" />
-              </span>{" "}
-              Free
+              </span>
+              {headline.post ? <> {headline.post}</> : null}
             </h1>
 
             <p className="text-xl lg:text-2xl font-light text-primary-100 leading-relaxed max-w-xl">
-              No credit card required. No software to install. Start in minutes.
+              {subheadline}
             </p>
 
-            {/* Features List */}
             <motion.div className="space-y-3" variants={containerVariants}>
               {features.map((feature, index) => (
                 <motion.div
-                  key={feature}
+                  key={index}
                   variants={featureItem}
                   className="flex items-center gap-3"
                 >
@@ -170,21 +173,19 @@ export default function ImastTrial(props: any) {
               ))}
             </motion.div>
 
-            {/* CTA Section */}
             <div className="space-y-4 pt-4">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <motion.a
-                  href="/start-trial"
+                  href={cta.href}
                   className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-primary-700 font-bold rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl active:scale-95 min-w-[200px] justify-center"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <span className="relative z-10">Start Free Trial</span>
+                  <span className="relative z-10">{cta.text}</span>
                   <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
                   <div className="absolute inset-0 bg-gradient-to-r from-white to-primary-100 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </motion.a>
 
-                {/* Trust Indicators */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 text-primary-100">
                   <div className="flex items-center gap-2">
                     <div className="flex -space-x-2">
@@ -196,20 +197,22 @@ export default function ImastTrial(props: any) {
                       ))}
                     </div>
                     <span className="text-sm font-medium">
-                      Trusted by <strong className="text-white">500+</strong>{" "}
-                      brands
+                      {trust.brandsLabel}{" "}
+                      <strong className="text-white">
+                        {trust.brandsCount}
+                      </strong>
                     </span>
                   </div>
                   <div className="hidden sm:block w-px h-4 bg-primary-400/50" />
                   <div className="flex items-center gap-2 text-sm font-medium">
-                    <strong className="text-white">2M+</strong> users
+                    <strong className="text-white">{trust.usersCount}</strong>{" "}
+                    {trust.usersLabel}
                   </div>
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Illustration Section */}
           <div className="relative p-8 lg:p-10 flex justify-center items-center">
             <motion.div
               variants={floatAnimation}
@@ -219,7 +222,6 @@ export default function ImastTrial(props: any) {
               whileTap="tap"
               className="relative max-w-md lg:max-w-lg w-full cursor-pointer select-none"
             >
-              {/* Enhanced decorative frame */}
               <motion.div
                 initial={{ opacity: 0.06, scale: 0.98 }}
                 animate={{
@@ -234,29 +236,20 @@ export default function ImastTrial(props: any) {
                 className="absolute -inset-4 rounded-xl border border-primary-600/25 blur-md pointer-events-none"
               />
 
-              {/* Main illustration */}
               <motion.img
-                src={props.illustrationSrc || "/imast-try-free.png"}
+                src={illustrationSrc}
                 alt="IMAST product preview"
                 loading="lazy"
                 className="w-full h-auto object-contain rounded-lg relative z-10"
                 draggable={false}
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{
-                  duration: 0.8,
-                  ease: "easeOut",
-                  delay: 0.2,
-                }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
               />
 
-              {/* Enhanced floating label */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
-                animate={{
-                  opacity: [0, 0.8, 0.6],
-                  y: [10, -5, 10],
-                }}
+                animate={{ opacity: [0, 0.8, 0.6], y: [10, -5, 10] }}
                 transition={{
                   delay: 0.5,
                   duration: 6,

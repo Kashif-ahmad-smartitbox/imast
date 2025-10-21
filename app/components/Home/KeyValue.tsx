@@ -113,7 +113,7 @@ function RightContent({ cardProps }: { cardProps?: ImastCardProps }) {
   return (
     <div className="relative order-1 lg:order-2">
       <div className="relative z-10 transform hover:scale-[1.02] transition-transform duration-500">
-        {/* @ts-ignore */}
+        {/* @ts-expect-error: cardProps may be partial/dynamic */}
         <ImastCard {...(cardProps ?? {})} />
       </div>
 

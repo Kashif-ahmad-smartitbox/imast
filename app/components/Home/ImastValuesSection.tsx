@@ -36,19 +36,12 @@ function ValueCard({ value, index }: { value: ValueItem; index: number }) {
           {value.title}
         </h3>
 
-        {/*
-          Description behaviour:
-          - By default the description is visually constrained with a max-height (approx 3 lines)
-          - On hover / focus (keyboard accessible) it expands smoothly to show full text
-          - We avoid relying on Tailwind line-clamp plugin so the effect works in plain Tailwind
-        */}
         <p
           className={`text-[15px] text-slate-600 leading-relaxed overflow-hidden transition-[max-height,color] duration-300`}
         >
           {value.description}
         </p>
 
-        {/* Invisible focus/hover anchor to expand the description for keyboard users */}
         <style>
           {`/* CSS to make group hover/focus control p maxHeight */
           .group:focus p, .group:hover p { max-height: 400px; color: inherit; }
@@ -68,8 +61,8 @@ export default memo(function ImastValuesSection(props: any) {
       <div className="relative">
         <div className="w-full h-[250px] md:h-[300px] lg:h-[500px] overflow-hidden bg-gradient-to-br from-slate-900/20 to-primary-900/10">
           <img
-            src={props.data.heroImage}
-            alt="IMAST team gathered at an event"
+            src={props.data.heroImage.src}
+            alt={props.data.heroImage.alt}
             className="w-full h-full object-cover object-top mix-blend-overlay"
             loading="eager"
             decoding="async"
@@ -82,22 +75,24 @@ export default memo(function ImastValuesSection(props: any) {
               <div className="max-w-5xl mx-auto">
                 <header className="text-center mb-8 md:mb-12">
                   <p className="text-2xl font-semibold text-primary-600 uppercase tracking-wide">
-                    Our Values
+                    {props.data.sectionBadge}
                   </p>
                   <h2
                     id="impact-heading"
                     className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
                   >
-                    {props.data.title.split("\n").map((line, i) => (
-                      <span key={i} className="block">
-                        &quot;{line}&quot;
-                      </span>
-                    ))}
+                    {props.data.title
+                      .split("\n")
+                      .map((line: any, i: number) => (
+                        <span key={i} className="block">
+                          &quot;{line}&quot;
+                        </span>
+                      ))}
                   </h2>
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 md:mb-16">
-                  {valuesList.map((value, i) => (
+                  {valuesList.map((value: any, i: number) => (
                     <ValueCard key={i} value={value} index={i} />
                   ))}
                 </div>

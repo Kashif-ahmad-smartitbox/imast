@@ -41,10 +41,10 @@ export default function ImpactSection(props: any) {
 
   return (
     <section
-      className="relative py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 to-white"
+      className="relative py-10 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 to-white"
       aria-labelledby="impact-heading"
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 relative z-10">
         <header className="text-center mb-12">
           <p className="text-xl font-semibold text-primary-600 uppercase tracking-wide">
             {props.data.subtitle}

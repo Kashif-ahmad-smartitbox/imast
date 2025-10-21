@@ -1,6 +1,7 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
 import { Briefcase, ArrowRight, ChevronDown, X } from "lucide-react";
+import Link from "next/link";
 
 type CaseStudy = {
   id: string;
@@ -96,17 +97,16 @@ export default function CaseStudies(props: any) {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <header className="mb-8 text-center">
           <p className="text-3xl font-semibold text-primary-600">
-            Customer stories
+            {props.data.subtitle}
           </p>
           <h2
             id="case-studies-title"
             className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
           >
-            Success stories that move the needle
+            {props.data.title}
           </h2>
           <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-            Real outcomes from customers using IMAST across retail, distribution
-            and FMCG.
+            {props.data.description}
           </p>
         </header>
 
@@ -228,18 +228,18 @@ export default function CaseStudies(props: any) {
                 </div>
 
                 <div className="mt-6 flex items-center gap-3">
-                  <a
+                  <Link
                     href={`/case-studies/${open.id}`}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white font-semibold"
                   >
                     Read full case study
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/contact"
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200"
                   >
                     Talk to our team
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
