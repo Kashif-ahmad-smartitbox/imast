@@ -7,14 +7,14 @@ import type { NavigationItem as NavItemType } from "@/app/admin/dashboard/layout
 
 type Props = {
   item: NavItemType;
-  isActive: boolean;
+  isActive: boolean; // This should be boolean
   isExpanded: boolean;
   onClick: (id: string, href?: string) => void;
 };
 
 const NavigationItem: React.FC<Props> = ({
   item,
-  isActive,
+  isActive, // This is now boolean
   isExpanded,
   onClick,
 }) => {
@@ -45,7 +45,9 @@ const NavigationItem: React.FC<Props> = ({
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       onClick(item.id, item.href);
-      handleNavigation(item.href, e);
+      if (item.href) {
+        handleNavigation(item.href, e);
+      }
     },
     [item, onClick, handleNavigation]
   );

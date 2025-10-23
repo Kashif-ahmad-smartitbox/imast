@@ -1,7 +1,8 @@
-import { X } from "lucide-react";
-import { useEffect, useRef } from "react";
-import { SIDEBAR_ITEMS } from "@/app/admin/dashboard/layout";
+"use client";
 
+import { X, ChevronDown } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { SIDEBAR_ITEMS } from "@/app/admin/dashboard/layout";
 import BrandSection from "./BrandSection";
 
 interface MobileDrawerProps {
@@ -9,7 +10,7 @@ interface MobileDrawerProps {
   isMobile: boolean;
   activeItem: string;
   onToggle: () => void;
-  onItemClick: (id: string) => void;
+  onItemClick: (id: string, href?: string) => void;
   onClose?: () => void;
 }
 
@@ -30,6 +31,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
 }) => {
   const drawerRef = useRef<HTMLDivElement>(null);
   const firstDrawerButtonRef = useRef<HTMLButtonElement>(null);
+  const [openSubmenus, setOpenSubmenus] = useState<Set<string>>(new Set());
 
   useBodyScrollLock(isMobile);
 
@@ -38,6 +40,54 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
       firstDrawerButtonRef.current?.focus();
     }
   }, [isMobile]);
+
+  const toggleSubmenu = useCallback((itemId: string) => {
+    setOpenSubmenus((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const handleItemClick = useCallback(
+    (itemId: string, href?: string) => {
+      const item = SIDEBAR_ITEMS.find((it) => it.id === itemId);
+
+      if (item?.children && !href) {
+        // If it's a parent item with children and no specific href, toggle submenu
+        toggleSubmenu(itemId);
+      } else {
+        // For regular items or child items with href, call the parent handler
+        onItemClick(itemId, href);
+        onClose?.();
+      }
+    },
+    [toggleSubmenu, onItemClick, onClose]
+  );
+
+  // Close drawer when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        drawerRef.current &&
+        !drawerRef.current.contains(event.target as Node)
+      ) {
+        onClose?.();
+      }
+    };
+
+    if (isMobile) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobile, onClose]);
 
   if (!isMobile) return null;
 
@@ -76,25 +126,81 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
             <ul className="space-y-2" role="navigation">
               {SIDEBAR_ITEMS.map((item) => (
                 <li key={item.id}>
-                  <button
-                    onClick={() => {
-                      onItemClick(item.id);
-                      onClose?.();
-                    }}
-                    className={`w-full flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      activeItem === item.id
-                        ? "bg-blue-50 text-primary-700 border border-blue-100"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
-                  >
-                    <item.Icon className="w-5 h-5" aria-hidden />
-                    <span>{item.label}</span>
-                    {item.badge && (
-                      <span className="ml-auto w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                        {item.badge}
-                      </span>
-                    )}
-                  </button>
+                  {item.children ? (
+                    <>
+                      <button
+                        onClick={() => handleItemClick(item.id)}
+                        className={`w-full flex items-center justify-between gap-3 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 outline-none ${
+                          activeItem === item.id ||
+                          (item.children &&
+                            item.children.some(
+                              (child) => child.id === activeItem
+                            ))
+                            ? "bg-blue-50 text-primary-700 border border-blue-100"
+                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <item.Icon className="w-5 h-5" aria-hidden />
+                          <span>{item.label}</span>
+                          {item.badge && (
+                            <span className="ml-2 w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                              {item.badge}
+                            </span>
+                          )}
+                        </div>
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform duration-200 ${
+                            openSubmenus.has(item.id) ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+
+                      {openSubmenus.has(item.id) && item.children && (
+                        <ul className="ml-6 mt-1 space-y-1 border-l-2 border-gray-200 pl-4">
+                          {item.children.map((child) => (
+                            <li key={child.id}>
+                              <button
+                                onClick={() =>
+                                  handleItemClick(child.id, child.href)
+                                }
+                                className={`w-full flex items-center gap-3 py-2 px-4 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                  activeItem === child.id
+                                    ? "bg-blue-50 text-primary-700"
+                                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                }`}
+                              >
+                                <child.Icon className="w-4 h-4" aria-hidden />
+                                <span>{child.label}</span>
+                                {child.badge && (
+                                  <span className="ml-auto w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                                    {child.badge}
+                                  </span>
+                                )}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => handleItemClick(item.id, item.href)}
+                      className={`w-full flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        activeItem === item.id
+                          ? "bg-blue-50 text-primary-700 border border-blue-100"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      }`}
+                    >
+                      <item.Icon className="w-5 h-5" aria-hidden />
+                      <span>{item.label}</span>
+                      {item.badge && (
+                        <span className="ml-auto w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>

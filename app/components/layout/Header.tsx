@@ -533,7 +533,7 @@ function SolutionMega({
             >
               <div className="flex items-start gap-4">
                 <div
-                  className={`${s.gradient} h-12 w-12 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300 shadow-lg flex-shrink-0`}
+                  className={`bg-gradient-to-r from-primary-500 to-primary-600 h-12 w-12 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300 shadow-lg flex-shrink-0`}
                 >
                   <Icon size={iconSize} />
                 </div>
@@ -594,8 +594,6 @@ function SolutionMega({
   );
 }
 
-// ... (keep all other existing mega menu components: SolutionMegaTablet, ServicesMega, ServicesMegaTablet, CompanyMega, CompanyMegaTablet, MobileMenu)
-
 // These components remain exactly the same as in your original code
 function SolutionMegaTablet({ data }: { data: MenuItem[] }) {
   return (
@@ -610,7 +608,7 @@ function SolutionMegaTablet({ data }: { data: MenuItem[] }) {
           >
             <div className="flex items-center gap-3">
               <div
-                className={`${s.gradient} h-8 w-8 rounded-lg flex items-center justify-center text-white shadow-md flex-shrink-0`}
+                className={`bg-gradient-to-r from-primary-500 to-primary-600 h-8 w-8 rounded-lg flex items-center justify-center text-white shadow-md flex-shrink-0`}
               >
                 <Icon size={16} />
               </div>
@@ -663,7 +661,7 @@ function ServicesMega({
           >
             <div className="flex items-center gap-4 mb-4">
               <div
-                className={`${service.gradient} h-12 w-12 rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0`}
+                className={`bg-gradient-to-r from-primary-500 to-primary-600 h-12 w-12 rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0`}
               >
                 <Icon size={iconSize} />
               </div>
@@ -760,7 +758,7 @@ function CompanyMega({
                 className={`${padding} group flex items-center gap-4 rounded-xl hover:bg-white hover:shadow-lg transition-all duration-300 border border-transparent hover:border-gray-200/60 transform hover:-translate-y-0.5`}
                 style={{ transitionDelay: `${index * 30}ms` }}
               >
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-600 group-hover:scale-110 transition-transform duration-300 shadow-sm flex-shrink-0">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300 shadow-sm flex-shrink-0">
                   <Icon size={iconSize} />
                 </div>
                 <div className="min-w-0">

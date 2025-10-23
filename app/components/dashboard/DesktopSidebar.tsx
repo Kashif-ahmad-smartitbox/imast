@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import BrandSection from "./BrandSection";
-import NavigationItem from "./NavigationItem";
+import NavigationItemWrapper from "./NavigationItemWrapper";
 import { classNames } from "@/lib/classNames";
 import type { NavigationItem as NavItemType } from "@/app/admin/dashboard/layout";
 import { SIDEBAR_ITEMS } from "@/app/admin/dashboard/layout";
@@ -11,7 +11,7 @@ import { SIDEBAR_ITEMS } from "@/app/admin/dashboard/layout";
 interface DesktopSidebarProps {
   isExpanded: boolean;
   isMobile?: boolean;
-  activeItem?: string; // optional override from parent
+  activeItem?: string;
   onToggle: () => void;
   onItemClick: (id: string, href?: string) => void;
   onClose?: () => void;
@@ -26,18 +26,41 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
 }) => {
   const pathname = usePathname() || "/";
 
-  // Determine active id: prop override > URL matching (exact or startsWith) > first item
+  // Enhanced active item detection that checks children too
   const currentActiveId = useMemo(() => {
     if (activeItem) return activeItem;
 
-    const exact = SIDEBAR_ITEMS.find((it) => it.href === pathname)?.id;
-    if (exact) return exact;
+    // Check exact matches first
+    const exactMatch = SIDEBAR_ITEMS.find((it) => it.href === pathname);
+    if (exactMatch) return exactMatch.id;
 
-    // fallback to startsWith match (handles nested routes)
-    const startsWith = SIDEBAR_ITEMS.find(
+    // Check children for exact matches
+    for (const item of SIDEBAR_ITEMS) {
+      if (item.children) {
+        const childMatch = item.children.find(
+          (child) => child.href === pathname
+        );
+        if (childMatch) return childMatch.id;
+      }
+    }
+
+    // Fallback to startsWith matches
+    const startsWithMatch = SIDEBAR_ITEMS.find(
       (it) => it.href && pathname.startsWith(it.href)
-    )?.id;
-    return startsWith || SIDEBAR_ITEMS[0]?.id || "";
+    );
+    if (startsWithMatch) return startsWithMatch.id;
+
+    // Check children for startsWith matches
+    for (const item of SIDEBAR_ITEMS) {
+      if (item.children) {
+        const childStartsWithMatch = item.children.find(
+          (child) => child.href && pathname.startsWith(child.href)
+        );
+        if (childStartsWithMatch) return childStartsWithMatch.id;
+      }
+    }
+
+    return SIDEBAR_ITEMS[0]?.id || "";
   }, [activeItem, pathname]);
 
   return (
@@ -57,12 +80,12 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       <nav className="px-3 py-6 flex-1 overflow-auto" aria-label="Sidebar">
         <ul className="space-y-1" role="menubar" aria-orientation="vertical">
           {SIDEBAR_ITEMS.map((item) => (
-            <NavigationItem
+            <NavigationItemWrapper
               key={item.id}
               item={item as NavItemType}
-              isActive={currentActiveId === item.id}
+              activeItemId={currentActiveId}
               isExpanded={isExpanded}
-              onClick={(id, href) => onItemClick(id, href)}
+              onClick={onItemClick}
             />
           ))}
         </ul>

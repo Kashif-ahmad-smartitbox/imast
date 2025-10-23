@@ -1,19 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Settings,
   Globe,
   Mail,
   Database,
-  Layers,
-  Trash2,
-  Zap,
   Save,
   RefreshCcw,
+  Download,
+  Upload,
+  AlertTriangle,
 } from "lucide-react";
+import {
+  exportCollectionsDownload,
+  importNdjson,
+  exportBinaryDumpDownload,
+  importBinaryDump,
+} from "@/services/modules/backup";
+import { getCookie } from "@/app/lib/cookies";
 
-type SettingsState = {
+interface SettingsState {
   siteName: string;
   siteUrl: string;
   timezone: string;
@@ -21,11 +28,15 @@ type SettingsState = {
   contactEmail: string;
   smtpHost: string;
   smtpPort: string;
-  analyticsKey: string;
   enableAutoBackup: boolean;
-};
+}
 
-const defaultState: SettingsState = {
+interface Message {
+  type: "info" | "success" | "error";
+  text: string;
+}
+
+const DEFAULT_SETTINGS: SettingsState = {
   siteName: "Imast",
   siteUrl: "https://imast.in",
   timezone: "Asia/Kolkata",
@@ -33,151 +44,348 @@ const defaultState: SettingsState = {
   contactEmail: "admin@imast.in",
   smtpHost: "",
   smtpPort: "587",
-  analyticsKey: "",
   enableAutoBackup: true,
 };
 
 const SettingPage: React.FC = () => {
-  const [state, setState] = useState<SettingsState>(defaultState);
+  const [settings, setSettings] = useState<SettingsState>(DEFAULT_SETTINGS);
   const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<Message | null>(null);
 
-  const handleChange =
-    (k: keyof SettingsState) =>
+  // Backup states
+  const [ndjsonImporting, setNdjsonImporting] = useState(false);
+  const [ndjsonUploadProgress, setNdjsonUploadProgress] = useState<
+    number | null
+  >(null);
+  const [binaryImporting, setBinaryImporting] = useState(false);
+  const [binaryUploadProgress, setBinaryUploadProgress] = useState<
+    number | null
+  >(null);
+  const [exporting, setExporting] = useState(false);
+  const [exportingBinary, setExportingBinary] = useState(false);
+
+  const ndjsonFileRef = useRef<HTMLInputElement>(null);
+  const binaryFileRef = useRef<HTMLInputElement>(null);
+
+  const handleSettingChange =
+    (key: keyof SettingsState) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const value =
-        (e.target as HTMLInputElement).type === "checkbox"
+        e.target.type === "checkbox"
           ? (e.target as HTMLInputElement).checked
           : e.target.value;
-      setState((s) => ({ ...s, [k]: value } as SettingsState));
+
+      setSettings((prev) => ({ ...prev, [key]: value }));
     };
 
-  const handleSave = () => {
+  const showMessage = (type: Message["type"], text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 5000);
+  };
+
+  const handleSave = async () => {
     setSaving(true);
-    // simulate save
-    setTimeout(() => {
-      setSaving(false);
-      alert("Settings saved (demo).");
-      console.log("Saved settings", state);
-    }, 700);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    setSaving(false);
+    showMessage("success", "Settings saved successfully");
+    console.log("Saved settings:", settings);
   };
 
   const handleReset = () => {
-    if (confirm("Reset settings to defaults?")) {
-      setState(defaultState);
+    if (confirm("Reset all settings to default values?")) {
+      setSettings(DEFAULT_SETTINGS);
+      showMessage("info", "Settings reset to defaults");
     }
   };
 
-  const handleRegenerateKey = () => {
-    const newKey = `ak-${Math.random().toString(36).slice(2, 10)}`;
-    setState((s) => ({ ...s, analyticsKey: newKey }));
+  const getAccessToken = (): string | undefined => {
+    return typeof window !== "undefined"
+      ? getCookie("token") || undefined
+      : undefined;
   };
 
-  const handleDanger = (action: "delete-site" | "clear-backups") => {
-    const confirmMsg =
-      action === "delete-site"
-        ? "This will permanently delete the site and all data. Are you sure?"
-        : "This will remove all stored backups. Continue?";
-    if (!confirm(confirmMsg)) return;
-    alert(`${action} executed (demo).`);
+  // Backup handlers
+  const handleExportCollections = async () => {
+    try {
+      setExporting(true);
+      showMessage("info", "Preparing export...");
+
+      const token = getAccessToken();
+      const result = await exportCollectionsDownload(
+        ["pages", "modules", "media"],
+        token
+      );
+
+      if ((result as Blob).size) {
+        showMessage("success", "Export completed - file downloaded");
+      } else {
+        showMessage("error", "Export failed: Invalid response");
+      }
+    } catch (error: any) {
+      console.error("Export error:", error);
+      showMessage(
+        "error",
+        `Export failed: ${error?.message || "Unknown error"}`
+      );
+    } finally {
+      setExporting(false);
+    }
   };
+
+  const handleImportNdjson = async (file?: File) => {
+    const selectedFile = file || ndjsonFileRef.current?.files?.[0];
+    if (!selectedFile) {
+      alert("Please select an NDJSON file");
+      return;
+    }
+
+    try {
+      setNdjsonImporting(true);
+      setNdjsonUploadProgress(0);
+      showMessage("info", "Uploading NDJSON backup...");
+
+      const token = getAccessToken();
+      const result = await importNdjson(
+        selectedFile,
+        "upsert",
+        token,
+        undefined,
+        (loaded, total) => {
+          const progress = Math.round((loaded / total) * 100);
+          setNdjsonUploadProgress(progress);
+        }
+      );
+
+      if (result.success) {
+        showMessage("success", "NDJSON import completed successfully");
+      } else {
+        showMessage("error", result.message || "Import failed");
+      }
+    } catch (error: any) {
+      console.error("NDJSON import error:", error);
+      showMessage(
+        "error",
+        `Import failed: ${error?.message || "Unknown error"}`
+      );
+    } finally {
+      setNdjsonImporting(false);
+      setNdjsonUploadProgress(null);
+      if (ndjsonFileRef.current) ndjsonFileRef.current.value = "";
+    }
+  };
+
+  const handleExportBinary = async () => {
+    try {
+      setExportingBinary(true);
+      showMessage("info", "Preparing binary dump...");
+
+      const token = getAccessToken();
+      const result = await exportBinaryDumpDownload(token);
+
+      if ((result as Blob).size) {
+        showMessage("success", "Binary export completed - file downloaded");
+      } else {
+        showMessage("error", "Binary export failed: Invalid response");
+      }
+    } catch (error: any) {
+      console.error("Binary export error:", error);
+      showMessage(
+        "error",
+        `Binary export failed: ${error?.message || "Unknown error"}`
+      );
+    } finally {
+      setExportingBinary(false);
+    }
+  };
+
+  const handleImportBinary = async (file?: File) => {
+    const selectedFile = file || binaryFileRef.current?.files?.[0];
+    if (!selectedFile) {
+      alert("Please select a binary archive file");
+      return;
+    }
+
+    if (
+      !confirm(
+        "WARNING: This will restore the binary backup and may OVERWRITE existing data. This action cannot be undone. Are you sure you want to continue?"
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setBinaryImporting(true);
+      setBinaryUploadProgress(0);
+      showMessage("info", "Uploading binary archive...");
+
+      const token = getAccessToken();
+      const result = await importBinaryDump(
+        selectedFile,
+        token,
+        undefined,
+        (loaded, total) => {
+          const progress = Math.round((loaded / total) * 100);
+          setBinaryUploadProgress(progress);
+        }
+      );
+
+      if (result.success) {
+        showMessage("success", "Binary restore completed successfully");
+      } else {
+        showMessage("error", result.message || "Binary restore failed");
+      }
+    } catch (error: any) {
+      console.error("Binary import error:", error);
+      showMessage(
+        "error",
+        `Binary restore failed: ${error?.message || "Unknown error"}`
+      );
+    } finally {
+      setBinaryImporting(false);
+      setBinaryUploadProgress(null);
+      if (binaryFileRef.current) binaryFileRef.current.value = "";
+    }
+  };
+
+  const SectionHeader: React.FC<{
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+  }> = ({ icon, title, description }) => (
+    <div className="flex items-center gap-3 mb-6">
+      <div className="flex-shrink-0">{icon}</div>
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+        <p className="text-sm text-gray-500">{description}</p>
+      </div>
+    </div>
+  );
+
+  const BackupCard: React.FC<{
+    title: string;
+    description: string;
+    danger?: boolean;
+    children: React.ReactNode;
+  }> = ({ title, description, danger = false, children }) => (
+    <div
+      className={`border rounded-lg p-4 ${
+        danger ? "border-red-200 bg-red-50" : "border-gray-200"
+      }`}
+    >
+      <div className="mb-3">
+        <div
+          className={`text-sm font-medium ${
+            danger ? "text-red-900" : "text-gray-900"
+          }`}
+        >
+          {title}
+          {danger && (
+            <span className="text-xs text-red-600 ml-2 font-normal">
+              Dangerous Operation
+            </span>
+          )}
+        </div>
+        <div className={`text-xs ${danger ? "text-red-700" : "text-gray-500"}`}>
+          {description}
+        </div>
+      </div>
+      {children}
+    </div>
+  );
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 p-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
-          <p className="text-sm text-gray-500">
-            Configure site preferences, email, integrations and backups.
+          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Configure site preferences, email settings, and manage backups.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={handleReset}
-            className="inline-flex items-center gap-2 bg-gray-50 text-gray-700 px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-100 text-sm font-medium"
-            title="Reset to defaults"
+            disabled={saving}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
           >
-            <RefreshCcw className="w-4 h-4" /> Reset
+            <RefreshCcw className="w-4 h-4" />
+            Reset
           </button>
 
           <button
             onClick={handleSave}
             disabled={saving}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium shadow-sm ${
-              saving
-                ? "bg-primary-300 text-white cursor-wait"
-                : "bg-primary-600 text-white hover:bg-primary-700"
-            }`}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Save className="w-4 h-4" />
-            {saving ? "Saving..." : "Save changes"}
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>
 
-      {/* General */}
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-        <div className="flex items-center gap-3">
-          <Settings className="w-5 h-5 text-gray-600" />
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">General</h2>
-            <p className="text-xs text-gray-500">
-              Basic site information and locale.
-            </p>
-          </div>
-        </div>
+      {/* General Settings */}
+      <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+        <SectionHeader
+          icon={<Settings className="w-5 h-5 text-gray-600" />}
+          title="General Settings"
+          description="Basic site information and localization preferences"
+        />
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Site name
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Site Name
             </label>
             <input
-              value={state.siteName}
-              onChange={handleChange("siteName")}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              type="text"
+              value={settings.siteName}
+              onChange={handleSettingChange("siteName")}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Site URL
             </label>
-            <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500 transition-colors">
               <Globe className="w-4 h-4 text-gray-400" />
               <input
-                value={state.siteUrl}
-                onChange={handleChange("siteUrl")}
-                className="w-full bg-transparent outline-none text-sm text-gray-700"
+                type="url"
+                value={settings.siteUrl}
+                onChange={handleSettingChange("siteUrl")}
+                className="w-full bg-transparent outline-none text-gray-700"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Timezone
             </label>
             <select
-              value={state.timezone}
-              onChange={handleChange("timezone")}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              value={settings.timezone}
+              onChange={handleSettingChange("timezone")}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
             >
-              <option>Asia/Kolkata</option>
-              <option>UTC</option>
-              <option>America/New_York</option>
-              <option>Europe/London</option>
+              <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">America/New_York (EST)</option>
+              <option value="Europe/London">Europe/London (GMT)</option>
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Language
             </label>
             <select
-              value={state.language}
-              onChange={handleChange("language")}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              value={settings.language}
+              onChange={handleSettingChange("language")}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
             >
               <option value="en">English</option>
               <option value="hi">Hindi</option>
@@ -187,175 +395,193 @@ const SettingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Email */}
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-        <div className="flex items-center gap-3">
-          <Mail className="w-5 h-5 text-gray-600" />
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Email</h2>
-            <p className="text-xs text-gray-500">
-              Contact address and SMTP settings for outgoing mail.
-            </p>
-          </div>
-        </div>
+      {/* Email Settings */}
+      <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+        <SectionHeader
+          icon={<Mail className="w-5 h-5 text-gray-600" />}
+          title="Email Settings"
+          description="Configure contact information and SMTP settings for outgoing emails"
+        />
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Contact email
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Contact Email
             </label>
             <input
-              value={state.contactEmail}
-              onChange={handleChange("contactEmail")}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              type="email"
+              value={settings.contactEmail}
+              onChange={handleSettingChange("contactEmail")}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              SMTP host
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              SMTP Host
             </label>
             <input
-              value={state.smtpHost}
-              onChange={handleChange("smtpHost")}
+              type="text"
+              value={settings.smtpHost}
+              onChange={handleSettingChange("smtpHost")}
               placeholder="smtp.mailgun.org"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              SMTP port
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              SMTP Port
             </label>
             <input
-              value={state.smtpPort}
-              onChange={handleChange("smtpPort")}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              type="text"
+              value={settings.smtpPort}
+              onChange={handleSettingChange("smtpPort")}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Test email
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Test Email Configuration
             </label>
             <div className="flex gap-2">
               <input
+                type="email"
                 placeholder="recipient@example.com"
-                className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                aria-label="Test recipient email"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
               />
               <button
-                onClick={() => alert("Test email sent (demo).")}
-                className="inline-flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-100 text-sm"
+                onClick={() => showMessage("info", "Test email sent (demo)")}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
               >
-                Send
+                Send Test
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Integrations */}
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-        <div className="flex items-center gap-3">
-          <Zap className="w-5 h-5 text-gray-600" />
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Integrations
-            </h2>
-            <p className="text-xs text-gray-500">
-              Connect analytics, backups and external services.
-            </p>
-          </div>
-        </div>
+      {/* Backup & Restore */}
+      <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+        <SectionHeader
+          icon={<Database className="w-5 h-5 text-gray-600" />}
+          title="Backup & Restore"
+          description="Export and import site data. NDJSON is recommended for portability. Binary restore may overwrite existing data."
+        />
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="flex items-center justify-between gap-4 border border-gray-100 rounded-lg p-3">
-            <div>
-              <div className="text-sm font-medium text-gray-900">
-                Analytics (API key)
-              </div>
-              <div className="text-xs text-gray-500">
-                Connect Google/3rd party analytics
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Export NDJSON */}
+          <BackupCard
+            title="Export Data (NDJSON)"
+            description="Download selected collections as portable NDJSON format"
+          >
+            <button
+              onClick={handleExportCollections}
+              disabled={exporting}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              {exporting ? "Exporting..." : "Download NDJSON"}
+            </button>
+          </BackupCard>
+
+          {/* Import NDJSON */}
+          <BackupCard
+            title="Import Data (NDJSON)"
+            description="Upload NDJSON backup to import data (upsert mode)"
+          >
+            <div className="space-y-3">
               <input
-                value={state.analyticsKey}
-                onChange={handleChange("analyticsKey")}
-                placeholder="api-key-xxxxx"
-                className="border border-gray-200 rounded-lg px-2 py-1 text-sm"
+                ref={ndjsonFileRef}
+                type="file"
+                accept=".ndjson,.jsonl,.json"
+                className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
               />
               <button
-                onClick={handleRegenerateKey}
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-gray-50 hover:bg-gray-100 text-sm border border-gray-200"
-                title="Regenerate key"
+                onClick={() => handleImportNdjson()}
+                disabled={ndjsonImporting}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Regenerate
+                <Upload className="w-4 h-4" />
+                {ndjsonImporting ? "Importing..." : "Upload NDJSON"}
               </button>
+              {ndjsonUploadProgress !== null && (
+                <div className="text-xs text-gray-600">
+                  Upload progress: {ndjsonUploadProgress}%
+                </div>
+              )}
             </div>
-          </div>
+          </BackupCard>
 
-          <div className="flex items-center justify-between gap-4 border border-gray-100 rounded-lg p-3">
-            <div>
-              <div className="text-sm font-medium text-gray-900">Backups</div>
-              <div className="text-xs text-gray-500">
-                Automatic daily backups
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={state.enableAutoBackup}
-                  onChange={handleChange("enableAutoBackup")}
-                />
-                <span className="text-sm text-gray-700">Auto</span>
-              </label>
+          {/* Export Binary */}
+          <BackupCard
+            title="Export Data (Binary)"
+            description="Create a complete binary database dump (.archive.gz)"
+          >
+            <button
+              onClick={handleExportBinary}
+              disabled={exportingBinary}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              {exportingBinary ? "Exporting..." : "Download Binary"}
+            </button>
+          </BackupCard>
+
+          {/* Import Binary */}
+          <BackupCard
+            title="Restore Data (Binary)"
+            description="Upload binary database dump to restore. This may overwrite existing data."
+            danger
+          >
+            <div className="space-y-3">
+              <input
+                ref={binaryFileRef}
+                type="file"
+                accept=".gz,.archive"
+                className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+              />
               <button
-                onClick={() => alert("Backup started (demo).")}
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-gray-50 hover:bg-gray-100 text-sm border border-gray-200"
+                onClick={() => handleImportBinary()}
+                disabled={binaryImporting}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Run now
+                <AlertTriangle className="w-4 h-4" />
+                {binaryImporting ? "Restoring..." : "Restore Binary"}
               </button>
+              {binaryUploadProgress !== null && (
+                <div className="text-xs text-red-600">
+                  Restore progress: {binaryUploadProgress}%
+                </div>
+              )}
             </div>
-          </div>
+          </BackupCard>
         </div>
       </section>
 
-      {/* Danger zone */}
-      <section className="bg-white rounded-2xl border border-primary-100 shadow-sm p-6">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600">
-              <Trash2 className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-primary-700">
-                Danger zone
-              </h3>
-              <p className="text-xs text-primary-500">
-                Irreversible actions — use with extreme caution.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
+      {/* Status Message */}
+      {message && (
+        <div
+          className={`rounded-lg p-4 border transition-all duration-300 ${
+            message.type === "error"
+              ? "bg-red-50 border-red-200 text-red-700"
+              : message.type === "success"
+              ? "bg-green-50 border-green-200 text-green-700"
+              : "bg-blue-50 border-blue-200 text-blue-700"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">{message.text}</span>
             <button
-              onClick={() => handleDanger("clear-backups")}
-              className="px-4 py-2 rounded-lg border border-primary-200 text-primary-600 hover:bg-primary-50 text-sm"
+              onClick={() => setMessage(null)}
+              className="ml-4 text-sm opacity-70 hover:opacity-100"
             >
-              Clear backups
-            </button>
-            <button
-              onClick={() => handleDanger("delete-site")}
-              className="px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 text-sm"
-            >
-              Delete site
+              ×
             </button>
           </div>
         </div>
-      </section>
+      )}
     </div>
   );
 };

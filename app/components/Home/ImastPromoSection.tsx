@@ -63,7 +63,7 @@ export default function ImastPromoSection(props: any) {
   return (
     <section
       ref={sectionRef}
-      className={`${props.data.sectionBg} px-4 py-20 lg:py-28 overflow-hidden`}
+      className={`${props.data.sectionBg} px-4 py-10 lg:py-20 overflow-hidden`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">

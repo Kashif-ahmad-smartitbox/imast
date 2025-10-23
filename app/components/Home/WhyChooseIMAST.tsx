@@ -18,7 +18,6 @@ interface Differentiator {
   icon: React.ReactNode;
   title: string;
   desc: string;
-  accent: string;
   color: string;
 }
 
@@ -146,7 +145,7 @@ export default function WhyChooseIMAST({ data }: { data: WhyChooseIMASTData }) {
               >
                 <div className="flex items-start gap-4">
                   <div
-                    className={`flex-shrink-0 w-14 h-14 rounded-lg bg-gradient-to-br ${d.accent} flex items-center justify-center`}
+                    className={`flex-shrink-0 w-14 h-14 rounded-lg bg-[#654c0010] flex items-center justify-center`}
                     aria-hidden
                   >
                     <div className={`${d.color} bg-white/0`}>{d.icon}</div>

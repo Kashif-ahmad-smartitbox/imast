@@ -127,7 +127,7 @@ const PageRow: React.FC<{
   );
 };
 
-const Content: React.FC = () => {
+const Pages: React.FC = () => {
   const [pages, setPages] = useState<PageItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -213,7 +213,7 @@ const Content: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <CommonDashHeader
-          title="Content Management"
+          title="Page Management"
           description="Manage and organize all website pages from one place."
         />
         <div className="flex items-center gap-3">
@@ -237,6 +237,15 @@ const Content: React.FC = () => {
           >
             <Link className="w-3 h-3" />
             <span>Create Module</span>
+          </button>
+          <button
+            onClick={handleCreatePage}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-white"
+            aria-label="Create new module"
+            title="Create Module"
+          >
+            <Link className="w-3 h-3" />
+            <span>Create Page</span>
           </button>
         </div>
       </div>
@@ -383,4 +392,4 @@ const Content: React.FC = () => {
   );
 };
 
-export default Content;
+export default Pages;

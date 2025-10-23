@@ -17,7 +17,6 @@ export type MetricCardData = {
   icon: string;
   label: string;
   value: string;
-  gradient: string;
   delay?: string;
 };
 
@@ -78,6 +77,7 @@ export default function ImastCard({
         <div className="p-4 sm:p-6 lg:p-8">
           {/* Header Section */}
           <div className="flex flex-col xs:flex-row items-start justify-between mb-4 sm:mb-6 gap-3 sm:gap-4">
+            <img className="w-33 py-5" src={logoUrl} alt="Imast 360 Logo" />
             <div className="flex-1 min-w-0">
               <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-2 leading-tight">
                 {title}
@@ -90,13 +90,6 @@ export default function ImastCard({
                 </span>
               </p>
             </div>
-            <div className="flex-shrink-0 self-start sm:self-center">
-              <img
-                className="w-12 sm:w-14 lg:w-16 opacity-90 hover:opacity-100 transition-opacity"
-                src={logoUrl}
-                alt="Imast 360 Logo"
-              />
-            </div>
           </div>
 
           {/* Key metrics grid */}
@@ -107,7 +100,6 @@ export default function ImastCard({
                 icon={metric.icon}
                 label={metric.label}
                 value={metric.value}
-                gradient={metric.gradient}
                 delay={metric.delay || "0"}
               />
             ))}
@@ -155,7 +147,7 @@ export default function ImastCard({
 }
 
 /* Metric Card Component */
-function MetricCard({ icon, label, value, gradient, delay }: MetricCardData) {
+function MetricCard({ icon, label, value, delay }: MetricCardData) {
   const IconComponent = ICON_MAP[icon] || TrendingUp;
 
   return (
@@ -164,7 +156,7 @@ function MetricCard({ icon, label, value, gradient, delay }: MetricCardData) {
       style={{ animationDelay: `${delay}ms` }}
     >
       <div
-        className={`inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-r ${gradient} text-white mb-1 sm:mb-2 group-hover/metric:scale-110 transition-transform duration-300 mx-auto`}
+        className={`inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white mb-1 sm:mb-2 group-hover/metric:scale-110 transition-transform duration-300 mx-auto`}
       >
         <IconComponent className="w-3 h-3 sm:w-4 sm:h-4" />
       </div>

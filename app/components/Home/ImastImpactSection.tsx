@@ -90,7 +90,7 @@ export default function ImpactSection(props: any) {
                 >
                   {/* Card Content */}
                   <div
-                    className={`relative px-6 py-8 text-white shadow-lg rounded-2xl h-full flex flex-col min-h-[280px] bg-gradient-to-br ${it.gradient}`}
+                    className={`relative px-6 py-8 text-white shadow-lg rounded-2xl h-full flex flex-col min-h-[280px] bg-gradient-to-r from-primary-500 to-primary-600`}
                   >
                     {/* Top Badge */}
                     <div className="absolute -top-3 left-6 inline-flex items-center gap-2 bg-white text-slate-900 rounded-full px-4 py-2 shadow-lg">

@@ -1,5 +1,6 @@
+// app/admin/dashboard/layout.tsx
 "use client";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   FileText,
@@ -29,6 +30,7 @@ export interface NavigationItem {
   Icon: LucideIcon;
   badge?: number;
   href?: string;
+  children?: NavigationItem[];
 }
 
 interface LayoutProps {
@@ -38,11 +40,30 @@ interface LayoutProps {
 export const SIDEBAR_ITEMS: NavigationItem[] = [
   { href: "/admin/dashboard", id: "overview", label: "Overview", Icon: Home },
   {
-    href: "/admin/dashboard/content",
     id: "content",
     label: "Content",
     Icon: FileText,
     badge: 3,
+    children: [
+      {
+        href: "/admin/dashboard/content/pages",
+        id: "pages",
+        label: "Pages",
+        Icon: FileText,
+      },
+      {
+        href: "/admin/dashboard/content/blogs",
+        id: "blogs",
+        label: "Blogs",
+        Icon: FileText,
+      },
+      {
+        href: "/admin/dashboard/content/stories",
+        id: "stories",
+        label: "Stories",
+        Icon: FileText,
+      },
+    ],
   },
   { href: "/admin/dashboard/media", id: "media", label: "Media", Icon: Image },
   {
@@ -88,18 +109,38 @@ export default function ImastLayout({ children }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
 
-  // Find active item based on current path
   const getActiveItem = useCallback(() => {
     // Exact match first
     const exactMatch = SIDEBAR_ITEMS.find((item) => item.href === pathname);
     if (exactMatch) return exactMatch.id;
+
+    // Check children for exact matches
+    for (const item of SIDEBAR_ITEMS) {
+      if (item.children) {
+        const childExactMatch = item.children.find(
+          (child) => child.href === pathname
+        );
+        if (childExactMatch) return childExactMatch.id;
+      }
+    }
 
     // Fallback: find by path segment for nested routes
     const pathMatch = SIDEBAR_ITEMS.find(
       (item) => item.href && pathname.startsWith(item.href + "/")
     );
     if (pathMatch) return pathMatch.id;
+
+    // Check children for path matches
+    for (const item of SIDEBAR_ITEMS) {
+      if (item.children) {
+        const childPathMatch = item.children.find(
+          (child) => child.href && pathname.startsWith(child.href + "/")
+        );
+        if (childPathMatch) return childPathMatch.id;
+      }
+    }
 
     // Default to overview
     return "overview";
@@ -116,9 +157,28 @@ export default function ImastLayout({ children }: LayoutProps) {
     setSidebarExpanded((s) => !s);
   }, []);
 
-  const handleItemClick = useCallback((id: string) => {
-    console.log("Item clicked:", id);
-  }, []);
+  const handleNavigation = useCallback(
+    (href: string | undefined) => {
+      if (!href) return;
+
+      // Close drawer if open
+      setDrawerOpen(false);
+
+      // Navigate
+      router.push(href);
+    },
+    [router]
+  );
+
+  const handleItemClick = useCallback(
+    (id: string, href?: string) => {
+      console.log("Item clicked:", id, href);
+      if (href) {
+        handleNavigation(href);
+      }
+    },
+    [handleNavigation]
+  );
 
   const handleMenuOpen = useCallback(() => {
     setDrawerOpen(true);

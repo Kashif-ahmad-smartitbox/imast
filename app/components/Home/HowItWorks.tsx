@@ -48,8 +48,6 @@ export type Step = {
   title: string;
   desc: string;
   iconName: IconName;
-  colorClass?: string;
-  gradient?: string;
 };
 
 export type Channel = {
@@ -237,7 +235,6 @@ export default function HowItWorks({ data }: Props) {
                         title={b.title}
                         subtitle={b.subtitle}
                         iconName={b.iconName}
-                        gradient={b.gradient}
                       />
                     ))}
                   </div>
@@ -319,9 +316,7 @@ function StepCard({
 
       <div className="flex flex-col items-start gap-6">
         <div
-          className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${
-            step.gradient ?? "from-primary-500 to-pink-500"
-          } flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow`}
+          className={`w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow`}
         >
           <IconComp size={18} className="text-white" aria-hidden />
         </div>
@@ -372,21 +367,17 @@ function EnhancedBusCard({
   title,
   subtitle,
   iconName,
-  gradient,
 }: {
   title: string;
   subtitle: string;
   iconName: IconName;
-  gradient?: string;
 }) {
   const IconComp = ICON_MAP[iconName];
   return (
     <div className="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-all duration-300 group hover:scale-105">
       <div className="flex items-start gap-4">
         <div
-          className={`w-12 h-12 rounded-lg bg-gradient-to-br ${
-            gradient ?? "from-primary-500 to-pink-500"
-          } flex items-center justify-center shadow-md`}
+          className={`w-12 h-12 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center text-white justify-center shadow-md`}
         >
           <IconComp />
         </div>

@@ -14,19 +14,24 @@ import {
 } from "lucide-react";
 import ImastCard, { ImastCardProps } from "./ImastCard";
 
-// Types
 export type Feature = {
   icon: string;
   title: string;
   desc: string;
-  color: string;
   delay?: number;
+};
+
+export type Ipeople = {
+  id: number;
+  img: string;
+  alt: string;
 };
 
 export type TrustedData = {
   text?: string;
   brands?: number | string;
   dailyUsers?: string;
+  peopleImage?: Ipeople[];
 };
 
 export type CTA = {
@@ -157,14 +162,20 @@ function HeaderSection({
 
 function TrustBadge({ trusted }: { trusted?: TrustedData }) {
   return (
-    <div className="mt-8 lg:mt-10 p-4 sm:p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+    <div className="mt-8 lg:mt-10 p-4 sm:p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100 hover:shadow-md transition-all duration-300 group">
       <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
         <div className="flex -space-x-3 shrink-0">
-          {[1, 2, 3, 4].map((item) => (
+          {trusted?.peopleImage?.map((item) => (
             <div
-              key={item}
-              className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-400 rounded-full border-3 border-white shadow-md"
-            />
+              key={item.id}
+              className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-400 overflow-hidden rounded-full border-3 border-white flex items-center justify-center"
+            >
+              <img
+                src={item.img}
+                alt={item.alt}
+                className="w-[100%] h-[100%] object-cover"
+              />
+            </div>
           ))}
         </div>
 
@@ -231,7 +242,7 @@ function CTAButton({
     "group relative inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3 rounded font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden";
 
   const variants = {
-    primary: `${baseClasses} bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg hover:shadow-xl`,
+    primary: `${baseClasses} bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg hover:shadow-xl`,
     secondary: `${baseClasses} border-2 border-gray-200 bg-white/80 text-gray-700 hover:bg-white hover:border-primary-200 hover:text-primary-700 hover:shadow-md`,
   };
 
@@ -259,7 +270,7 @@ function EnhancedFeature({
   feature: Feature;
   index: number;
 }) {
-  const { icon, title, desc, color, delay = 0 } = feature;
+  const { icon, title, desc, delay = 0 } = feature;
   const IconComp = ICON_MAP[icon] ?? TrendingUp;
 
   return (
@@ -274,7 +285,7 @@ function EnhancedFeature({
     >
       <div className="flex gap-4 items-start">
         <div
-          className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r ${color} text-white shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-3`}
+          className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-3`}
         >
           <IconComp className="w-6 h-6" />
         </div>
