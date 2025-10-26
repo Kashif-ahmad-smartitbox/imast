@@ -11,6 +11,7 @@ export interface PageItem {
   keywords?: string[];
   canonicalUrl?: string;
   status: "draft" | "published" | "archived";
+  type: "default" | "solutions" | "services";
   publishedAt?: string;
   layout: {
     moduleId: string;
@@ -170,6 +171,7 @@ class PageService {
     page?: number;
     limit?: number;
     status?: string;
+    search?: string;
   }): Promise<PageResponse> {
     const cacheKey = this.getCacheKey("/admin/pages", params);
     const cached = this.getCache(cacheKey);
@@ -179,9 +181,12 @@ class PageService {
     }
 
     const queryParams = new URLSearchParams();
-    if (params?.page) queryParams.append("page", params.page.toString());
-    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.page != null)
+      queryParams.append("page", params.page.toString());
+    if (params?.limit != null)
+      queryParams.append("limit", params.limit.toString());
     if (params?.status) queryParams.append("status", params.status);
+    if (params?.search) queryParams.append("search", params.search);
 
     const endpoint = `/admin/pages${
       queryParams.toString() ? `?${queryParams}` : ""
@@ -312,14 +317,13 @@ class PageService {
   }
 }
 
-// Export a singleton instance
 export const pageService = new PageService();
 
-// Keep the original functions for backward compatibility
 export const getPages = (params?: {
   page?: number;
   limit?: number;
   status?: string;
+  search?: string;
 }) => pageService.getPages(params);
 
 export const getPage = (id: string, options?: RequestOptions) =>

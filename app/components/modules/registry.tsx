@@ -63,6 +63,20 @@ const HeroHeader = dynamic(() => import("@/components/common/HeroHeader"), {
   ssr: false,
 });
 
+const SolutionHeroHeader = dynamic(
+  () => import("@/components/common/SolutionHeroHeader"),
+  {
+    ssr: false,
+  }
+);
+
+const ServicesHeroHeader = dynamic(
+  () => import("@/components/common/ServicesHeroHeader"),
+  {
+    ssr: false,
+  }
+);
+
 export type ModuleComponentProps = {
   data: any;
 };
@@ -87,6 +101,8 @@ const registry: Record<string, ComponentType<ModuleComponentProps>> = {
   imastpromo: ImastPromoSection,
   footer: Footer,
   heroheader: HeroHeader,
+  solutionheroheader: SolutionHeroHeader,
+  servicesheroheader: ServicesHeroHeader,
 };
 
 export default registry;

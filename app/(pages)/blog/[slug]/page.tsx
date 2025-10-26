@@ -73,7 +73,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 function SingleBlogPage({ params }: Props) {
-  console.log("params", params);
   return <SingleBlog />;
 }
 

@@ -512,7 +512,6 @@ const Pagination: React.FC<{
   );
 };
 
-// Enhanced Featured Blog Card Component
 const FeaturedBlogCard = ({
   blog,
   isFirst = false,
@@ -521,105 +520,144 @@ const FeaturedBlogCard = ({
   isFirst?: boolean;
 }) => {
   const [imageError, setImageError] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   return (
-    <Link href={`/blog/${blog.slug}`} className="block group">
-      <article className="bg-white rounded-xl border border-gray-200 hover:border-primary-200 transition-all duration-500 overflow-hidden group-hover:shadow-lg">
+    <Link href={`/blog/${blog.slug}`} className="block">
+      <article className="group relative bg-white rounded-3xl overflow-hidden transition-all duration-700 transform hover:-translate-y-2 border border-gray-100">
         <div className="flex flex-col lg:flex-row h-full">
-          {/* Image Container */}
-          <div className="lg:w-2/5 relative">
-            <div className="aspect-[4/3] lg:aspect-auto lg:h-full relative bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+          <div className="lg:w-[45%] relative flex-shrink-0">
+            <div className="aspect-[4/3] lg:aspect-auto lg:h-full relative bg-gradient-to-br from-slate-300 to-slate-400 overflow-hidden">
               {blog.cover && !imageError ? (
                 <Image
                   src={blog.cover}
                   alt={blog.title}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
+                  sizes="(max-width: 1024px) 100vw, 45vw"
                   priority={isFirst}
                   onError={() => setImageError(true)}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <BookOpen className="w-12 h-12 text-gray-400" />
+                  <BookOpen
+                    className="w-20 h-20 text-slate-400"
+                    strokeWidth={1.5}
+                  />
                 </div>
               )}
 
-              {/* Enhanced Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
-
-              {/* Featured Badge */}
-              <div className="absolute top-4 left-4">
-                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/95 backdrop-blur-sm text-primary-700 font-semibold text-sm border border-primary-200 shadow-sm">
-                  <Star className="w-4 h-4" />
-                  Featured
-                </span>
-              </div>
-
-              {/* Hover Action Buttons */}
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-                <div className="flex gap-2">
-                  <button className="p-2 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-colors duration-200 shadow-sm">
-                    <Bookmark className="w-4 h-4 text-gray-700" />
-                  </button>
-                  <button className="p-2 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-colors duration-200 shadow-sm">
-                    <Share2 className="w-4 h-4 text-gray-700" />
-                  </button>
+              {/* Featured Badge - Premium Design */}
+              <div className="absolute top-6 left-6 z-10">
+                <div className="relative">
+                  <span className="relative inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-primary-400 to-primary-500 text-white font-bold text-sm shadow-2xl border-2 border-white/30">
+                    <Star className="w-4 h-4 fill-white" strokeWidth={2} />
+                    Featured
+                  </span>
                 </div>
               </div>
+
+              {/* Action Buttons - Enhanced */}
+              <div className="absolute top-6 right-6 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+                {/* <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsBookmarked(!isBookmarked);
+                  }}
+                  className="p-2.5 rounded-full bg-white/95 backdrop-blur-md hover:bg-white transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-110 border border-white/50"
+                >
+                  <Bookmark
+                    className={`w-5 h-5 ${
+                      isBookmarked
+                        ? "fill-amber-500 text-amber-500"
+                        : "text-slate-700"
+                    }`}
+                    strokeWidth={2}
+                  />
+                </button> */}
+                <button
+                  onClick={(e) => e.preventDefault()}
+                  className="p-2.5 rounded-full bg-white/95 backdrop-blur-md hover:bg-white transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-110 border border-white/50"
+                >
+                  <Share2 className="w-5 h-5 text-slate-700" strokeWidth={2} />
+                </button>
+              </div>
+
+              {/* Reading Time Badge - Bottom */}
+              <div className="absolute bottom-6 right-6 z-10">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/80 backdrop-blur-md text-white text-sm font-semibold shadow-xl border border-white/20">
+                  <Clock className="w-4 h-4" strokeWidth={2.5} />
+                  {blog.readingTime} min read
+                </div>
+              </div>
+
+              {/* Decorative Corner Element */}
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-primary-600/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             </div>
           </div>
 
-          {/* Content Container */}
-          <div className="lg:w-3/5 p-8 flex flex-col">
-            {/* Header with enhanced accent */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-px bg-primary-500"></div>
-                  <span className="text-sm font-medium text-primary-700 uppercase tracking-wide">
-                    Featured Insight
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 text-sm text-gray-500">
-                  <Clock className="w-4 h-4" />
-                  <span>{blog.readingTime} min read</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 mb-4 flex-wrap">
-                {blog.tags?.slice(0, 3).map((tag, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700 border border-primary-200 transition-colors duration-300 group-hover:bg-primary-100"
-                  >
-                    <Tag className="w-3 h-3" />
-                    {tag}
-                  </span>
-                ))}
-              </div>
+          {/* Content Container - Enhanced */}
+          <div className="lg:w-[55%] p-8 lg:p-10 flex flex-col relative">
+            <div className="flex flex-wrap gap-2 mb-5">
+              {blog.tags?.slice(0, 3).map((tag, index) => (
+                <span
+                  key={index}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-primary-50 to-purple-50 text-primary-700 border border-primary-200 hover:border-primary-300 hover:shadow-md transition-all duration-300"
+                >
+                  <Tag className="w-3 h-3" strokeWidth={2.5} />
+                  {tag}
+                </span>
+              ))}
             </div>
 
-            <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 group-hover:text-primary-700 transition-colors duration-300 leading-tight">
+            {/* Title - Premium Typography */}
+            <h3 className="text-3xl lg:text-4xl font-extrabold text-slate-900 mb-5 leading-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary-600 group-hover:to-purple-600 transition-all duration-500">
               {blog.title}
             </h3>
 
-            <p className="text-gray-600 mb-6 leading-relaxed text-lg line-clamp-3 flex-1">
+            {/* Excerpt - Enhanced */}
+            <p className="text-slate-600 text-base lg:text-lg leading-relaxed line-clamp-3 mb-6 flex-1">
               {blog.excerpt || blog.metaDescription}
             </p>
 
-            <div className="flex items-center justify-between pt-6 border-t border-gray-200 mt-auto">
-              <div className="flex items-center gap-4 text-sm text-gray-600">
-                <span className="flex items-center gap-2 font-medium">
-                  <Calendar className="w-4 h-4" />
-                  {blog.publishedAt
-                    ? formatDate(blog.publishedAt)
-                    : formatDate(blog.createdAt)}
+            {/* Stats Bar - New Addition */}
+            <div className="flex items-center gap-6 mb-6 pb-6 border-b border-slate-200">
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-100 to-purple-100 flex items-center justify-center">
+                  <Calendar
+                    className="w-4 h-4 text-primary-600"
+                    strokeWidth={2.5}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs text-slate-500 font-medium">
+                    Published
+                  </span>
+                  <time className="text-sm font-semibold text-slate-700">
+                    {formatDate(blog.publishedAt || blog.createdAt)}
+                  </time>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Button - Premium Design */}
+            <div className="flex items-center justify-between mt-auto">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span className="text-xs text-slate-500 font-medium">
+                  Trending Now
                 </span>
               </div>
-              <span className="inline-flex items-center text-primary-700 font-semibold group-hover:text-primary-800 group-hover:translate-x-2 transition-all duration-300">
-                Read Full Article
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:scale-110 transition-transform" />
+
+              <span className="group/btn relative inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-primary-600 to-purple-600 text-white font-bold shadow-lg hover:shadow-xl hover:shadow-primary-500/50 transition-all duration-300 overflow-hidden hover:scale-105">
+                {/* Shimmer Effect */}
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover/btn:translate-x-[200%] transition-transform duration-1000"></span>
+
+                <span className="relative">Read Full Article</span>
+                <ArrowRight
+                  className="relative w-5 h-5 group-hover/btn:translate-x-1 transition-transform duration-300"
+                  strokeWidth={2.5}
+                />
               </span>
             </div>
           </div>
@@ -629,89 +667,125 @@ const FeaturedBlogCard = ({
   );
 };
 
-// Enhanced Regular Blog Card Component
 const BlogCard = ({ blog }: { blog: BlogItem }) => {
   const [imageError, setImageError] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   return (
-    <Link href={`/blog/${blog.slug}`} className="block group">
-      <article className="bg-white rounded-xl border border-gray-200 hover:border-primary-200 transition-all duration-300 overflow-hidden h-full flex flex-col group-hover:shadow-lg">
-        {/* Image Container */}
-        <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+    <Link href={`/blog/${blog.slug}`} className="block h-full">
+      <article className="group relative bg-white rounded-2xl overflow-hidden transition-all duration-500 transform hover:-translate-y-1 h-full flex flex-col border border-gray-100">
+        {/* Image Container with Enhanced Overlay */}
+        <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300 flex-shrink-0">
           {blog.cover && !imageError ? (
             <Image
               src={blog.cover}
               alt={blog.title}
               fill
-              className="object-cover group-hover:scale-110 transition-transform duration-500"
+              className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               onError={() => setImageError(true)}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <BookOpen className="w-10 h-10 text-gray-400" />
+              <BookOpen
+                className="w-16 h-16 text-slate-400"
+                strokeWidth={1.5}
+              />
             </div>
           )}
 
-          {/* Enhanced Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-50 group-hover:opacity-30 transition-opacity duration-300" />
-
           {/* Reading Time Badge */}
-          <div className="absolute top-3 right-3">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-black/80 backdrop-blur-sm text-white text-xs font-medium border border-white/20">
-              <Clock className="w-3 h-3" />
-              {blog.readingTime} min
-            </span>
-          </div>
-
-          {/* Hover Action Buttons */}
-          <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-            <div className="flex gap-1">
-              <button className="p-1.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-colors duration-200 shadow-sm">
-                <Bookmark className="w-3 h-3 text-gray-700" />
-              </button>
-              <button className="p-1.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-colors duration-200 shadow-sm">
-                <Share2 className="w-3 h-3 text-gray-700" />
-              </button>
+          <div className="absolute top-4 right-4 z-10">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-slate-800 text-xs font-semibold shadow-lg border border-white/50">
+              <Clock
+                className="w-3.5 h-3.5 text-primary-600"
+                strokeWidth={2.5}
+              />
+              {blog.readingTime} min read
             </div>
           </div>
+
+          {/* Action Buttons */}
+          <div className="absolute top-4 left-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0">
+            {/* <button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsBookmarked(!isBookmarked);
+              }}
+              className="p-2 rounded-full bg-white/95 backdrop-blur-md hover:bg-white transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-110 border border-white/50"
+            >
+              <Bookmark
+                className={`w-4 h-4 ${
+                  isBookmarked
+                    ? "fill-primary-600 text-primary-600"
+                    : "text-slate-700"
+                }`}
+                strokeWidth={2}
+              />
+            </button> */}
+            <button
+              onClick={(e) => e.preventDefault()}
+              className="p-2 rounded-full bg-white/95 backdrop-blur-md hover:bg-white transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-110 border border-white/50"
+            >
+              <Share2 className="w-4 h-4 text-slate-700" strokeWidth={2} />
+            </button>
+          </div>
+
+          {/* Category Badge */}
+          {blog.tags && blog.tags[0] && (
+            <div className="absolute bottom-4 left-4 z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-600 text-white text-xs font-bold shadow-lg backdrop-blur-sm border border-primary-500/30">
+                <Tag className="w-3 h-3" strokeWidth={2.5} />
+                {blog.tags[0]}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Content Container */}
         <div className="p-6 flex-1 flex flex-col">
-          {/* Meta Information */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              {blog.tags?.slice(0, 2).map((tag, index) => (
+          {/* Secondary Tags */}
+          {blog.tags && blog.tags.length > 1 && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {blog.tags.slice(1, 3).map((tag, index) => (
                 <span
                   key={index}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-50 text-primary-700 border border-primary-200 transition-colors duration-300 group-hover:bg-primary-100"
+                  className="inline-block px-2.5 py-1 rounded-lg text-xs font-medium bg-primary-50 text-primary-700 border border-primary-100 hover:bg-primary-100 transition-colors duration-200"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-          </div>
+          )}
 
-          <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-primary-700 transition-colors duration-300 leading-tight line-clamp-2 flex-1">
+          {/* Title */}
+          <h3 className="text-xl font-bold text-slate-900 mb-3 line-clamp-2 leading-tight group-hover:text-primary-600 transition-colors duration-300 flex-shrink-0">
             {blog.title}
           </h3>
 
-          <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed flex-1">
+          {/* Excerpt */}
+          <p className="text-slate-600 text-sm line-clamp-2 leading-relaxed mb-4 flex-1">
             {blog.excerpt || blog.metaDescription}
           </p>
 
-          <div className="flex items-center justify-between text-sm text-gray-600 pt-4 border-t border-gray-200 mt-auto">
-            <span className="font-medium flex items-center gap-1.5">
-              <Calendar className="w-3 h-3" />
-              {blog.publishedAt
-                ? formatDate(blog.publishedAt)
-                : formatDate(blog.createdAt)}
-            </span>
-            <span className="inline-flex items-center text-primary-700 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 font-semibold">
-              Read
-              <ArrowRight className="w-3 h-3 ml-1 group-hover:scale-110 transition-transform" />
-            </span>
+          {/* Footer */}
+          <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto flex-shrink-0">
+            <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+              <Calendar className="w-3.5 h-3.5" strokeWidth={2} />
+              <time>
+                {blog.publishedAt
+                  ? formatDate(blog.publishedAt)
+                  : formatDate(blog.createdAt)}
+              </time>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-primary-600 font-semibold text-sm opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-300">
+              Read more
+              <ArrowRight
+                className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300"
+                strokeWidth={2.5}
+              />
+            </div>
           </div>
         </div>
       </article>

@@ -10,13 +10,28 @@ import {
   RefreshCw,
   Calendar,
   Link,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { getPages, PageItem } from "@/app/services/modules/pageModule";
 import CommonDashHeader from "@/app/components/common/CommonDashHeader";
 import { useRouter } from "next/navigation";
 
-type FetchResult = { items: PageItem[] };
+// Constants
+const PAGE_LIMIT = 10;
+const DEBOUNCE_DELAY = 300;
 
+type FetchResult = Awaited<ReturnType<typeof getPages>>;
+
+interface PaginationState {
+  page: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+// Utility
 const formatDate = (iso?: string) =>
   iso
     ? new Date(iso).toLocaleDateString("en-US", {
@@ -26,6 +41,18 @@ const formatDate = (iso?: string) =>
       })
     : "—";
 
+const debounce = <T extends (...args: any[]) => void>(
+  func: T,
+  delay: number
+): ((...args: Parameters<T>) => void) => {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
+
+// Shared small components
 const StatusBadge: React.FC<{ status: string }> = React.memo(({ status }) => {
   const isPublished = status === "published";
   return (
@@ -52,7 +79,7 @@ StatusBadge.displayName = "StatusBadge";
 const SkeletonList: React.FC = () => (
   <div className="bg-white rounded-xl border border-gray-200 p-8">
     <div className="animate-pulse space-y-4">
-      {[...Array(5)].map((_, i) => (
+      {[...Array(PAGE_LIMIT)].map((_, i) => (
         <div key={i} className="flex items-center space-x-4">
           <div className="w-5 h-5 bg-gray-200 rounded"></div>
           <div className="flex-1 space-y-2">
@@ -65,6 +92,85 @@ const SkeletonList: React.FC = () => (
   </div>
 );
 
+// Pagination component (same behaviour as in Blogs)
+const Pagination: React.FC<{
+  pagination: PaginationState;
+  onPageChange: (page: number) => void;
+  loading: boolean;
+}> = ({ pagination, onPageChange, loading }) => {
+  const { page, totalPages, hasNext, hasPrev } = pagination;
+
+  if (totalPages <= 1) return null;
+
+  return (
+    <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
+      <div className="text-sm text-gray-500">
+        Showing page {page} of {totalPages}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => onPageChange(page - 1)}
+          disabled={!hasPrev || loading}
+          className={`p-2 rounded-lg border border-gray-300 transition-colors ${
+            !hasPrev || loading
+              ? "opacity-50 cursor-not-allowed text-gray-400"
+              : "text-gray-600 hover:bg-gray-100 hover:border-gray-400"
+          }`}
+          aria-label="Previous page"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+
+        <div className="flex items-center gap-1">
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            // Show pages around current page
+            let pageNum;
+            if (totalPages <= 5) {
+              pageNum = i + 1;
+            } else if (page <= 3) {
+              pageNum = i + 1;
+            } else if (page >= totalPages - 2) {
+              pageNum = totalPages - 4 + i;
+            } else {
+              pageNum = page - 2 + i;
+            }
+
+            return (
+              <button
+                key={pageNum}
+                onClick={() => onPageChange(pageNum)}
+                disabled={loading}
+                className={`min-w-[2rem] px-2 py-1 text-sm rounded-lg transition-colors ${
+                  page === pageNum
+                    ? "bg-primary-600 text-white border border-primary-600"
+                    : "text-gray-600 border border-gray-300 hover:bg-gray-100"
+                } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          onClick={() => onPageChange(page + 1)}
+          disabled={!hasNext || loading}
+          className={`p-2 rounded-lg border border-gray-300 transition-colors ${
+            !hasNext || loading
+              ? "opacity-50 cursor-not-allowed text-gray-400"
+              : "text-gray-600 hover:bg-gray-100 hover:border-gray-400"
+          }`}
+          aria-label="Next page"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Row component for a page
 const PageRow: React.FC<{
   page: PageItem;
   onEdit: (id: string) => void;
@@ -133,48 +239,96 @@ const Pages: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [pagination, setPagination] = useState<PaginationState>({
+    page: 1,
+    total: 0,
+    totalPages: 0,
+    hasNext: false,
+    hasPrev: false,
+  });
 
   const router = useRouter();
 
-  const fetchPages = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = (await getPages()) as FetchResult;
-      setPages(res.items || []);
-    } catch (err: any) {
-      console.error("Failed to load pages:", err);
-      setError(
-        err?.message || "Failed to fetch pages. Check console and try again."
-      );
-      setPages([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const fetchPages = useCallback(
+    async (page: number = 1, search: string = searchTerm) => {
+      setLoading(true);
+      setError(null);
 
+      try {
+        const res = (await getPages({
+          page,
+          limit: PAGE_LIMIT,
+          search: search.trim() || undefined,
+          status: statusFilter !== "all" ? statusFilter : undefined,
+        })) as FetchResult;
+
+        const total = res.total ?? 0;
+        const computedTotalPages =
+          (res as any).totalPages ?? Math.max(1, Math.ceil(total / PAGE_LIMIT));
+
+        setPages(res.items || []);
+        setPagination({
+          page: res.page || page,
+          total,
+          totalPages: computedTotalPages,
+          hasNext: (res.page || page) < computedTotalPages,
+          hasPrev: (res.page || page) > 1,
+        });
+      } catch (err: any) {
+        console.error("Failed to load pages:", err);
+        setError(
+          err?.message || "Failed to fetch pages. Check console and try again."
+        );
+        setPages([]);
+        setPagination((prev) => ({
+          ...prev,
+          total: 0,
+          totalPages: 0,
+          hasNext: false,
+          hasPrev: false,
+        }));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchTerm, statusFilter]
+  );
+
+  // Debounced search
+  const debouncedFetch = useMemo(
+    () =>
+      debounce(
+        (page: number, search: string) => fetchPages(page, search),
+        DEBOUNCE_DELAY
+      ),
+    [fetchPages]
+  );
+
+  // Initial load & when status changes
   useEffect(() => {
-    // initial load
-    fetchPages();
-  }, [fetchPages]);
+    fetchPages(1);
+  }, [statusFilter]);
 
-  const filteredPages = useMemo(() => {
-    const q = searchTerm.trim().toLowerCase();
-    return pages.filter((page) => {
-      const matchesSearch =
-        !q ||
-        page.title.toLowerCase().includes(q) ||
-        page.slug.toLowerCase().includes(q);
-      const matchesStatus =
-        statusFilter === "all" || page.status === statusFilter;
-      return matchesSearch && matchesStatus;
-    });
-  }, [pages, searchTerm, statusFilter]);
+  // Search term changes
+  useEffect(() => {
+    debouncedFetch(1, searchTerm);
+  }, [searchTerm, debouncedFetch]);
+
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      if (newPage >= 1 && newPage <= pagination.totalPages) {
+        fetchPages(newPage);
+      }
+    },
+    [pagination.totalPages, fetchPages]
+  );
+
+  const handleRefresh = useCallback(() => {
+    fetchPages(pagination.page);
+  }, [fetchPages, pagination.page]);
 
   const handleEdit = useCallback(
     (id: string) => {
-      // navigate to admin edit page for that page
-      // chosen route: /admin/pages/[id]/edit
       router.push(`/admin/pages/${id}/edit`);
     },
     [router]
@@ -182,16 +336,12 @@ const Pages: React.FC = () => {
 
   const handleView = useCallback(
     (page: PageItem) => {
-      // open public page in new tab/window
-      // prefer slug if present, otherwise fallback to id-based route
       const publicPath = page.slug
         ? `/pages/${page.slug}`
         : `/pages/id/${page._id}`;
-      // open in new tab
       if (typeof window !== "undefined") {
         window.open(publicPath, "_blank", "noopener,noreferrer");
       } else {
-        // fallback: client-side navigation (rare for SSR)
         router.push(publicPath);
       }
     },
@@ -199,14 +349,26 @@ const Pages: React.FC = () => {
   );
 
   const handleCreateModule = useCallback(() => {
-    // chosen route: /admin/modules/new
     router.push("/admin/modules/new");
   }, [router]);
 
   const handleCreatePage = useCallback(() => {
-    // chosen route: /admin/pages/new
     router.push("/admin/pages/new");
   }, [router]);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(e.target.value);
+    },
+    []
+  );
+
+  const handleStatusFilterChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setStatusFilter(e.target.value);
+    },
+    []
+  );
 
   return (
     <div className="space-y-6">
@@ -218,9 +380,9 @@ const Pages: React.FC = () => {
         />
         <div className="flex items-center gap-3">
           <button
-            onClick={fetchPages}
+            onClick={handleRefresh}
             className={`p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors ${
-              loading ? "opacity-60 cursor-wait" : ""
+              loading ? "animate-spin opacity-60 cursor-wait" : ""
             }`}
             title="Refresh"
             aria-label="Refresh pages"
@@ -250,8 +412,8 @@ const Pages: React.FC = () => {
               type="text"
               placeholder="Search pages..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl outline-none bg-white transition-all duration-200"
+              onChange={handleSearchChange}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl outline-none bg-white transition-all duration-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
               aria-label="Search pages"
             />
           </div>
@@ -260,7 +422,7 @@ const Pages: React.FC = () => {
             <div className="relative">
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={handleStatusFilterChange}
                 className="appearance-none bg-white pl-4 pr-10 py-2.5 border border-gray-300 rounded-lg outline-none transition-colors cursor-pointer text-sm font-medium text-gray-700 hover:border-gray-400 min-w-[140px]"
                 aria-label="Filter by status"
               >
@@ -293,7 +455,7 @@ const Pages: React.FC = () => {
         <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
           <div className="text-red-600 mb-2">{error}</div>
           <button
-            onClick={fetchPages}
+            onClick={() => fetchPages(1)}
             className="text-red-600 hover:text-red-700 text-sm font-medium"
             aria-label="Try fetch pages again"
           >
@@ -303,11 +465,10 @@ const Pages: React.FC = () => {
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           {/* List count */}
-          {filteredPages.length > 0 && (
+          {!loading && pages.length > 0 && (
             <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
               <div className="text-sm text-gray-500">
-                {filteredPages.length}{" "}
-                {filteredPages.length === 1 ? "page" : "pages"}
+                Showing {pages.length} of {pagination.total} pages
               </div>
             </div>
           )}
@@ -339,7 +500,7 @@ const Pages: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {filteredPages.map((page) => (
+                    {pages.map((page) => (
                       <PageRow
                         key={page._id}
                         page={page}
@@ -352,18 +513,15 @@ const Pages: React.FC = () => {
               </div>
 
               {/* Empty state when no results */}
-              {filteredPages.length === 0 && (
+              {pages.length === 0 && (
                 <div className="text-center py-12">
                   <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {pages.length === 0
-                      ? "No pages found"
-                      : "No matching pages"}
+                    No pages found
                   </h3>
                   <p className="text-gray-500 mb-6 max-w-sm mx-auto">
-                    {pages.length === 0
-                      ? "Get started by creating your first page to organize your content."
-                      : "Try adjusting your search or filter to find what you're looking for."}
+                    Get started by creating your first page to organize your
+                    content.
                   </p>
                   <button
                     className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 transition-colors"
@@ -374,6 +532,15 @@ const Pages: React.FC = () => {
                     Create New Page
                   </button>
                 </div>
+              )}
+
+              {/* Pagination */}
+              {pages.length > 0 && (
+                <Pagination
+                  pagination={pagination}
+                  onPageChange={handlePageChange}
+                  loading={loading}
+                />
               )}
             </>
           )}

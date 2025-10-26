@@ -304,7 +304,7 @@ export default function Header({ data }: { data: HeaderData }) {
                   : "opacity-0 -translate-y-4 py-0 pointer-events-none"
               }`}
             >
-              <div className="rounded-3xl border border-gray-200/50 bg-white/95 p-8 transform-gpu shadow-xl">
+              <div className="rounded-3xl border border-gray-200/50 bg-white/95 p-8 transform-gpu">
                 {openMenu === "solution" && (
                   <SolutionMega data={data} isLargeDesktop={isLargeDesktop} />
                 )}
@@ -425,7 +425,7 @@ function CTAButton({ href, text, isSmallTablet, isTablet }: CTAButtonProps) {
     : "px-6 py-2.5 text-base";
 
   return (
-    <a
+    <Link
       href={href}
       className={`inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded shadow-lg hover:shadow-xl transition-all duration-300 font-semibold hover:scale-105 hover:gap-3 group relative overflow-hidden ${buttonSize}`}
     >
@@ -435,7 +435,7 @@ function CTAButton({ href, text, isSmallTablet, isTablet }: CTAButtonProps) {
         className="relative z-10 group-hover:translate-x-1 transition-transform"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-    </a>
+    </Link>
   );
 }
 
@@ -499,7 +499,6 @@ function TabletMegaMenu({
   );
 }
 
-// --- Mega Menu Components (keep the existing implementation, but extract to separate components)
 function SolutionMega({
   data,
   isLargeDesktop,
@@ -518,10 +517,10 @@ function SolutionMega({
         {data.solutions.map((s, idx) => {
           const Icon = getIconComponent(s.icon);
           return (
-            <a
+            <Link
               key={s.title}
               href={s.href}
-              className={`${padding} group block rounded-2xl hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-gray-200/60 transform hover:-translate-y-1`}
+              className={`${padding} group block rounded-2xl hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gray-200/60 transform hover:-translate-y-1`}
               style={{ transitionDelay: `${idx * 50}ms` }}
             >
               <div className="flex items-start gap-4">
@@ -541,12 +540,12 @@ function SolutionMega({
                   </p>
                 </div>
               </div>
-            </a>
+            </Link>
           );
         })}
       </div>
 
-      <div className="bg-gradient-to-br from-gray-50 to-gray-100/80 rounded-2xl p-6 flex flex-col justify-between border border-gray-200/40 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-primary-50 to-primary-100/80 rounded-2xl p-6 flex flex-col justify-between border border-gray-200/40 relative overflow-hidden">
         <div className="relative z-10">
           <div className="bg-white rounded-2xl p-3 w-fit mx-auto mb-6 shadow-lg">
             <img
@@ -646,10 +645,10 @@ function ServicesMega({
       {data.map((service, index) => {
         const Icon = getIconComponent(service.icon);
         return (
-          <a
+          <Link
             key={service.title}
             href={service.href}
-            className={`${padding} group block rounded-2xl hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-gray-200/60 bg-white transform hover:-translate-y-1`}
+            className={`${padding} group block rounded-2xl hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gray-200/60 transform hover:-translate-y-1`}
             style={{ transitionDelay: `${index * 100}ms` }}
           >
             <div className="flex items-center gap-4 mb-4">
@@ -690,7 +689,7 @@ function ServicesMega({
                 className="group-hover:translate-x-1 transition-transform"
               />
             </div>
-          </a>
+          </Link>
         );
       })}
     </div>
@@ -745,10 +744,10 @@ function CompanyMega({
           {data.companyLinks.map((link, index) => {
             const Icon = getIconComponent(link.icon);
             return (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
-                className={`${padding} group flex items-center gap-4 rounded-xl hover:bg-white hover:shadow-lg transition-all duration-300 border border-transparent hover:border-gray-200/60 transform hover:-translate-y-0.5`}
+                className={`${padding} group flex items-center gap-4 rounded-xl hover:bg-white hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-gray-200/60 transform hover:-translate-y-0.5`}
                 style={{ transitionDelay: `${index * 30}ms` }}
               >
                 <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300 shadow-sm flex-shrink-0">
@@ -766,7 +765,7 @@ function CompanyMega({
                     Learn more →
                   </span>
                 </div>
-              </a>
+              </Link>
             );
           })}
         </div>
@@ -823,7 +822,7 @@ function CompanyMegaTablet({ data }: { data: CompanyLink[] }) {
       {data.slice(0, 5).map((link) => {
         const Icon = getIconComponent(link.icon);
         return (
-          <a
+          <Link
             key={link.label}
             href={link.href}
             className="group flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-white hover:shadow-md transition-all duration-300 border border-gray-100"
@@ -838,7 +837,7 @@ function CompanyMegaTablet({ data }: { data: CompanyLink[] }) {
               size={14}
               className="ml-auto text-gray-400 group-hover:text-red-600"
             />
-          </a>
+          </Link>
         );
       })}
       <Link
@@ -941,7 +940,7 @@ function MobileMenu({
                   {items.map((item, index) => {
                     const Icon = getIconComponent(item.icon);
                     return (
-                      <a
+                      <Link
                         key={item.label}
                         href={item.href}
                         className={`flex items-center gap-3 p-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1 ${itemTextSize}`}
@@ -953,7 +952,7 @@ function MobileMenu({
                           className="text-gray-400 flex-shrink-0"
                         />
                         <span className="truncate">{item.label}</span>
-                      </a>
+                      </Link>
                     );
                   })}
                 </div>
@@ -961,14 +960,14 @@ function MobileMenu({
             </div>
           ))}
 
-          <a
+          <Link
             href={data.cta.href}
             className={`flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-3 rounded font-semibold mt-4 hover:shadow-lg transition-all duration-300 hover:gap-3 hover:scale-105 ${buttonTextSize}`}
             onClick={onClose}
           >
             {data.cta.text}
             <ArrowRight size={smallIconSize} />
-          </a>
+          </Link>
         </nav>
 
         {isMobile && (
@@ -977,13 +976,13 @@ function MobileMenu({
               <p className="text-xs text-gray-500 mb-2">
                 {data.mobileMenu.contact.text}
               </p>
-              <a
+              <Link
                 href={`tel:${data.mobileMenu.contact.phone}`}
                 className="inline-flex items-center gap-2 text-red-600 font-semibold text-sm hover:gap-3 transition-all duration-300"
               >
                 <HeadphonesIcon size={14} />
                 Call Us
-              </a>
+              </Link>
             </div>
           </div>
         )}

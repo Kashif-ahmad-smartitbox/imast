@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import ModuleRenderer from "@/components/modules/ModuleRenderer";
 import { getPageWithContent } from "@/services/modules/pageModule";
 import { notFound } from "next/navigation";
+import ServicesHeroHeader from "@/components/common/ServicesHeroHeader";
 
 type PageResponse = {
   page?: any;
@@ -20,12 +21,15 @@ export async function generateMetadata({
     const response: PageResponse = await getPageWithContent(slug);
 
     if (response.message === "Not found" || !response.page) {
-      notFound();
+      return {
+        title: "Page Not Found",
+        description: "The page you are looking for does not exist.",
+      };
     }
 
     const page = response.page;
-    // ensure this is a default page
-    if ((page.type || "default") !== "default") {
+
+    if (page.type !== "services") {
       notFound();
     }
 
@@ -46,7 +50,7 @@ export async function generateMetadata({
           page.excerpt ||
           "Discover expert insights and analysis.",
         type: "website",
-        url: `${baseUrl}/${slug}`,
+        url: `${baseUrl}/services/${slug}`,
         siteName: "iMast",
       },
       twitter: {
@@ -60,11 +64,11 @@ export async function generateMetadata({
       robots:
         page.status === "published" ? "index, follow" : "noindex, nofollow",
       alternates: {
-        canonical: page.canonicalUrl || `${baseUrl}/${slug}`,
+        canonical: page.canonicalUrl || `${baseUrl}/services/${slug}`,
       },
     };
   } catch (error) {
-    console.error("generateMetadata default:", error);
+    console.error("generateMetadata services:", error);
     return {
       title: "Page Not Found",
       description: "The page you are looking for does not exist.",
@@ -83,8 +87,8 @@ export default async function Page({ params }: { params: any }) {
 
   const page = response.page;
 
-  // ensure page type matches default
-  if ((page.type || "default") !== "default") {
+  // require services type
+  if (page.type !== "services") {
     notFound();
   }
 

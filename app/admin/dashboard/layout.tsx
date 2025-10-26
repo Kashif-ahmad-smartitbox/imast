@@ -54,21 +54,15 @@ export const SIDEBAR_ITEMS: NavigationItem[] = [
         label: "Blogs",
         Icon: FileText,
       },
-      {
-        href: "/admin/dashboard/content/stories",
-        id: "stories",
-        label: "Stories",
-        Icon: FileText,
-      },
     ],
   },
   { href: "/admin/dashboard/media", id: "media", label: "Media", Icon: Image },
-  {
-    href: "/admin/dashboard/analytics",
-    id: "analytics",
-    label: "Analytics",
-    Icon: BarChart2,
-  },
+  // {
+  //   href: "/admin/dashboard/analytics",
+  //   id: "analytics",
+  //   label: "Analytics",
+  //   Icon: BarChart2,
+  // },
   { href: "/admin/dashboard/team", id: "team", label: "Team", Icon: Users },
   {
     href: "/admin/dashboard/seo",
