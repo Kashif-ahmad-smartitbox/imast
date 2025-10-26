@@ -74,7 +74,7 @@ export interface PageUpdatePayload {
   canonicalUrl?: string;
   status?: "draft" | "published" | "archived";
   publishedAt?: string | null;
-  layout?: { moduleId: string; order: number; props?: Record<string, any> }[];
+  layout?: { moduleId: string; order: number }[];
 }
 
 export interface PageUpdateResponse {

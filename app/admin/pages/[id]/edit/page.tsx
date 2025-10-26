@@ -9,7 +9,11 @@ import {
   PageItem2,
   PageWithContentResponse,
 } from "@/services/modules/pageModule";
-import { updateModule } from "@/services/modules/module";
+import {
+  updateModule,
+  createModule,
+  getModules,
+} from "@/services/modules/module";
 import {
   Save,
   Edit3,
@@ -40,6 +44,11 @@ import {
   Plus,
   Trash2,
   Braces,
+  Copy,
+  Package,
+  GripVertical,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 
 // ────────────────────────────────
@@ -108,6 +117,7 @@ interface ContentField {
 }
 
 type EditMode = "form" | "json";
+type AddModuleMode = "copy" | "create";
 
 // ────────────────────────────────
 // Utility Functions
@@ -948,6 +958,641 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
 };
 
 // ────────────────────────────────
+// Confirmation Modal Component
+// ────────────────────────────────
+
+interface ConfirmationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  type?: "danger" | "warning" | "info";
+}
+
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  type = "danger",
+}) => {
+  if (!isOpen) return null;
+
+  const getTypeStyles = () => {
+    switch (type) {
+      case "danger":
+        return {
+          icon: <AlertCircle className="w-6 h-6 text-red-600" />,
+          button: "bg-red-600 hover:bg-red-700",
+          background: "bg-red-50",
+        };
+      case "warning":
+        return {
+          icon: <AlertCircle className="w-6 h-6 text-yellow-600" />,
+          button: "bg-yellow-600 hover:bg-yellow-700",
+          background: "bg-yellow-50",
+        };
+      default:
+        return {
+          icon: <Info className="w-6 h-6 text-blue-600" />,
+          button: "bg-blue-600 hover:bg-blue-700",
+          background: "bg-blue-50",
+        };
+    }
+  };
+
+  const styles = getTypeStyles();
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl w-full max-w-md">
+        <div className="p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className={`p-3 rounded-full ${styles.background}`}>
+              {styles.icon}
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+              <p className="text-gray-600 mt-1">{message}</p>
+            </div>
+          </div>
+        </div>
+        <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 rounded-b-2xl">
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              type="button"
+            >
+              {cancelText}
+            </button>
+            <button
+              onClick={onConfirm}
+              className={`px-4 py-2 text-white rounded-lg transition-colors font-medium ${styles.button}`}
+              type="button"
+            >
+              {confirmText}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ────────────────────────────────
+// Add Module Modal Components
+// ────────────────────────────────
+
+interface AddModuleModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onAddModule: (moduleId: string) => void;
+  currentPageId: string;
+}
+
+const AddModuleModal: React.FC<AddModuleModalProps> = ({
+  isOpen,
+  onClose,
+  onAddModule,
+  currentPageId,
+}) => {
+  const [mode, setMode] = useState<AddModuleMode>("copy");
+  const [availableModules, setAvailableModules] = useState<Module[]>([]);
+  const [loadingModules, setLoadingModules] = useState(false);
+  const [selectedModuleId, setSelectedModuleId] = useState("");
+  const [newModuleTitle, setNewModuleTitle] = useState("");
+  const [creatingModule, setCreatingModule] = useState(false);
+  const [message, setMessage] = useState<UpdateMessage | null>(null);
+
+  // Load available modules when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      loadAvailableModules();
+    }
+  }, [isOpen]);
+
+  const loadAvailableModules = async () => {
+    setLoadingModules(true);
+    try {
+      const getModulesList = await getModules();
+      setAvailableModules(getModulesList.items);
+    } catch (error) {
+      console.error("Failed to load modules:", error);
+      setMessage({ type: "error", text: "Failed to load available modules" });
+    } finally {
+      setLoadingModules(false);
+    }
+  };
+
+  const handleCreateModule = async () => {
+    if (!newModuleTitle.trim()) {
+      setMessage({ type: "error", text: "Module title is required" });
+      return;
+    }
+
+    setCreatingModule(true);
+    setMessage(null);
+
+    try {
+      const selectedModule = availableModules.find(
+        (module) => module._id === selectedModuleId
+      );
+
+      if (!selectedModule) {
+        setMessage({ type: "error", text: "Selected module not found" });
+        return;
+      }
+
+      // Create a clone of the selected module
+      const response = await createModule({
+        type: selectedModule.type,
+        title: newModuleTitle.trim(),
+        content: selectedModule.content || {},
+        status: "published",
+      });
+
+      setMessage({ type: "success", text: "Module cloned successfully!" });
+
+      // Add the new module to the page
+      setTimeout(() => {
+        onAddModule(response.module._id);
+      }, 1000);
+    } catch (error: any) {
+      setMessage({
+        type: "error",
+        text: error.message || "Failed to clone module",
+      });
+    } finally {
+      setCreatingModule(false);
+    }
+  };
+
+  const handleCopyModule = () => {
+    if (!selectedModuleId) {
+      setMessage({ type: "error", text: "Please select a module to copy" });
+      return;
+    }
+
+    const selectedModule = availableModules.find(
+      (module) => module._id === selectedModuleId
+    );
+
+    if (selectedModule) {
+      setNewModuleTitle(`${selectedModule.title} (Copy)`);
+    }
+  };
+
+  const selectedModule = availableModules.find(
+    (module) => module._id === selectedModuleId
+  );
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        {/* Header */}
+        <div className="border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+                <Plus className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Add Module</h2>
+                <p className="text-gray-500">Add a new module to this page</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              type="button"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-y-auto max-h-[60vh]">
+          {/* Mode Selection */}
+          <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
+            <button
+              onClick={() => setMode("copy")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center ${
+                mode === "copy"
+                  ? "bg-white text-primary-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+              type="button"
+            >
+              <Copy className="w-4 h-4" />
+              Clone Existing Module
+            </button>
+            <button
+              onClick={() => setMode("create")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center ${
+                mode === "create"
+                  ? "bg-white text-primary-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+              type="button"
+            >
+              <Package className="w-4 h-4" />
+              Create New Module
+            </button>
+          </div>
+
+          {mode === "copy" ? (
+            <div className="space-y-6">
+              <h3 className="font-semibold text-gray-900">
+                Select Module to Clone
+              </h3>
+
+              {loadingModules ? (
+                <div className="text-center py-8">
+                  <RefreshCw className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-3" />
+                  <p className="text-gray-500">Loading available modules...</p>
+                </div>
+              ) : availableModules.length > 0 ? (
+                <>
+                  <div className="space-y-3">
+                    {availableModules.map((module) => (
+                      <label
+                        key={module._id}
+                        className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors"
+                      >
+                        <input
+                          type="radio"
+                          name="moduleSelection"
+                          value={module._id}
+                          checked={selectedModuleId === module._id}
+                          onChange={(e) => {
+                            setSelectedModuleId(e.target.value);
+                            setNewModuleTitle(`${module.title} (Copy)`);
+                          }}
+                          className="text-primary-600 focus:ring-primary-500"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-gray-900">
+                              {module.title}
+                            </span>
+                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
+                              {module.type}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            ID: {module._id}
+                          </p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+
+                  {selectedModule && (
+                    <div className="border-t pt-6">
+                      <h4 className="font-semibold text-gray-900 mb-4">
+                        Clone Settings
+                      </h4>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-800 mb-2">
+                            New Module Title
+                          </label>
+                          <input
+                            type="text"
+                            value={newModuleTitle}
+                            onChange={(e) => setNewModuleTitle(e.target.value)}
+                            placeholder="Enter new module title..."
+                            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary-500"
+                          />
+                          <p className="text-xs text-gray-500 mt-2">
+                            This will create a copy of the selected module with
+                            a new title
+                          </p>
+                        </div>
+
+                        <div className="bg-gray-50 p-4 rounded-xl border">
+                          <h5 className="font-semibold text-gray-900 text-sm mb-2">
+                            Original Module Details
+                          </h5>
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <span className="text-gray-600">Type:</span>
+                              <span className="ml-2 font-medium">
+                                {selectedModule.type}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Fields:</span>
+                              <span className="ml-2 font-medium">
+                                {
+                                  Object.keys(selectedModule.content || {})
+                                    .length
+                                }
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-xl">
+                  <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-500">No modules available to clone</p>
+                  <p className="text-gray-400 text-sm mt-1">
+                    Create a new module instead
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <h3 className="font-semibold text-gray-900">Create New Module</h3>
+
+              <div className="grid grid-cols-1 gap-4">
+                <InputField
+                  label="Module Type"
+                  value={selectedModule?.type || ""}
+                  onChange={() => {}}
+                  placeholder="e.g., hero, card, banner"
+                  required
+                  helperText="The type of module (hero, card, banner, etc.)"
+                />
+
+                <InputField
+                  label="Module Title"
+                  value={newModuleTitle}
+                  onChange={(value) => setNewModuleTitle(value)}
+                  placeholder="e.g., Homepage Hero"
+                  required
+                  helperText="A descriptive title for this module"
+                />
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">
+                    Initial Content (JSON)
+                  </label>
+                  <textarea
+                    value={JSON.stringify(
+                      selectedModule?.content || {},
+                      null,
+                      2
+                    )}
+                    onChange={() => {}}
+                    rows={6}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm font-mono outline-none focus:border-primary-500 bg-gray-50"
+                    placeholder='{"key": "value"}'
+                    disabled
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Content will be copied from the selected module
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {message && (
+            <div
+              className={`mt-4 p-4 rounded-xl border flex items-center gap-3 ${
+                message.type === "error"
+                  ? "bg-red-50 text-red-800 border-red-200"
+                  : "bg-green-50 text-green-800 border-green-200"
+              }`}
+            >
+              {message.type === "error" ? (
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              ) : (
+                <CheckCircle className="w-5 h-5 flex-shrink-0" />
+              )}
+              <span className="font-medium">{message.text}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={onClose}
+              className="px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 font-semibold"
+              type="button"
+            >
+              Cancel
+            </button>
+
+            {mode === "copy" ? (
+              <button
+                onClick={handleCreateModule}
+                disabled={
+                  !selectedModuleId || !newModuleTitle.trim() || creatingModule
+                }
+                className={`px-6 py-3 rounded-xl text-white font-semibold transition-all duration-200 ${
+                  !selectedModuleId || !newModuleTitle.trim() || creatingModule
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
+                }`}
+                type="button"
+              >
+                {creatingModule ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                    Cloning...
+                  </>
+                ) : (
+                  "Clone Module"
+                )}
+              </button>
+            ) : (
+              <button
+                onClick={handleCreateModule}
+                disabled={creatingModule || !newModuleTitle.trim()}
+                className={`px-6 py-3 rounded-xl text-white font-semibold transition-all duration-200 ${
+                  creatingModule || !newModuleTitle.trim()
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
+                }`}
+                type="button"
+              >
+                {creatingModule ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                    Creating...
+                  </>
+                ) : (
+                  "Create Module"
+                )}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ────────────────────────────────
+// Reorder Modal Component
+// ────────────────────────────────
+
+interface ReorderModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onReorder: (newOrder: string[]) => void;
+  modules: PageLayoutItem[];
+}
+
+const ReorderModal: React.FC<ReorderModalProps> = ({
+  isOpen,
+  onClose,
+  onReorder,
+  modules,
+}) => {
+  const [reorderedModules, setReorderedModules] = useState<PageLayoutItem[]>(
+    []
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      setReorderedModules([...modules].sort((a, b) => a.order - b.order));
+    }
+  }, [isOpen, modules]);
+
+  const moveModule = (fromIndex: number, toIndex: number) => {
+    const newModules = [...reorderedModules];
+    const [movedModule] = newModules.splice(fromIndex, 1);
+    newModules.splice(toIndex, 0, movedModule);
+    setReorderedModules(newModules);
+  };
+
+  const handleSave = () => {
+    const moduleIds = reorderedModules.map((item) => item.moduleId);
+    onReorder(moduleIds);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        {/* Header */}
+        <div className="border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+                <GripVertical className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Reorder Modules
+                </h2>
+                <p className="text-gray-500">
+                  Drag and drop to reorder modules
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              type="button"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-y-auto max-h-[60vh]">
+          <div className="space-y-3">
+            {reorderedModules.map((item, index) => (
+              <div
+                key={item.moduleId}
+                className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl bg-white"
+              >
+                <div className="flex items-center gap-3 text-gray-400">
+                  <GripVertical className="w-5 h-5 cursor-grab" />
+                  <span className="text-sm font-medium w-8 text-center">
+                    {index + 1}
+                  </span>
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-semibold text-gray-900">
+                      {item.module?.title || "Untitled Module"}
+                    </span>
+                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
+                      {item.module?.type}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-500">ID: {item.moduleId}</p>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => moveModule(index, Math.max(0, index - 1))}
+                    disabled={index === 0}
+                    className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                    type="button"
+                  >
+                    <ArrowUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() =>
+                      moveModule(
+                        index,
+                        Math.min(reorderedModules.length - 1, index + 1)
+                      )
+                    }
+                    disabled={index === reorderedModules.length - 1}
+                    className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                    type="button"
+                  >
+                    <ArrowDown className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={onClose}
+              className="px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 font-semibold"
+              type="button"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
+              type="button"
+            >
+              Save Order
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ────────────────────────────────
 // Main Component
 // ────────────────────────────────
 
@@ -960,6 +1605,8 @@ export default function EditPage() {
   // State Management
   // ────────────────────────────────
   const [pageData, setPageData] = useState<PageData | null>(null);
+  const [pageDataWithoutContent, setPageDataWithoutContent] =
+    useState<PageItem2 | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -994,6 +1641,18 @@ export default function EditPage() {
     new Set()
   );
 
+  // Add Module Modal State
+  const [showAddModuleModal, setShowAddModuleModal] = useState(false);
+  const [addingModule, setAddingModule] = useState(false);
+
+  // Remove Module State
+  const [moduleToRemove, setModuleToRemove] = useState<string | null>(null);
+  const [removingModule, setRemovingModule] = useState(false);
+
+  // Reorder Modal State
+  const [showReorderModal, setShowReorderModal] = useState(false);
+  const [reorderingModules, setReorderingModules] = useState(false);
+
   // ────────────────────────────────
   // Data Fetching
   // ────────────────────────────────
@@ -1005,6 +1664,8 @@ export default function EditPage() {
 
     try {
       const base: PageItem2 = await getPage(id);
+
+      setPageDataWithoutContent(base);
 
       const slug = base?.page?.slug;
 
@@ -1180,6 +1841,113 @@ export default function EditPage() {
       }
       return newExpanded;
     });
+  };
+
+  // ────────────────────────────────
+  // Add Module Functionality
+  // ────────────────────────────────
+  const handleAddModule = async (moduleId: string) => {
+    if (!pageData) return;
+
+    setAddingModule(true);
+
+    try {
+      const base: PageItem2 = await getPage(id);
+
+      const nextOrder = base.page.layout.length + 1;
+
+      const newLayoutItem = {
+        moduleId,
+        order: nextOrder,
+      };
+
+      const updatedLayout = [...base.page.layout, newLayoutItem];
+
+      await updatePage(id, {
+        layout: updatedLayout,
+      });
+
+      setUpdateMsg({ type: "success", text: "Module added successfully!" });
+      setShowAddModuleModal(false);
+      await getPageData();
+    } catch (err: any) {
+      setUpdateMsg({
+        type: "error",
+        text: err.message || "Failed to add module to page",
+      });
+    } finally {
+      setAddingModule(false);
+    }
+  };
+
+  // ────────────────────────────────
+  // Remove Module Functionality
+  // ────────────────────────────────
+  const handleRemoveModule = async () => {
+    if (!moduleToRemove || !pageData) return;
+
+    setRemovingModule(true);
+
+    try {
+      const base: PageItem2 = await getPage(id);
+
+      // Filter out the module to remove
+      const updatedLayout = base.page.layout.filter(
+        (item: PageLayoutItem) => item.moduleId !== moduleToRemove
+      );
+
+      // Reorder the remaining modules
+      const reorderedLayout = updatedLayout.map((item, index) => ({
+        ...item,
+        order: index + 1,
+      }));
+
+      await updatePage(id, {
+        layout: reorderedLayout,
+      });
+
+      setUpdateMsg({ type: "success", text: "Module removed successfully!" });
+      setModuleToRemove(null);
+      await getPageData();
+    } catch (err: any) {
+      setUpdateMsg({
+        type: "error",
+        text: err.message || "Failed to remove module",
+      });
+    } finally {
+      setRemovingModule(false);
+    }
+  };
+
+  const handleReorderModules = async (newOrder: string[]) => {
+    if (!pageData) return;
+
+    setReorderingModules(true);
+
+    try {
+      const newLayout = newOrder.map((moduleId, index) => ({
+        moduleId,
+        order: index + 1,
+      }));
+
+      await updatePage(id, {
+        layout: newLayout,
+      });
+
+      setUpdateMsg({
+        type: "success",
+        text: "Modules reordered successfully!",
+      });
+      setShowReorderModal(false);
+      await getPageData();
+    } catch (err: any) {
+      setUpdateMsg({
+        type: "error",
+        text: err.message || "Failed to reorder modules",
+      });
+    } finally {
+      setReorderingModules(false);
+    }
   };
 
   // ────────────────────────────────
@@ -1710,9 +2478,8 @@ export default function EditPage() {
                       </div>
                     </div>
 
-                    {/* Search Bar */}
-                    {!isDraftWithoutModules && (
-                      <div className="flex gap-3">
+                    <div className="flex gap-3">
+                      {!isDraftWithoutModules && (
                         <div className="relative">
                           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
                           <input
@@ -1723,7 +2490,33 @@ export default function EditPage() {
                             className="pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm outline-none w-80 transition-all duration-200 bg-white"
                           />
                         </div>
-                      </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="pt-4 flex justify-end">
+                    {/* Reorder Button */}
+                    {!isDraftWithoutModules && moduleCount > 1 && (
+                      <button
+                        onClick={() => setShowReorderModal(true)}
+                        className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-200 font-semibold shadow-lg shadow-gray-500/25 mr-2"
+                        type="button"
+                      >
+                        <GripVertical className="w-4 h-4" />
+                        Reorder
+                      </button>
+                    )}
+
+                    {/* Add Module Button */}
+                    {!isDraftWithoutModules && (
+                      <button
+                        onClick={() => setShowAddModuleModal(true)}
+                        className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
+                        type="button"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add Module
+                      </button>
                     )}
                   </div>
                 </div>
@@ -1778,6 +2571,9 @@ export default function EditPage() {
                                     <span className="text-xs bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1.5 rounded-full font-semibold shadow-sm">
                                       {moduleData.type}
                                     </span>
+                                    <span className="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full font-semibold">
+                                      Order: {index + 1}
+                                    </span>
                                   </div>
 
                                   <p className="text-sm text-gray-500 mb-4 flex items-center gap-2">
@@ -1810,14 +2606,26 @@ export default function EditPage() {
 
                                 <div className="flex items-center gap-2">
                                   {!isEditing ? (
-                                    <button
-                                      onClick={() => startEdit(moduleData)}
-                                      className="flex items-center gap-2 px-5 py-2.5 text-sm bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
-                                      type="button"
-                                    >
-                                      <Edit3 className="w-4 h-4" />
-                                      Edit Content
-                                    </button>
+                                    <>
+                                      <button
+                                        onClick={() => startEdit(moduleData)}
+                                        className="flex items-center gap-2 px-5 py-2.5 text-sm bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
+                                        type="button"
+                                      >
+                                        <Edit3 className="w-4 h-4" />
+                                        Edit Content
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          setModuleToRemove(moduleData._id)
+                                        }
+                                        className="flex items-center gap-2 px-5 py-2.5 text-sm bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-200 font-semibold shadow-lg shadow-red-500/25"
+                                        type="button"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                        Remove
+                                      </button>
+                                    </>
                                   ) : (
                                     <button
                                       onClick={cancelEdit}
@@ -1941,13 +2749,22 @@ export default function EditPage() {
                             ? "No modules match your search criteria. Try adjusting your search terms."
                             : "This page doesn't have any modules configured yet."}
                         </p>
-                        {searchTerm && (
+                        {searchTerm ? (
                           <button
                             onClick={() => setSearchTerm("")}
                             className="px-6 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
                             type="button"
                           >
                             Clear Search
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setShowAddModuleModal(true)}
+                            className="flex items-center gap-3 px-6 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25 mx-auto"
+                            type="button"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Add Your First Module
                           </button>
                         )}
                       </div>
@@ -1959,6 +2776,34 @@ export default function EditPage() {
           </div>
         </div>
       </div>
+
+      {/* Add Module Modal */}
+      <AddModuleModal
+        isOpen={showAddModuleModal}
+        onClose={() => setShowAddModuleModal(false)}
+        onAddModule={handleAddModule}
+        currentPageId={id}
+      />
+
+      {/* Reorder Modal */}
+      <ReorderModal
+        isOpen={showReorderModal}
+        onClose={() => setShowReorderModal(false)}
+        onReorder={handleReorderModules}
+        modules={pageDataWithoutContent?.page.layout || []}
+      />
+
+      {/* Remove Module Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!moduleToRemove}
+        onClose={() => setModuleToRemove(null)}
+        onConfirm={handleRemoveModule}
+        title="Remove Module"
+        message="Are you sure you want to remove this module from the page? This action cannot be undone."
+        confirmText={removingModule ? "Removing..." : "Remove Module"}
+        cancelText="Cancel"
+        type="danger"
+      />
     </div>
   );
 }

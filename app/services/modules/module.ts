@@ -34,6 +34,22 @@ export type ModuleRequestOptions = {
   signal?: AbortSignal | null;
 };
 
+export type ModuleItem = {
+  _id: string;
+  type: string;
+  title: string;
+  status: string;
+  content: any;
+  version: number;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type moduleRes = {
+  items: ModuleItem[];
+};
+
 function buildRequestOptions(opts?: ModuleRequestOptions): RequestInit {
   const token = getCookie("token");
 
@@ -100,24 +116,8 @@ export const updateModule = async (
   return api.put<ModuleResponse>(`/admin/modules/${id}`, payload, requestInit);
 };
 
-// Utility function to get multiple modules by IDs
-export const getModules = async (
-  ids: string[],
-  opts?: ModuleRequestOptions
-): Promise<Module[]> => {
-  if (!ids?.length) {
-    return [];
-  }
-
-  const requests = ids.map((id) => getModuleById(id, opts));
-  const results = await Promise.allSettled(requests);
-
-  return results
-    .filter(
-      (result): result is PromiseFulfilledResult<Module> =>
-        result.status === "fulfilled"
-    )
-    .map((result) => result.value);
+export const getModules = async () => {
+  return api.get<moduleRes>("/admin/modules");
 };
 
 export default {
