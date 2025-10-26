@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 
+import { AlertProvider } from "@/components/alerts/AlertProvider";
+import { GlobalModalProvider } from "@/components/global/GlobalModalProvider";
+
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
@@ -22,7 +25,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.variable} antialiased`}>{children}</body>
+      <body className={`${outfit.variable} antialiased`}>
+        <GlobalModalProvider>
+          <AlertProvider>{children}</AlertProvider>
+        </GlobalModalProvider>
+      </body>
     </html>
   );
 }

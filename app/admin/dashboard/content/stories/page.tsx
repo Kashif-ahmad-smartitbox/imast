@@ -11,7 +11,7 @@ import {
   Calendar,
   Link,
 } from "lucide-react";
-import { getStories, StoryItem } from "@/app/services/modules/storyModule";
+import { getStories, StoryItem } from "@/app/services/modules/story";
 import CommonDashHeader from "@/app/components/common/CommonDashHeader";
 import { useRouter } from "next/navigation";
 

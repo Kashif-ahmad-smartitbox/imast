@@ -1,34 +1,103 @@
 import React from "react";
+import { Metadata } from "next";
 import ModuleRenderer from "@/components/modules/ModuleRenderer";
 import { getPageWithContent } from "@/services/modules/pageModule";
+import { notFound } from "next/navigation";
 
-type Params = { params: { slug: string } };
+export async function generateMetadata({
+  params,
+}: {
+  params: any;
+}): Promise<Metadata> {
+  const { slug } = await params;
 
-export default async function Page({ params }: Params) {
-  const slug = params.slug;
-  const res = await fetch(
-    `${process.env.API_URL}/api/admin/pages/slug/${slug}`,
-    {
-      cache: "no-cache",
+  try {
+    const response = await getPageWithContent(slug);
+
+    if (response.message === "Not found" || !response.page) {
+      return {
+        title: "Page Not Found",
+        description: "The page you are looking for does not exist.",
+      };
     }
-  );
-  if (!res.ok) {
-    return <div className="p-8">Page not found</div>;
+
+    const page = response.page;
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
+
+    return {
+      title: page.metaTitle || page.title || "iMast",
+      description:
+        page.metaDescription ||
+        page.excerpt ||
+        "Discover expert insights and analysis.",
+      keywords: page.keywords?.join(", "),
+      authors: [{ name: "iMast" }],
+      openGraph: {
+        title: page.metaTitle || page.title || "iMast",
+        description:
+          page.metaDescription ||
+          page.excerpt ||
+          "Discover expert insights and analysis.",
+        type: "website",
+        url: `${baseUrl}/${slug}`,
+        siteName: "iMast",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: page.metaTitle || page.title || "iMast",
+        description:
+          page.metaDescription ||
+          page.excerpt ||
+          "Discover expert insights and analysis.",
+      },
+      robots:
+        page.status === "published" ? "index, follow" : "noindex, nofollow",
+      alternates: {
+        canonical: page.canonicalUrl || `${baseUrl}/${slug}`,
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Page Not Found",
+      description: "The page you are looking for does not exist.",
+    };
   }
-  const data = await res.json();
-  const page = data.page;
+}
+
+export default async function Page({ params }: { params: any }) {
+  // await params here as well
+  const { slug } = await params;
+
+  const response = await getPageWithContent(slug);
+
+  if (response.message === "Not found" || !response.page) {
+    notFound();
+  }
+
+  const page = response.page;
+
+  if (!page.layout || page.layout.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-xl font-semibold text-gray-900 mb-2">
+            No content
+          </h1>
+          <p className="text-gray-600">This page has no content yet.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const layout = page.layout.sort(
+    (a: any, b: any) => (a.order || 0) - (b.order || 0)
+  );
 
   return (
     <main>
-      {page.layout
-        ?.sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
-        .map((item: any, idx: number) => (
-          <ModuleRenderer
-            item={item}
-            index={idx}
-            key={item.module?._id || idx}
-          />
-        ))}
+      {layout.map((item: any, idx: number) => (
+        <ModuleRenderer item={item} index={idx} key={item.module?._id || idx} />
+      ))}
     </main>
   );
 }

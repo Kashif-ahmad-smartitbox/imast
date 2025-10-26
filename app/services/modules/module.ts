@@ -8,19 +8,22 @@ export interface ModuleCreatePayload {
   status?: "draft" | "published";
 }
 
+export interface Module {
+  _id: string;
+  type: string;
+  title?: string;
+  content?: any;
+  status?: "draft" | "published";
+  version?: number;
+  createdBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
+  [k: string]: any;
+}
+
 export interface ModuleResponse {
-  module: {
-    _id: string;
-    type: string;
-    title?: string;
-    content?: any;
-    status?: "draft" | "published";
-    version?: number;
-    createdBy?: string;
-    createdAt?: string;
-    updatedAt?: string;
-    [k: string]: any;
-  };
+  module: Module;
 }
 
 export type ModuleUpdatePayload = Partial<ModuleCreatePayload>;
@@ -46,6 +49,39 @@ function buildRequestOptions(opts?: ModuleRequestOptions): RequestInit {
   };
 }
 
+export const getModule = async (
+  id: string,
+  opts?: ModuleRequestOptions
+): Promise<ModuleResponse> => {
+  if (!id?.trim()) {
+    throw new Error("Module ID is required");
+  }
+
+  const requestInit = buildRequestOptions(opts);
+  return api.get<ModuleResponse>(`/admin/modules/${id}`, requestInit);
+};
+
+export const getModuleById = async (
+  id: string,
+  opts?: ModuleRequestOptions
+): Promise<Module> => {
+  if (!id?.trim()) {
+    throw new Error("Module ID is required");
+  }
+
+  const requestInit = buildRequestOptions(opts);
+  const response = await api.get<ModuleResponse>(
+    `/admin/modules/${id}`,
+    requestInit
+  );
+
+  if (!response.module) {
+    throw new Error("Module not found in response");
+  }
+
+  return response.module;
+};
+
 export const createModule = async (
   payload: ModuleCreatePayload,
   opts?: ModuleRequestOptions
@@ -64,4 +100,30 @@ export const updateModule = async (
   return api.put<ModuleResponse>(`/admin/modules/${id}`, payload, requestInit);
 };
 
-export default { createModule, updateModule };
+// Utility function to get multiple modules by IDs
+export const getModules = async (
+  ids: string[],
+  opts?: ModuleRequestOptions
+): Promise<Module[]> => {
+  if (!ids?.length) {
+    return [];
+  }
+
+  const requests = ids.map((id) => getModuleById(id, opts));
+  const results = await Promise.allSettled(requests);
+
+  return results
+    .filter(
+      (result): result is PromiseFulfilledResult<Module> =>
+        result.status === "fulfilled"
+    )
+    .map((result) => result.value);
+};
+
+export default {
+  createModule,
+  updateModule,
+  getModule,
+  getModuleById,
+  getModules,
+};

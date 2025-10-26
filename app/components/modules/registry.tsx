@@ -59,6 +59,10 @@ const ImastPromoSection = dynamic(
   { ssr: false }
 );
 
+const HeroHeader = dynamic(() => import("@/components/common/HeroHeader"), {
+  ssr: false,
+});
+
 export type ModuleComponentProps = {
   data: any;
 };
@@ -82,6 +86,7 @@ const registry: Record<string, ComponentType<ModuleComponentProps>> = {
   imastvalues: ImastValuesSection,
   imastpromo: ImastPromoSection,
   footer: Footer,
+  heroheader: HeroHeader,
 };
 
 export default registry;

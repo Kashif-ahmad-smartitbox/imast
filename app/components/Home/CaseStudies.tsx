@@ -95,18 +95,18 @@ export default function CaseStudies(props: any) {
       aria-labelledby="case-studies-title"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <header className="mb-8 text-center">
-          <p className="text-3xl font-semibold text-primary-600">
-            {props.data.subtitle}
+        <header className="mb-8 sm:mb-12 text-center">
+          <p className="text-2xl sm:text-3xl font-semibold text-primary-600">
+            {props.data?.subtitle}
           </p>
           <h2
-            id="case-studies-title"
-            className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900"
+            id="resources-title"
+            className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900"
           >
-            {props.data.title}
+            {props.data?.title}
           </h2>
-          <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-            {props.data.description}
+          <p className="mt-3 sm:mt-4 text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+            {props.data?.description}
           </p>
         </header>
 

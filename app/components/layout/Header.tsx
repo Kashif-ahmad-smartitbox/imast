@@ -210,7 +210,7 @@ export default function Header({ data }: { data: HeaderData }) {
     "w-full left-0 right-0 z-50 transition-all duration-300 ease-out";
   const headerPosition = scrolled ? "sticky top-0" : "absolute top-0";
   const headerBg = scrolled
-    ? "bg-white/95 backdrop-blur-md shadow-xl border-b border-gray-200/60"
+    ? "bg-white/95 border-b border-gray-200/60"
     : "bg-transparent";
 
   return (
@@ -238,14 +238,7 @@ export default function Header({ data }: { data: HeaderData }) {
                       : data.logo.desktopHeight
                   }`}
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-blue-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
-              {!isMobile && (
-                <Sparkles
-                  size={isMobile ? 12 : isTablet ? 14 : 16}
-                  className="text-red-500 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110"
-                />
-              )}
             </Link>
           </div>
 

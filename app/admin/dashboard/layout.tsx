@@ -1,4 +1,3 @@
-// app/admin/dashboard/layout.tsx
 "use client";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -11,13 +10,11 @@ import {
   Globe,
   LucideIcon,
 } from "lucide-react";
-import { removeCookie } from "@/app/lib/cookies";
 import DashHeader from "@/components/dashboard/DashHeader";
 import MobileDrawer from "@/components/dashboard/MobileDrawer";
 import React, { useEffect, useState, useCallback } from "react";
 import { AuthProvider } from "@/app/services/context/AuthContext";
 import DesktopSidebar from "@/components/dashboard/DesktopSidebar";
-import { adminLogout, getAdminProfile } from "@/app/services/modules/auth";
 import ExpandSidebarButton from "@/components/dashboard/ExpandSidebarButton";
 
 const SIDEBAR_W = 280;
