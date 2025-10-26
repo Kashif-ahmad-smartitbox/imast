@@ -10,7 +10,7 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { X, Loader2 } from "lucide-react";
+import { X } from "lucide-react";
 
 type ModalProps = {
   id: string;
@@ -34,10 +34,13 @@ type ModalContextValue = {
 
 const ModalContext = createContext<ModalContextValue | null>(null);
 
-const useId = (() => {
+// Custom ID generator that doesn't use React hooks
+const createIdGenerator = () => {
   let i = 0;
   return () => (++i).toString();
-})();
+};
+
+const idGenerator = createIdGenerator();
 
 function useModalContext() {
   const ctx = useContext(ModalContext);
@@ -53,7 +56,7 @@ export function GlobalModalProvider({
   const [modals, setModals] = useState<ModalProps[]>([]);
 
   const show = useCallback((opts: ShowModalOptions) => {
-    const id = useId();
+    const id = idGenerator();
     setModals((m) => [...m, { id, ...opts }]);
     return id;
   }, []);
@@ -70,7 +73,7 @@ export function GlobalModalProvider({
       opts: ShowModalOptions & { confirmText?: string; cancelText?: string }
     ) => {
       return new Promise<boolean>((resolve) => {
-        const id = useId();
+        const id = idGenerator();
 
         const handleClose = (result: boolean) => {
           setModals((m) => m.filter((x) => x.id !== id));
@@ -111,7 +114,7 @@ export function GlobalModalProvider({
   return (
     <ModalContext.Provider value={value}>
       {children}
-      <ModalRoot modals={modals} onClose={(id) => close(id)} />
+      <ModalRoot modals={modals} onClose={close} />
     </ModalContext.Provider>
   );
 }
@@ -143,8 +146,8 @@ function ModalRoot({
 
   return createPortal(
     <>
-      {modals.map((m) => (
-        <Modal key={m.id} {...m} onClose={() => onClose(m.id)} />
+      {modals.map((modal) => (
+        <Modal key={modal.id} {...modal} onClose={() => onClose(modal.id)} />
       ))}
     </>,
     el
@@ -152,27 +155,33 @@ function ModalRoot({
 }
 
 function Modal({
-  id,
   title,
   body,
   footer,
   closable = true,
   size = "md",
   onClose,
-}: ModalProps & { onClose?: () => void }) {
+}: Omit<ModalProps, "id"> & { onClose?: () => void }) {
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const [closing, setClosing] = useState(false);
 
+  const handleClose = useCallback(() => {
+    setClosing(true);
+    setTimeout(() => {
+      onClose?.();
+    }, 180);
+  }, [onClose]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (closable) handleClose();
+      if (e.key === "Escape" && closable) {
+        handleClose();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [closable]);
+  }, [closable, handleClose]); // Added handleClose to dependencies
 
   useEffect(() => {
     // focus trap basic: focus dialog on open
@@ -183,13 +192,6 @@ function Modal({
       return () => previouslyFocused?.focus?.();
     }
   }, []);
-
-  const handleClose = useCallback(() => {
-    setClosing(true);
-    setTimeout(() => {
-      onClose?.();
-    }, 180);
-  }, [onClose]);
 
   const sizeClass = (() => {
     switch (size) {
@@ -256,7 +258,7 @@ export function useModal() {
 }
 
 // convenience Confirm helper (uses modal confirm under the hood)
-export async function showConfirm(opts: {
+export async function showConfirm(_opts: {
   title?: React.ReactNode;
   body?: React.ReactNode;
   confirmText?: string;

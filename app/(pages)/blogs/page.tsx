@@ -74,7 +74,7 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     };
   } catch (error) {
-    // Fallback metadata in case of API failure
+    console.log("error", error);
     return {
       title: "Expert Insights & Articles | iMast",
       description:

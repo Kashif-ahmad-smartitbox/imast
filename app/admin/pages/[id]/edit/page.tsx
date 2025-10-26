@@ -6,6 +6,9 @@ import {
   getPage,
   getPageWithContent,
   updatePage,
+  PageItem,
+  PageItem2,
+  PageWithContentResponse,
 } from "@/services/modules/pageModule";
 import { updateModule } from "@/services/modules/module";
 import {
@@ -65,7 +68,9 @@ interface Module {
 }
 
 interface PageLayoutItem {
-  module: Module;
+  moduleId: string;
+  order: number;
+  module?: Module;
 }
 
 interface PageData {
@@ -1000,7 +1005,8 @@ export default function EditPage() {
     setError(null);
 
     try {
-      const base = await getPage(id);
+      const base: PageItem2 = await getPage(id);
+
       const slug = base?.page?.slug;
 
       if (!slug) {
@@ -1010,19 +1016,18 @@ export default function EditPage() {
       let fullPageData: PageData | null = null;
 
       try {
-        const full = await getPageWithContent(slug);
-        fullPageData = full.page;
+        const full: PageWithContentResponse = await getPageWithContent(slug);
+        fullPageData = full.page as PageData;
       } catch (err) {
         console.log("getPageWithContent failed, using base page data");
         fullPageData = {
           ...base.page,
           layout: [],
-        };
+        } as PageData;
       }
 
       const page = fullPageData || base.page;
-
-      setPageData(page);
+      setPageData(page as PageData);
       setPageFields({
         title: page.title || "",
         slug: page.slug || "",
@@ -1095,7 +1100,7 @@ export default function EditPage() {
         metaTitle: pageFields.metaTitle?.trim() || undefined,
         metaDescription: pageFields.metaDescription?.trim() || undefined,
         canonicalUrl,
-        status: pageFields.status,
+        status: pageFields.status as "draft" | "published" | "archived",
         publishedAt: pageFields.publishedAt
           ? new Date(pageFields.publishedAt).toISOString()
           : null,
@@ -1184,6 +1189,8 @@ export default function EditPage() {
   const filteredModules =
     pageData?.layout?.filter((item: PageLayoutItem) => {
       const moduleData = item.module;
+      if (!moduleData) return false;
+
       const searchLower = searchTerm.toLowerCase();
 
       return (
@@ -1751,6 +1758,8 @@ export default function EditPage() {
                       filteredModules.map(
                         (item: PageLayoutItem, index: number) => {
                           const moduleData = item.module;
+                          if (!moduleData) return null;
+
                           const isEditing = editingModuleId === moduleData._id;
                           const isExpanded = expandedModules.has(
                             moduleData._id

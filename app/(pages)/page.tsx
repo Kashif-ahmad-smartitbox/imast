@@ -44,6 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     };
   } catch (error) {
+    console.log("error", error);
     return {
       title: "Home | iMast",
       description: "Welcome to iMast - Your platform for insightful content.",
@@ -57,6 +58,7 @@ export default async function HomePage() {
   try {
     response = await getPageWithContent("home");
   } catch (error) {
+    console.log("error", error);
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

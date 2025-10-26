@@ -63,6 +63,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     };
   } catch (error) {
+    console.log("error", error);
     return {
       title: "Error | iMast",
       description: "Error loading article",
@@ -72,6 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 function SingleBlogPage({ params }: Props) {
+  console.log("params", params);
   return <SingleBlog />;
 }
 

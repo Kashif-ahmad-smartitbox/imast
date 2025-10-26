@@ -529,7 +529,7 @@ export default function EditBlog() {
             Blog not found
           </div>
           <p className="mt-2 text-gray-600">
-            The requested blog could not be found or you don't have access.
+            The requested blog could not be found or you don&apos;t have access.
           </p>
           <div className="mt-4">
             <button

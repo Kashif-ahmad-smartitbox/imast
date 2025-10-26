@@ -149,8 +149,8 @@ function AlertCard({
   useEffect(() => {
     if (alert.duration == null) return;
     let mounted = true;
-    let remaining = alert.duration!;
-    let start = Date.now();
+    const remaining = alert.duration!;
+    const start = Date.now();
     let raf: number | null = null;
     const tick = () => {
       if (!mounted) return;

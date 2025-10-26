@@ -8,6 +8,7 @@ import {
   Box,
   ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 
 type Partner = {
   id: string;
@@ -178,12 +179,12 @@ export default function PartnersIntegrations() {
               onChange={(e) => setQuery(e.target.value)}
               className="w-full sm:w-64 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-100"
             />
-            <a
+            <Link
               href="/integrations"
               className="ml-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-sm hover:bg-gray-50"
             >
               View all
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -241,12 +242,12 @@ export default function PartnersIntegrations() {
                 Build custom connectors or use our SDKs to integrate deeply.
               </div>
             </div>
-            <a
+            <Link
               href="/docs/api"
               className="ml-4 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-600 text-white"
             >
               Explore API <ArrowRight className="w-4 h-4" />
-            </a>
+            </Link>
           </div>
         </div>
       </div>

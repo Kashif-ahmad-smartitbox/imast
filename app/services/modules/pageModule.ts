@@ -29,6 +29,26 @@ export interface PageItem {
   __v: number;
 }
 
+export interface PageItem2 {
+  page: {
+    canonicalUrl: string;
+    createdAt: string;
+    createdBy: string;
+    excerpt: string;
+    layout: {
+      moduleId: string;
+      order: number;
+    }[];
+    metaDescription: string;
+    metaTitle: string;
+    publishedAt: string;
+    slug: string;
+    status: string;
+    title: string;
+    _id: string;
+  };
+}
+
 export interface PageResponse {
   items: PageItem[];
   total: number;
@@ -173,7 +193,7 @@ class PageService {
     return data;
   }
 
-  async getPage(id: string, options?: RequestOptions): Promise<PageItem> {
+  async getPage(id: string, options?: RequestOptions): Promise<PageItem2> {
     const cacheKey = this.getCacheKey(`/admin/pages/${id}`);
     const cached = this.getCache(cacheKey);
 
@@ -181,12 +201,14 @@ class PageService {
       return cached;
     }
 
-    const data = await this.makeRequest<PageItem>(
+    const data = await this.makeRequest<PageItem2>(
       "GET",
       `/admin/pages/${id}`,
       undefined,
       options
     );
+
+    console.log("data", data);
 
     this.setCache(cacheKey, data);
     return data;

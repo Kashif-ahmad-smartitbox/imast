@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Star,
 } from "lucide-react";
+import Link from "next/link";
 
 type Vertical = {
   id: string;
@@ -193,18 +194,18 @@ export default function UseCases() {
             </div>
           </div>
           <div className="flex gap-3">
-            <a
+            <Link
               href="/contact"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white font-semibold"
             >
               Talk to us
-            </a>
-            <a
+            </Link>
+            <Link
               href="/case-studies"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200"
             >
               View case studies
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -268,18 +269,18 @@ function VerticalCard({
           </div>
 
           <div className="mt-4 flex items-center gap-3">
-            <a
+            <Link
               href={`/verticals/${v.id}`}
               className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600"
             >
               Explore <ArrowRight size={14} />
-            </a>
-            <a
+            </Link>
+            <Link
               href="/contact"
               className="ml-auto inline-flex items-center px-3 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium"
             >
               Talk to us
-            </a>
+            </Link>
           </div>
 
           {v.stat && (
