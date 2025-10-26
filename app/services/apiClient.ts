@@ -14,6 +14,7 @@ export async function apiClient<T>(
 
   try {
     const res = await fetch(url, {
+      cache: "no-store",
       headers: {
         "Content-Type": "application/json",
         ...(options.headers || {}),

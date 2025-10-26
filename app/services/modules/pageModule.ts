@@ -90,8 +90,7 @@ export interface RequestOptions {
   headers?: Record<string, string>;
 }
 
-// Cache configuration
-const CACHE_DURATION = 1000 * 60 * 5; // 5 minutes
+const CACHE_DURATION = 1000 * 10;
 
 class PageService {
   private cache = new Map<string, { data: any; timestamp: number }>();
