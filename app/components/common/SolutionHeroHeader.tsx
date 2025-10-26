@@ -83,7 +83,7 @@ export default function SolutionHeroHeader({
             {logo?.src && (
               <div className="mb-6">
                 <div
-                  className="inline-block rounded-2xl flex items-center justify-center overflow-hidden bg-white p-2"
+                  className="inline-block rounded-2xl items-center justify-center overflow-hidden bg-white p-2"
                   style={{ height: logo.size ?? 80 }}
                 >
                   <img

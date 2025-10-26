@@ -348,10 +348,6 @@ const Pages: React.FC = () => {
     [router]
   );
 
-  const handleCreateModule = useCallback(() => {
-    router.push("/admin/modules/new");
-  }, [router]);
-
   const handleCreatePage = useCallback(() => {
     router.push("/admin/pages/new");
   }, [router]);
@@ -392,13 +388,13 @@ const Pages: React.FC = () => {
           </button>
 
           <button
-            onClick={handleCreateModule}
+            onClick={handleCreatePage}
             className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-white"
-            aria-label="Create new module"
-            title="Create Module"
+            aria-label="Create new Page"
+            title="Create Page"
           >
             <Link className="w-3 h-3" />
-            <span>Create Module</span>
+            <span>Create Page</span>
           </button>
         </div>
       </div>

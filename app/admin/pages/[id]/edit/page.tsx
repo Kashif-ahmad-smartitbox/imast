@@ -6,7 +6,6 @@ import {
   getPage,
   getPageWithContent,
   updatePage,
-  PageItem,
   PageItem2,
   PageWithContentResponse,
 } from "@/services/modules/pageModule";

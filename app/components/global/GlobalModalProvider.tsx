@@ -25,7 +25,7 @@ type ModalProps = {
 type ShowModalOptions = Omit<ModalProps, "id">;
 
 type ModalContextValue = {
-  show: (opts: ShowModalOptions) => string; // returns id
+  show: (opts: ShowModalOptions) => string;
   close: (id?: string) => void;
   confirm: (
     opts: ShowModalOptions & { confirmText?: string; cancelText?: string }
@@ -34,7 +34,6 @@ type ModalContextValue = {
 
 const ModalContext = createContext<ModalContextValue | null>(null);
 
-// Custom ID generator that doesn't use React hooks
 const createIdGenerator = () => {
   let i = 0;
   return () => (++i).toString();
@@ -181,10 +180,9 @@ function Modal({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [closable, handleClose]); // Added handleClose to dependencies
+  }, [closable, handleClose]);
 
   useEffect(() => {
-    // focus trap basic: focus dialog on open
     const el = dialogRef.current;
     if (el) {
       const previouslyFocused = document.activeElement as HTMLElement | null;
