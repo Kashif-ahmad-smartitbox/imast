@@ -15,13 +15,9 @@ const BrandSection: React.FC<Props> = ({ isExpanded, onToggle, ariaLabel }) => {
     <div className="px-4 min-h-[var(--header-h)] flex items-center justify-between gap-3 border-b border-gray-100">
       <div className="flex items-center gap-3">
         {isExpanded ? (
-          <img className="h-6" src="/logo.svg" alt="VisionLyft" />
+          <img className="h-6" src="/logo.svg" alt="Imast" />
         ) : (
-          <img
-            className="h-6"
-            src="/logo-compact.svg"
-            alt="VisionLyft compact"
-          />
+          <img className="h-6" src="/logo-compact.svg" alt="Imast compact" />
         )}
       </div>
 
