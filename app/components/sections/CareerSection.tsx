@@ -142,7 +142,7 @@ export default function CareerSection({
 
   const filteredAndSortedJobs = useMemo(() => {
     const q = search.trim().toLowerCase();
-    let filtered = jobs.filter((j) => {
+    const filtered = jobs.filter((j) => {
       if (department !== "All" && j.department !== department) return false;
       if (location !== "All" && j.location !== location) return false;
       if (jobType !== "All" && j.type !== jobType) return false;

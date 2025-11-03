@@ -348,6 +348,8 @@ const MemberForm: React.FC<{
 };
 
 function Team({ initialData }: TeamManagementProps) {
+  const user = useAuth();
+
   const [teamData, setTeamData] = useState<TeamResponse | null>(
     initialData || null
   );
@@ -470,8 +472,6 @@ function Team({ initialData }: TeamManagementProps) {
   if (loading) return <LoadingState />;
   if (error && !teamData)
     return <ErrorState error={error} onRetry={fetchTeamData} />;
-
-  const user = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-50">

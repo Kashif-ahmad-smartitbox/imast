@@ -3,13 +3,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Mail,
-  Plus,
-  Edit3,
   Search,
   RefreshCw,
   Calendar,
   User,
-  Tag,
   ChevronLeft,
   ChevronRight,
   Trash2,
@@ -28,13 +25,6 @@ const PAGE_LIMIT = 10;
 const DEBOUNCE_DELAY = 300;
 
 // Types
-interface FetchResult {
-  items: FormSubmission[];
-  total: number;
-  page: number;
-  totalPages: number;
-}
-
 interface PaginationState {
   page: number;
   total: number;
@@ -336,7 +326,7 @@ const EmptyState: React.FC<{
   </div>
 );
 
-const forms: React.FC = () => {
+const FormsPage: React.FC = () => {
   const [contacts, setContacts] = useState<FormSubmission[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -354,6 +344,7 @@ const forms: React.FC = () => {
 
   const { push } = useAlert();
   const modal = useModal();
+  const user = useAuth();
 
   const fetchContacts = useCallback(
     async (page: number = 1, search: string = searchTerm) => {
@@ -413,7 +404,7 @@ const forms: React.FC = () => {
   // Initial load and filter changes
   useEffect(() => {
     fetchContacts(1);
-  }, [statusFilter, formNameFilter]);
+  }, [statusFilter, formNameFilter, fetchContacts]);
 
   // Search term changes with debouncing
   useEffect(() => {
@@ -432,8 +423,6 @@ const forms: React.FC = () => {
   const handleRefresh = useCallback(() => {
     fetchContacts(pagination.page);
   }, [fetchContacts, pagination.page]);
-
-  const user = useAuth();
 
   const handleView = useCallback(
     async (id: string) => {
@@ -848,4 +837,4 @@ const forms: React.FC = () => {
   );
 };
 
-export default forms;
+export default FormsPage;
