@@ -18,6 +18,26 @@
   --color-primary-950: oklch(27.9% 0.091 12.422);
 }
 
+::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: oklch(64.5% 0.246 16.439);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 html {
   scroll-behavior: smooth;
 }

@@ -1,10 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import Header from "@/app/components/layout/Header";
-import Footer from "@/app/components/layout/Footer";
 import { getBlogs, BlogItem } from "@/services/modules/blog";
-import { getModule, ModuleResponse } from "@/services/modules/module";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -18,21 +15,15 @@ import {
   Tag,
   X,
   Sparkles,
-  Bookmark,
   Share2,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 
-const MODULE_IDS = {
-  HEADER: "68f49bac620187ec2fdfb66a",
-  FOOTER: "68f4a828620187ec2fdfb888",
-} as const;
-
-// Constants
 const BLOGS_PER_PAGE = 9;
 const FEATURED_BLOGS_PER_PAGE = 3;
 
+// Types
 interface PaginationState {
   currentPage: number;
   totalPages: number;
@@ -41,7 +32,15 @@ interface PaginationState {
   hasPrev: boolean;
 }
 
-const formatDate = (dateString: string) => {
+interface BlogsProps {
+  data: {
+    title: string;
+    subtitle: string;
+  };
+}
+
+// Utility Functions
+const formatDate = (dateString: string): string => {
   return new Date(dateString).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -49,9 +48,8 @@ const formatDate = (dateString: string) => {
   });
 };
 
-function Blogs() {
-  const [headerData, setHeaderData] = useState<ModuleResponse | null>(null);
-  const [footerData, setFooterData] = useState<ModuleResponse | null>(null);
+// Main Component
+function Blogs({ data }: BlogsProps) {
   const [blogs, setBlogs] = useState<BlogItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -71,22 +69,15 @@ function Blogs() {
         setLoading(true);
         setError(null);
 
-        const [headerResponse, footerResponse, blogsResponse] =
-          await Promise.all([
-            getModule(MODULE_IDS.HEADER),
-            getModule(MODULE_IDS.FOOTER),
-            getBlogs({
-              status: "published",
-              sortBy: "publishedAt",
-              sortOrder: "desc",
-              page,
-              limit: BLOGS_PER_PAGE,
-              search: search.trim() || undefined,
-            }),
-          ]);
+        const blogsResponse = await getBlogs({
+          status: "published",
+          sortBy: "publishedAt",
+          sortOrder: "desc",
+          page,
+          limit: BLOGS_PER_PAGE,
+          search: search.trim() || undefined,
+        });
 
-        setHeaderData(headerResponse);
-        setFooterData(footerResponse);
         setBlogs(blogsResponse.items || []);
 
         // Update pagination state
@@ -101,10 +92,8 @@ function Blogs() {
           hasPrev: page > 1,
         });
       } catch (err) {
-        console.error("Failed to fetch page data:", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to load page data"
-        );
+        console.error("Failed to fetch blogs:", err);
+        setError(err instanceof Error ? err.message : "Failed to load blogs");
       } finally {
         setLoading(false);
       }
@@ -116,297 +105,436 @@ function Blogs() {
     fetchPageData(1, searchQuery);
   }, [fetchPageData, searchQuery]);
 
-  // Handle page change
   const handlePageChange = useCallback(
     (newPage: number) => {
       if (newPage >= 1 && newPage <= pagination.totalPages) {
         fetchPageData(newPage, searchQuery);
         // Scroll to top of blog section
         const blogSection = document.getElementById("blog-content-section");
-        if (blogSection) {
-          blogSection.scrollIntoView({ behavior: "smooth" });
-        }
+        blogSection?.scrollIntoView({ behavior: "smooth" });
       }
     },
     [pagination.totalPages, searchQuery, fetchPageData]
   );
 
-  // Get featured blogs from the current page data
+  const clearSearch = () => setSearchQuery("");
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+  };
+
+  // Derived state
   const featuredBlogs = blogs
     .filter((blog) => blog.featured)
     .slice(0, FEATURED_BLOGS_PER_PAGE);
 
-  // Show all blogs in the main grid (including featured ones if they appear in this page)
   const displayBlogs = blogs;
 
-  const clearSearch = () => {
-    setSearchQuery("");
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    // Reset to first page when search changes
-    setPagination((prev) => ({ ...prev, currentPage: 1 }));
-  };
-
+  // Loading state
   if (loading && blogs.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-cream-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-700 font-medium">Loading Insights...</p>
-        </div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
+  // Error state
   if (error && blogs.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-cream-50">
-        <div className="text-center max-w-md mx-auto p-8 bg-white rounded-lg border border-gray-200">
-          <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Eye className="w-8 h-8 text-primary-600" />
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
-            Failed to load blogs
-          </h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            onClick={() => fetchPageData(1, searchQuery)}
-            className="px-6 py-3 bg-primary-600 text-white hover:bg-primary-700 transition-all duration-300 rounded-lg font-medium"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
+      <ErrorState error={error} onRetry={() => fetchPageData(1, searchQuery)} />
     );
   }
 
   return (
     <div className="min-h-screen bg-cream-50">
-      <Header data={headerData?.module?.content} />
-
       <main>
-        {/* Classic Hero Section */}
-        <section className="bg-gradient-to-b from-gray-900 to-gray-800 text-white pt-32 pb-20 -mt-20 relative overflow-hidden">
-          {/* Subtle Texture */}
-          <div className="absolute inset-0 opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNDUgMTVIMTVWNDVINDVWMTVaTTE1IDE1SDBWMEgxNVYxNVpNNDUgMTVWNDBINjBWMTVINjBINjBINDBaTTE1IDQ1VjYwSDBWNDVIMTVaTTQ1IDQ1SDYwVjYwSDQ1VjQ1WiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiLz48L3N2Zz4=')]"></div>
+        {/* Hero Section */}
+        <HeroSection
+          data={data}
+          searchQuery={searchQuery}
+          isSearchFocused={isSearchFocused}
+          totalItems={pagination.totalItems}
+          onSearchChange={handleSearchChange}
+          onSearchFocusChange={setIsSearchFocused}
+          onClearSearch={clearSearch}
+        />
 
-          <div className="container mx-auto px-6 pt-24 relative z-10">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="mb-8">
-                <div className="w-20 h-px bg-primary-500 mx-auto mb-6"></div>
-                <h1 className="text-5xl font-bold text-white mb-6">
-                  Expert Insights
-                </h1>
-                <p className="text-xl text-gray-300 mb-8 leading-relaxed max-w-2xl mx-auto">
-                  Discover in-depth analysis, industry trends, and professional
-                  perspectives from our team of experts.
-                </p>
-              </div>
-
-              {/* Enhanced Search Bar */}
-              <div className="max-w-2xl mx-auto mb-12">
-                <div className="relative group">
-                  {/* Main Search Container */}
-                  <div
-                    className={`relative transition-all duration-500 ${
-                      isSearchFocused ? "scale-105" : "scale-100"
-                    }`}
-                  >
-                    {/* Decorative Background Elements */}
-                    <div className="absolute -inset-4 bg-gradient-to-r from-primary-500/10 to-purple-500/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                    {/* Search Input Container */}
-                    <div
-                      className={`relative bg-white/10 backdrop-blur-md border transition-all duration-300 rounded-2xl overflow-hidden ${
-                        isSearchFocused
-                          ? "border-primary-400/50 shadow-lg shadow-primary-500/20"
-                          : "border-white/20 group-hover:border-white/30"
-                      }`}
-                    >
-                      <div className="flex items-center">
-                        {/* Search Icon */}
-                        <div className="pl-6 pr-4 py-5">
-                          <div
-                            className={`transition-all duration-300 ${
-                              isSearchFocused
-                                ? "scale-110 text-primary-300"
-                                : "text-gray-400"
-                            }`}
-                          >
-                            <Search className="w-6 h-6" />
-                          </div>
-                        </div>
-
-                        {/* Input Field */}
-                        <input
-                          type="text"
-                          placeholder="Search articles, topics, or insights..."
-                          value={searchQuery}
-                          onChange={handleSearchChange}
-                          onFocus={() => setIsSearchFocused(true)}
-                          onBlur={() => setIsSearchFocused(false)}
-                          className="flex-1 bg-transparent border-none outline-none text-white placeholder-gray-400 text-lg py-5 pr-4 w-full"
-                        />
-
-                        {/* Search Actions */}
-                        <div className="flex items-center gap-2 pr-4">
-                          {/* Clear Button */}
-                          {searchQuery && (
-                            <button
-                              onClick={clearSearch}
-                              className="p-2 rounded-full hover:bg-white/10 transition-all duration-200 group/clear"
-                            >
-                              <X className="w-4 h-4 text-gray-400 group-hover/clear:text-white transition-colors" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Active Search Indicator */}
-                      {isSearchFocused && (
-                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-400 to-purple-400"></div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Search Suggestions/Info */}
-                  <div
-                    className={`mt-4 text-center transition-all duration-300 ${
-                      searchQuery || isSearchFocused
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 -translate-y-2"
-                    }`}
-                  >
-                    <div className="inline-flex items-center gap-3 text-sm text-gray-400 bg-white/5 backdrop-blur-sm rounded-full px-4 py-2 border border-white/10">
-                      <Sparkles className="w-4 h-4 text-primary-300" />
-                      <span>
-                        {searchQuery
-                          ? `Found ${pagination.totalItems} ${
-                              pagination.totalItems === 1
-                                ? "article"
-                                : "articles"
-                            }`
-                          : "Type to search our knowledge base"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center gap-8 text-sm text-gray-400">
-                <span className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  <span className="font-semibold text-white">
-                    {pagination.totalItems}
-                  </span>
-                  {pagination.totalItems === 1 ? " Article" : " Articles"}
-                </span>
-                <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
-                <span>Curated Content</span>
-                <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
-                <span>Regular Updates</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Gradient Transition */}
-          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-cream-50 to-transparent"></div>
-        </section>
-
-        {/* Classic Blog Content Section */}
-        <section id="blog-content-section" className="py-16 relative">
-          <div className="container mx-auto px-6">
-            {/* Featured Posts - Only show if we have featured blogs on this page */}
-            {featuredBlogs.length > 0 && (
-              <div className="mb-16">
-                <div className="text-center mb-12">
-                  <div className="inline-flex items-center gap-4 mb-4">
-                    <div className="w-16 h-px bg-gray-300"></div>
-                    <Star className="w-5 h-5 text-primary-600" />
-                    <div className="w-16 h-px bg-gray-300"></div>
-                  </div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                    Featured Insights
-                  </h2>
-                  <p className="text-gray-600 max-w-2xl mx-auto">
-                    Handpicked articles showcasing our most valuable content and
-                    expert analysis
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 gap-8">
-                  {featuredBlogs.map((blog, index) => (
-                    <FeaturedBlogCard
-                      key={blog._id}
-                      blog={blog}
-                      isFirst={index === 0}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* All Blog Posts */}
-            <div>
-              <div className="text-center mb-12">
-                <div className="w-20 h-px bg-gray-300 mx-auto mb-4"></div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  {featuredBlogs.length > 0
-                    ? "All Articles"
-                    : "Latest Articles"}
-                </h2>
-                <p className="text-gray-600">
-                  Browse our complete collection of insights and analysis
-                </p>
-              </div>
-
-              {displayBlogs.length === 0 && !loading ? (
-                <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
-                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-300">
-                    <BookOpen className="w-8 h-8 text-gray-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-3">
-                    {searchQuery
-                      ? "No matching posts found"
-                      : "Content Coming Soon"}
-                  </h3>
-                  <p className="text-gray-600 max-w-sm mx-auto">
-                    {searchQuery
-                      ? "Try adjusting your search terms or browse all articles"
-                      : "We're crafting valuable insights for you. Stay tuned!"}
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                    {displayBlogs.map((blog) => (
-                      <BlogCard key={blog._id} blog={blog} />
-                    ))}
-                  </div>
-
-                  {/* Pagination Component */}
-                  {pagination.totalPages > 1 && (
-                    <Pagination
-                      pagination={pagination}
-                      onPageChange={handlePageChange}
-                      loading={loading}
-                    />
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </section>
+        {/* Blog Content Section */}
+        <BlogContentSection
+          featuredBlogs={featuredBlogs}
+          displayBlogs={displayBlogs}
+          loading={loading}
+          pagination={pagination}
+          searchQuery={searchQuery}
+          onPageChange={handlePageChange}
+        />
       </main>
-
-      <Footer data={footerData?.module?.content} />
     </div>
   );
 }
 
-// Pagination Component
+// Sub-Components
+const LoadingState: React.FC = () => (
+  <div className="min-h-screen flex items-center justify-center bg-cream-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+      <p className="text-gray-700 font-medium">Loading Insights...</p>
+    </div>
+  </div>
+);
+
+interface ErrorStateProps {
+  error: string;
+  onRetry: () => void;
+}
+
+const ErrorState: React.FC<ErrorStateProps> = ({ error, onRetry }) => (
+  <div className="min-h-screen flex items-center justify-center bg-cream-50">
+    <div className="text-center max-w-md mx-auto p-8 bg-white rounded-lg border border-gray-200">
+      <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <Eye className="w-8 h-8 text-primary-600" />
+      </div>
+      <h2 className="text-xl font-bold text-gray-900 mb-2">
+        Failed to load blogs
+      </h2>
+      <p className="text-gray-600 mb-6">{error}</p>
+      <button
+        onClick={onRetry}
+        className="px-6 py-3 bg-primary-600 text-white hover:bg-primary-700 transition-all duration-300 rounded-lg font-medium"
+      >
+        Try Again
+      </button>
+    </div>
+  </div>
+);
+
+interface HeroSectionProps {
+  data: BlogsProps["data"];
+  searchQuery: string;
+  isSearchFocused: boolean;
+  totalItems: number;
+  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearchFocusChange: (focused: boolean) => void;
+  onClearSearch: () => void;
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({
+  data,
+  searchQuery,
+  isSearchFocused,
+  totalItems,
+  onSearchChange,
+  onSearchFocusChange,
+  onClearSearch,
+}) => (
+  <section className="bg-gradient-to-b from-gray-900 to-gray-800 text-white pt-32 pb-20 -mt-20 relative overflow-hidden">
+    {/* Subtle Texture */}
+    <div className="absolute inset-0 opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNDUgMTVIMTVWNDVINDVWMTVaTTE1IDE1SDBWMEgxNVYxNVpNNDUgMTVWNDBINjBWMTVINjBINjBINDBaTTE1IDQ1VjYwSDBWNDVIMTVaTTQ1IDQ1SDYwVjYwSDQ1VjQ1WiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiLz48L3N2Zz4=')]"></div>
+
+    <div className="container mx-auto px-6 pt-24 relative z-10">
+      <div className="text-center max-w-3xl mx-auto">
+        <div className="mb-8">
+          <div className="w-20 h-px bg-primary-500 mx-auto mb-6"></div>
+          <h1 className="text-5xl font-bold text-white mb-6">{data.title}</h1>
+          <p className="text-xl text-gray-300 mb-8 leading-relaxed max-w-2xl mx-auto">
+            {data.subtitle}
+          </p>
+        </div>
+
+        <SearchBar
+          searchQuery={searchQuery}
+          isSearchFocused={isSearchFocused}
+          totalItems={totalItems}
+          onSearchChange={onSearchChange}
+          onSearchFocusChange={onSearchFocusChange}
+          onClearSearch={onClearSearch}
+        />
+
+        <BlogStats totalItems={totalItems} />
+      </div>
+    </div>
+
+    {/* Bottom Gradient Transition */}
+    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-cream-50 to-transparent"></div>
+  </section>
+);
+
+interface SearchBarProps {
+  searchQuery: string;
+  isSearchFocused: boolean;
+  totalItems: number;
+  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearchFocusChange: (focused: boolean) => void;
+  onClearSearch: () => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({
+  searchQuery,
+  isSearchFocused,
+  totalItems,
+  onSearchChange,
+  onSearchFocusChange,
+  onClearSearch,
+}) => (
+  <div className="max-w-2xl mx-auto mb-12">
+    <div className="relative group">
+      <div
+        className={`relative transition-all duration-500 ${
+          isSearchFocused ? "scale-105" : "scale-100"
+        }`}
+      >
+        <div className="absolute -inset-4 bg-gradient-to-r from-primary-500/10 to-purple-500/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+        <div
+          className={`relative bg-white/10 backdrop-blur-md border transition-all duration-300 rounded-2xl overflow-hidden ${
+            isSearchFocused
+              ? "border-primary-400/50 shadow-lg shadow-primary-500/20"
+              : "border-white/20 group-hover:border-white/30"
+          }`}
+        >
+          <div className="flex items-center">
+            <div className="pl-6 pr-4 py-5">
+              <div
+                className={`transition-all duration-300 ${
+                  isSearchFocused
+                    ? "scale-110 text-primary-300"
+                    : "text-gray-400"
+                }`}
+              >
+                <Search className="w-6 h-6" />
+              </div>
+            </div>
+
+            <input
+              type="text"
+              placeholder="Search articles, topics, or insights..."
+              value={searchQuery}
+              onChange={onSearchChange}
+              onFocus={() => onSearchFocusChange(true)}
+              onBlur={() => onSearchFocusChange(false)}
+              className="flex-1 bg-transparent border-none outline-none text-white placeholder-gray-400 text-lg py-5 pr-4 w-full"
+            />
+
+            {searchQuery && (
+              <button
+                onClick={onClearSearch}
+                className="p-2 rounded-full hover:bg-white/10 transition-all duration-200 group/clear mr-4"
+              >
+                <X className="w-4 h-4 text-gray-400 group-hover/clear:text-white transition-colors" />
+              </button>
+            )}
+          </div>
+
+          {isSearchFocused && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-400 to-purple-400"></div>
+          )}
+        </div>
+      </div>
+
+      <SearchInfo
+        searchQuery={searchQuery}
+        isSearchFocused={isSearchFocused}
+        totalItems={totalItems}
+      />
+    </div>
+  </div>
+);
+
+interface SearchInfoProps {
+  searchQuery: string;
+  isSearchFocused: boolean;
+  totalItems: number;
+}
+
+const SearchInfo: React.FC<SearchInfoProps> = ({
+  searchQuery,
+  isSearchFocused,
+  totalItems,
+}) => (
+  <div
+    className={`mt-4 text-center transition-all duration-300 ${
+      searchQuery || isSearchFocused
+        ? "opacity-100 translate-y-0"
+        : "opacity-0 -translate-y-2"
+    }`}
+  >
+    <div className="inline-flex items-center gap-3 text-sm text-gray-400 bg-white/5 backdrop-blur-sm rounded-full px-4 py-2 border border-white/10">
+      <Sparkles className="w-4 h-4 text-primary-300" />
+      <span>
+        {searchQuery
+          ? `Found ${totalItems} ${totalItems === 1 ? "article" : "articles"}`
+          : "Type to search our knowledge base"}
+      </span>
+    </div>
+  </div>
+);
+
+interface BlogStatsProps {
+  totalItems: number;
+}
+
+const BlogStats: React.FC<BlogStatsProps> = ({ totalItems }) => (
+  <div className="flex items-center justify-center gap-8 text-sm text-gray-400">
+    <span className="flex items-center gap-2">
+      <BookOpen className="w-5 h-5" />
+      <span className="font-semibold text-white">{totalItems}</span>
+      {totalItems === 1 ? " Article" : " Articles"}
+    </span>
+    <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
+    <span>Curated Content</span>
+    <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
+    <span>Regular Updates</span>
+  </div>
+);
+
+interface BlogContentSectionProps {
+  featuredBlogs: BlogItem[];
+  displayBlogs: BlogItem[];
+  loading: boolean;
+  pagination: PaginationState;
+  searchQuery: string;
+  onPageChange: (page: number) => void;
+}
+
+const BlogContentSection: React.FC<BlogContentSectionProps> = ({
+  featuredBlogs,
+  displayBlogs,
+  loading,
+  pagination,
+  searchQuery,
+  onPageChange,
+}) => (
+  <section id="blog-content-section" className="py-16 relative">
+    <div className="container mx-auto px-6">
+      {featuredBlogs.length > 0 && (
+        <FeaturedBlogsSection featuredBlogs={featuredBlogs} />
+      )}
+
+      <AllBlogsSection
+        displayBlogs={displayBlogs}
+        loading={loading}
+        pagination={pagination}
+        searchQuery={searchQuery}
+        onPageChange={onPageChange}
+        hasFeaturedBlogs={featuredBlogs.length > 0}
+      />
+    </div>
+  </section>
+);
+
+interface FeaturedBlogsSectionProps {
+  featuredBlogs: BlogItem[];
+}
+
+const FeaturedBlogsSection: React.FC<FeaturedBlogsSectionProps> = ({
+  featuredBlogs,
+}) => (
+  <div className="mb-16">
+    <SectionHeader
+      icon={Star}
+      title="Featured Insights"
+      description="Handpicked articles showcasing our most valuable content and expert analysis"
+    />
+
+    <div className="grid grid-cols-1 gap-8">
+      {featuredBlogs.map((blog, index) => (
+        <FeaturedBlogCard key={blog._id} blog={blog} isFirst={index === 0} />
+      ))}
+    </div>
+  </div>
+);
+
+interface AllBlogsSectionProps {
+  displayBlogs: BlogItem[];
+  loading: boolean;
+  pagination: PaginationState;
+  searchQuery: string;
+  onPageChange: (page: number) => void;
+  hasFeaturedBlogs: boolean;
+}
+
+const AllBlogsSection: React.FC<AllBlogsSectionProps> = ({
+  displayBlogs,
+  loading,
+  pagination,
+  searchQuery,
+  onPageChange,
+  hasFeaturedBlogs,
+}) => (
+  <div>
+    <SectionHeader
+      title={hasFeaturedBlogs ? "All Articles" : "Latest Articles"}
+      description="Browse our complete collection of insights and analysis"
+    />
+
+    {displayBlogs.length === 0 && !loading ? (
+      <EmptyState searchQuery={searchQuery} />
+    ) : (
+      <>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+          {displayBlogs.map((blog) => (
+            <BlogCard key={blog._id} blog={blog} />
+          ))}
+        </div>
+
+        {pagination.totalPages > 1 && (
+          <Pagination
+            pagination={pagination}
+            onPageChange={onPageChange}
+            loading={loading}
+          />
+        )}
+      </>
+    )}
+  </div>
+);
+
+interface SectionHeaderProps {
+  icon?: React.ComponentType<any>;
+  title: string;
+  description: string;
+}
+
+const SectionHeader: React.FC<SectionHeaderProps> = ({
+  icon: Icon,
+  title,
+  description,
+}) => (
+  <div className="text-center mb-12">
+    {Icon && (
+      <div className="inline-flex items-center gap-4 mb-4">
+        <div className="w-16 h-px bg-gray-300"></div>
+        <Icon className="w-5 h-5 text-primary-600" />
+        <div className="w-16 h-px bg-gray-300"></div>
+      </div>
+    )}
+    {!Icon && <div className="w-20 h-px bg-gray-300 mx-auto mb-4"></div>}
+
+    <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+      {title}
+    </h2>
+    <p className="text-gray-600 max-w-2xl mx-auto">{description}</p>
+  </div>
+);
+
+interface EmptyStateProps {
+  searchQuery: string;
+}
+
+const EmptyState: React.FC<EmptyStateProps> = ({ searchQuery }) => (
+  <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
+    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-300">
+      <BookOpen className="w-8 h-8 text-gray-400" />
+    </div>
+    <h3 className="text-xl font-semibold text-gray-800 mb-3">
+      {searchQuery ? "No matching posts found" : "Content Coming Soon"}
+    </h3>
+    <p className="text-gray-600 max-w-sm mx-auto">
+      {searchQuery
+        ? "Try adjusting your search terms or browse all articles"
+        : "We're crafting valuable insights for you. Stay tuned!"}
+    </p>
+  </div>
+);
+
 const Pagination: React.FC<{
   pagination: PaginationState;
   onPageChange: (page: number) => void;

@@ -49,7 +49,10 @@ import {
   GripVertical,
   ArrowUp,
   ArrowDown,
+  LinkIcon,
+  FilePlus,
 } from "lucide-react";
+import { FaClone } from "react-icons/fa";
 
 // ────────────────────────────────
 // Constants & Types
@@ -88,6 +91,7 @@ interface PageData {
   excerpt?: string;
   metaTitle?: string;
   metaDescription?: string;
+  type?: "default" | "solutions" | "services" | "policies";
   canonicalUrl?: string;
   status: PageStatus;
   publishedAt?: string;
@@ -117,7 +121,7 @@ interface ContentField {
 }
 
 type EditMode = "form" | "json";
-type AddModuleMode = "copy" | "create";
+type AddModuleMode = "existing" | "clone" | "create";
 
 // ────────────────────────────────
 // Utility Functions
@@ -174,10 +178,6 @@ const isValidJSON = (
   }
 };
 
-// ────────────────────────────────
-// Input Components
-// ────────────────────────────────
-
 interface InputFieldProps {
   label: string;
   value: string;
@@ -189,6 +189,8 @@ interface InputFieldProps {
   fullWidth?: boolean;
   helperText?: string;
   error?: string;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -202,6 +204,8 @@ const InputField: React.FC<InputFieldProps> = ({
   fullWidth = false,
   helperText,
   error,
+  disabled = false,
+  readOnly = false, // Add this line
 }) => {
   const baseClasses = `
     w-full border rounded-xl px-4 py-3.5 text-sm outline-none focus:border-primary-500 
@@ -211,7 +215,9 @@ const InputField: React.FC<InputFieldProps> = ({
         ? "border-red-300 focus:ring-red-500 focus:border-red-500"
         : "border-gray-300"
     }
+    ${disabled || readOnly ? "bg-gray-50 cursor-not-allowed opacity-70" : ""}
     ${icon ? "pl-11" : "pl-4"}
+    ${readOnly ? "select-all bg-blue-50 border-blue-200" : ""} // Add this line
   `;
 
   return (
@@ -219,6 +225,11 @@ const InputField: React.FC<InputFieldProps> = ({
       <label className="block text-sm font-semibold text-gray-800 mb-2">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
+        {readOnly && ( // Add this section
+          <span className="ml-2 text-xs text-blue-600 font-normal">
+            (read-only)
+          </span>
+        )}
       </label>
 
       <div className="relative">
@@ -235,6 +246,8 @@ const InputField: React.FC<InputFieldProps> = ({
             placeholder={placeholder}
             rows={4}
             className={`${baseClasses} resize-none`}
+            disabled={disabled || readOnly} // Update this line
+            readOnly={readOnly} // Add this line
           />
         ) : (
           <input
@@ -244,6 +257,8 @@ const InputField: React.FC<InputFieldProps> = ({
             placeholder={placeholder}
             required={required}
             className={baseClasses}
+            disabled={disabled || readOnly}
+            readOnly={readOnly}
           />
         )}
       </div>
@@ -268,6 +283,7 @@ interface SelectFieldProps {
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
   icon?: React.ReactNode;
+  disabled?: boolean;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -276,6 +292,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   onChange,
   options,
   icon,
+  disabled = false,
 }) => {
   return (
     <div>
@@ -293,9 +310,11 @@ const SelectField: React.FC<SelectFieldProps> = ({
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
           className={`
             w-full border border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-primary-500 
             focus:border-primary-500 transition-all duration-200 bg-white appearance-none
+            ${disabled ? "bg-gray-50 cursor-not-allowed opacity-70" : ""}
             ${icon ? "pl-11" : "pl-4"}
           `}
         >
@@ -481,9 +500,14 @@ const ObjectFieldEditor: React.FC<ObjectFieldEditorProps> = ({
 interface JSONEditorProps {
   value: any;
   onChange: (value: any) => void;
+  disabled?: boolean;
 }
 
-const JSONEditor: React.FC<JSONEditorProps> = ({ value, onChange }) => {
+const JSONEditor: React.FC<JSONEditorProps> = ({
+  value,
+  onChange,
+  disabled = false,
+}) => {
   const [jsonValue, setJsonValue] = useState(() => {
     try {
       return JSON.stringify(value, null, 2);
@@ -495,6 +519,8 @@ const JSONEditor: React.FC<JSONEditorProps> = ({ value, onChange }) => {
 
   const handleChange = (newValue: string) => {
     setJsonValue(newValue);
+
+    if (disabled) return;
 
     const validation = isValidJSON(newValue);
     if (validation.valid) {
@@ -524,7 +550,8 @@ const JSONEditor: React.FC<JSONEditorProps> = ({ value, onChange }) => {
         </label>
         <button
           onClick={formatJSON}
-          className="flex items-center gap-2 px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          disabled={disabled}
+          className="flex items-center gap-2 px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           type="button"
         >
           <Braces className="w-3 h-3" />
@@ -536,9 +563,10 @@ const JSONEditor: React.FC<JSONEditorProps> = ({ value, onChange }) => {
         value={jsonValue}
         onChange={(e) => handleChange(e.target.value)}
         rows={12}
+        disabled={disabled}
         className={`w-full border rounded-lg px-3 py-2 text-sm font-mono outline-none ${
           error ? "border-red-300 bg-red-50" : "border-gray-300"
-        }`}
+        } ${disabled ? "bg-gray-50 cursor-not-allowed opacity-70" : ""}`}
         placeholder="Enter valid JSON..."
       />
 
@@ -562,6 +590,7 @@ interface ModuleContentEditorProps {
   onChange: (content: any) => void;
   editMode: EditMode;
   onEditModeChange: (mode: EditMode) => void;
+  disabled?: boolean;
 }
 
 const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
@@ -569,6 +598,7 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
   onChange,
   editMode,
   onEditModeChange,
+  disabled = false,
 }) => {
   const [fields, setFields] = useState<ContentField[]>([]);
   const [newFieldKey, setNewFieldKey] = useState("");
@@ -602,6 +632,8 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
 
   const updateFieldValue = useCallback(
     (index: number, newValue: any) => {
+      if (disabled) return;
+
       setFields((prev) => {
         const updatedFields = [...prev];
         updatedFields[index].value = newValue;
@@ -615,11 +647,11 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
         return updatedFields;
       });
     },
-    [onChange]
+    [onChange, disabled]
   );
 
   const addField = () => {
-    if (!newFieldKey.trim()) return;
+    if (disabled || !newFieldKey.trim()) return;
 
     const key = newFieldKey.trim();
 
@@ -662,6 +694,8 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
   };
 
   const removeField = (index: number) => {
+    if (disabled) return;
+
     const fieldToRemove = fields[index];
     const updatedFields = fields.filter((_, i) => i !== index);
     setFields(updatedFields);
@@ -694,8 +728,9 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
   };
 
   const renderFieldInput = (field: ContentField, index: number) => {
-    const baseInputClasses =
-      "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none";
+    const baseInputClasses = `w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none ${
+      disabled ? "bg-gray-50 cursor-not-allowed opacity-70" : ""
+    }`;
 
     switch (field.type) {
       case "text":
@@ -706,6 +741,7 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
             onChange={(e) => updateFieldValue(index, e.target.value)}
             className={baseInputClasses}
             placeholder={`Enter ${field.key}...`}
+            disabled={disabled}
           />
         );
 
@@ -717,6 +753,7 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
             rows={4}
             className={baseInputClasses}
             placeholder={`Enter ${field.key}...`}
+            disabled={disabled}
           />
         );
 
@@ -729,6 +766,7 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
               updateFieldValue(index, parseFloat(e.target.value) || 0)
             }
             className={baseInputClasses}
+            disabled={disabled}
           />
         );
 
@@ -740,6 +778,7 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
               checked={field.value || false}
               onChange={(e) => updateFieldValue(index, e.target.checked)}
               className="w-4 h-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              disabled={disabled}
             />
             <span className="text-sm text-gray-700">
               {field.value ? "True" : "False"}
@@ -772,6 +811,7 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
               onChange={(e) => updateFieldValue(index, e.target.value)}
               placeholder="Enter image URL..."
               className={baseInputClasses}
+              disabled={disabled}
             />
             {field.value && (
               <div className="mt-2">
@@ -795,6 +835,7 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
             value={field.value || ""}
             onChange={(e) => updateFieldValue(index, e.target.value)}
             className={baseInputClasses}
+            disabled={disabled}
           />
         );
     }
@@ -810,32 +851,34 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
   return (
     <div className="space-y-6">
       {/* Edit Mode Toggle */}
-      <div className="flex bg-gray-100 rounded-xl p-1">
-        <button
-          onClick={() => onEditModeChange("form")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center ${
-            editMode === "form"
-              ? "bg-white text-primary-600 shadow-sm"
-              : "text-gray-600 hover:text-gray-900"
-          }`}
-          type="button"
-        >
-          <Settings className="w-4 h-4" />
-          Form Editor
-        </button>
-        <button
-          onClick={() => onEditModeChange("json")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center ${
-            editMode === "json"
-              ? "bg-white text-primary-600 shadow-sm"
-              : "text-gray-600 hover:text-gray-900"
-          }`}
-          type="button"
-        >
-          <Braces className="w-4 h-4" />
-          JSON Editor
-        </button>
-      </div>
+      {!disabled && (
+        <div className="flex bg-gray-100 rounded-xl p-1">
+          <button
+            onClick={() => onEditModeChange("form")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center ${
+              editMode === "form"
+                ? "bg-white text-primary-600 shadow-sm"
+                : "text-gray-600 hover:text-gray-900"
+            }`}
+            type="button"
+          >
+            <Settings className="w-4 h-4" />
+            Form Editor
+          </button>
+          <button
+            onClick={() => onEditModeChange("json")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center ${
+              editMode === "json"
+                ? "bg-white text-primary-600 shadow-sm"
+                : "text-gray-600 hover:text-gray-900"
+            }`}
+            type="button"
+          >
+            <Braces className="w-4 h-4" />
+            JSON Editor
+          </button>
+        </div>
+      )}
 
       {editMode === "form" ? (
         <>
@@ -856,13 +899,15 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
                       {field.type}
                     </span>
                   </div>
-                  <button
-                    onClick={() => removeField(index)}
-                    className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
-                    type="button"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {!disabled && (
+                    <button
+                      onClick={() => removeField(index)}
+                      className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
+                      type="button"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
                 {renderFieldInput(field, index)}
               </div>
@@ -875,72 +920,78 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
                   No content fields defined yet
                 </p>
                 <p className="text-gray-400 text-xs mt-1">
-                  Add your first field below
+                  {disabled
+                    ? "This module has no content fields"
+                    : "Add your first field below"}
                 </p>
               </div>
             )}
           </div>
 
           {/* Add New Field */}
-          <div className="border border-gray-200 rounded-xl p-4 bg-gray-50">
-            <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add New Field
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-              <div className="md:col-span-6">
-                <input
-                  type="text"
-                  value={newFieldKey}
-                  onChange={(e) => setNewFieldKey(e.target.value)}
-                  onKeyPress={handleAddFieldKeyPress}
-                  placeholder="Field key (e.g., title)"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none"
-                />
-                <p className="text-xs text-gray-500 mt-1">Unique identifier</p>
-              </div>
-
-              <div className="md:col-span-4">
-                <div className="relative">
-                  <select
-                    value={newFieldType}
-                    onChange={(e) =>
-                      setNewFieldType(e.target.value as ContentFieldType)
-                    }
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none bg-white appearance-none pr-10 transition-all duration-200 hover:border-gray-400"
-                  >
-                    <option value="text">📝 Text</option>
-                    <option value="rich-text">📄 Rich Text</option>
-                    <option value="number">🔢 Number</option>
-                    <option value="boolean">✅ Boolean</option>
-                    <option value="array">📋 Array</option>
-                    <option value="object">⚙️ Object</option>
-                    <option value="image">🖼️ Image URL</option>
-                  </select>
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
-                    <ChevronDown className="w-4 h-4" />
-                  </div>
+          {!disabled && (
+            <div className="border border-gray-200 rounded-xl p-4 bg-gray-50">
+              <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Add New Field
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                <div className="md:col-span-6">
+                  <input
+                    type="text"
+                    value={newFieldKey}
+                    onChange={(e) => setNewFieldKey(e.target.value)}
+                    onKeyPress={handleAddFieldKeyPress}
+                    placeholder="Field key (e.g., title)"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Unique identifier
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-2 font-medium">
-                  Data Type
-                </p>
-              </div>
 
-              <div className="md:col-span-2">
-                <button
-                  onClick={addField}
-                  disabled={!newFieldKey.trim()}
-                  className="w-full bg-primary-600 text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                  type="button"
-                >
-                  Add
-                </button>
+                <div className="md:col-span-4">
+                  <div className="relative">
+                    <select
+                      value={newFieldType}
+                      onChange={(e) =>
+                        setNewFieldType(e.target.value as ContentFieldType)
+                      }
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none bg-white appearance-none pr-10 transition-all duration-200 hover:border-gray-400"
+                    >
+                      <option value="text">📝 Text</option>
+                      <option value="rich-text">📄 Rich Text</option>
+                      <option value="number">🔢 Number</option>
+                      <option value="boolean">✅ Boolean</option>
+                      <option value="array">📋 Array</option>
+                      <option value="object">⚙️ Object</option>
+                      <option value="image">🖼️ Image URL</option>
+                    </select>
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 font-medium">
+                    Data Type
+                  </p>
+                </div>
+
+                <div className="md:col-span-2">
+                  <button
+                    onClick={addField}
+                    disabled={!newFieldKey.trim()}
+                    className="w-full bg-primary-600 text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                    type="button"
+                  >
+                    Add
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </>
       ) : (
-        <JSONEditor value={content} onChange={onChange} />
+        <JSONEditor value={content} onChange={onChange} disabled={disabled} />
       )}
 
       {/* JSON Preview */}
@@ -1063,20 +1114,35 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
   onAddModule,
   currentPageId,
 }) => {
-  const [mode, setMode] = useState<AddModuleMode>("copy");
+  const [mode, setMode] = useState<AddModuleMode>("existing");
   const [availableModules, setAvailableModules] = useState<Module[]>([]);
   const [loadingModules, setLoadingModules] = useState(false);
   const [selectedModuleId, setSelectedModuleId] = useState("");
   const [newModuleTitle, setNewModuleTitle] = useState("");
+  const [newModuleType, setNewModuleType] = useState("");
+  const [newModuleContent, setNewModuleContent] = useState<any>({});
   const [creatingModule, setCreatingModule] = useState(false);
   const [message, setMessage] = useState<UpdateMessage | null>(null);
 
-  // Load available modules when modal opens
+  // Reset form when modal opens/closes or mode changes
   useEffect(() => {
     if (isOpen) {
       loadAvailableModules();
+      resetForm();
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    resetForm();
+  }, [mode]);
+
+  const resetForm = () => {
+    setSelectedModuleId("");
+    setNewModuleTitle("");
+    setNewModuleType("");
+    setNewModuleContent({});
+    setMessage(null);
+  };
 
   const loadAvailableModules = async () => {
     setLoadingModules(true);
@@ -1091,7 +1157,27 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
     }
   };
 
-  const handleCreateModule = async () => {
+  const handleAddExistingModule = () => {
+    if (!selectedModuleId) {
+      setMessage({ type: "error", text: "Please select a module to add" });
+      return;
+    }
+
+    onAddModule(selectedModuleId);
+    setMessage({ type: "success", text: "Module added successfully!" });
+
+    // Close modal after a brief delay to show success message
+    setTimeout(() => {
+      onClose();
+    }, 1000);
+  };
+
+  const handleCloneModule = async () => {
+    if (!selectedModuleId) {
+      setMessage({ type: "error", text: "Please select a module to clone" });
+      return;
+    }
+
     if (!newModuleTitle.trim()) {
       setMessage({ type: "error", text: "Module title is required" });
       return;
@@ -1134,30 +1220,102 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
     }
   };
 
-  const handleCopyModule = () => {
-    if (!selectedModuleId) {
-      setMessage({ type: "error", text: "Please select a module to copy" });
+  const handleCreateNewModule = async () => {
+    if (!newModuleTitle.trim()) {
+      setMessage({ type: "error", text: "Module title is required" });
       return;
     }
 
-    const selectedModule = availableModules.find(
-      (module) => module._id === selectedModuleId
-    );
-
-    if (selectedModule) {
-      setNewModuleTitle(`${selectedModule.title} (Copy)`);
+    if (!newModuleType.trim()) {
+      setMessage({ type: "error", text: "Module type is required" });
+      return;
     }
+
+    setCreatingModule(true);
+    setMessage(null);
+
+    try {
+      const response = await createModule({
+        type: newModuleType.trim(),
+        title: newModuleTitle.trim(),
+        content: newModuleContent || {},
+        status: "published",
+      });
+
+      setMessage({ type: "success", text: "Module created successfully!" });
+
+      // Add the new module to the page
+      setTimeout(() => {
+        onAddModule(response.module._id);
+      }, 1000);
+    } catch (error: any) {
+      setMessage({
+        type: "error",
+        text: error.message || "Failed to create module",
+      });
+    } finally {
+      setCreatingModule(false);
+    }
+  };
+
+  const handleContentChange = (newContent: any) => {
+    setNewModuleContent(newContent);
   };
 
   const selectedModule = availableModules.find(
     (module) => module._id === selectedModuleId
   );
 
+  const getModeConfig = () => {
+    switch (mode) {
+      case "existing":
+        return {
+          title: "Use Existing Module",
+          description: "Select an existing module to add to this page",
+          icon: <LinkIcon className="w-5 h-5" />,
+          buttonText: "Add Module",
+          buttonAction: handleAddExistingModule,
+          disabled: !selectedModuleId,
+        };
+      case "clone":
+        return {
+          title: "Clone Existing Module",
+          description: "Create a copy of an existing module with a new title",
+          icon: <FaClone className="w-5 h-5" />,
+          buttonText: creatingModule ? "Cloning..." : "Clone & Add Module",
+          buttonAction: handleCloneModule,
+          disabled:
+            !selectedModuleId || !newModuleTitle.trim() || creatingModule,
+        };
+      case "create":
+        return {
+          title: "Create New Module",
+          description: "Create a completely new module from scratch",
+          icon: <FilePlus className="w-5 h-5" />,
+          buttonText: creatingModule ? "Creating..." : "Create & Add Module",
+          buttonAction: handleCreateNewModule,
+          disabled:
+            !newModuleTitle.trim() || !newModuleType.trim() || creatingModule,
+        };
+      default:
+        return {
+          title: "",
+          description: "",
+          icon: null,
+          buttonText: "",
+          buttonAction: () => {},
+          disabled: true,
+        };
+    }
+  };
+
+  const modeConfig = getModeConfig();
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
@@ -1185,16 +1343,28 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
           {/* Mode Selection */}
           <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
             <button
-              onClick={() => setMode("copy")}
+              onClick={() => setMode("existing")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center ${
-                mode === "copy"
+                mode === "existing"
                   ? "bg-white text-primary-600 shadow-sm"
                   : "text-gray-600 hover:text-gray-900"
               }`}
               type="button"
             >
-              <Copy className="w-4 h-4" />
-              Clone Existing Module
+              <LinkIcon className="w-4 h-4" />
+              Use Existing
+            </button>
+            <button
+              onClick={() => setMode("clone")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center ${
+                mode === "clone"
+                  ? "bg-white text-primary-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+              type="button"
+            >
+              <FaClone className="w-4 h-4" />
+              Clone Module
             </button>
             <button
               onClick={() => setMode("create")}
@@ -1205,25 +1375,39 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
               }`}
               type="button"
             >
-              <Package className="w-4 h-4" />
-              Create New Module
+              <FilePlus className="w-4 h-4" />
+              Create New
             </button>
           </div>
 
-          {mode === "copy" ? (
-            <div className="space-y-6">
-              <h3 className="font-semibold text-gray-900">
-                Select Module to Clone
-              </h3>
+          {/* Mode Content */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 mb-4">
+              {modeConfig.icon}
+              <div>
+                <h3 className="font-semibold text-gray-900 text-lg">
+                  {modeConfig.title}
+                </h3>
+                <p className="text-gray-500 text-sm">
+                  {modeConfig.description}
+                </p>
+              </div>
+            </div>
 
-              {loadingModules ? (
-                <div className="text-center py-8">
-                  <RefreshCw className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-3" />
-                  <p className="text-gray-500">Loading available modules...</p>
-                </div>
-              ) : availableModules.length > 0 ? (
-                <>
-                  <div className="space-y-3">
+            {/* Module Selection for Existing and Clone modes */}
+            {(mode === "existing" || mode === "clone") && (
+              <div className="space-y-4">
+                <h4 className="font-semibold text-gray-900">Select Module</h4>
+
+                {loadingModules ? (
+                  <div className="text-center py-8">
+                    <RefreshCw className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-3" />
+                    <p className="text-gray-500">
+                      Loading available modules...
+                    </p>
+                  </div>
+                ) : availableModules.length > 0 ? (
+                  <div className="space-y-3 max-h-60 overflow-y-auto border border-gray-200 rounded-xl p-4">
                     {availableModules.map((module) => (
                       <label
                         key={module._id}
@@ -1236,7 +1420,9 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
                           checked={selectedModuleId === module._id}
                           onChange={(e) => {
                             setSelectedModuleId(e.target.value);
-                            setNewModuleTitle(`${module.title} (Copy)`);
+                            if (mode === "clone") {
+                              setNewModuleTitle(`${module.title} (Copy)`);
+                            }
                           }}
                           className="text-primary-600 focus:ring-primary-500"
                         />
@@ -1252,116 +1438,101 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
                           <p className="text-sm text-gray-500">
                             ID: {module._id}
                           </p>
+                          {module.content &&
+                            Object.keys(module.content).length > 0 && (
+                              <p className="text-xs text-gray-400 mt-1">
+                                {Object.keys(module.content).length} field(s)
+                              </p>
+                            )}
                         </div>
                       </label>
                     ))}
                   </div>
+                ) : (
+                  <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-xl">
+                    <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-gray-500">No modules available</p>
+                    <p className="text-gray-400 text-sm mt-1">
+                      Create a new module instead
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
-                  {selectedModule && (
-                    <div className="border-t pt-6">
-                      <h4 className="font-semibold text-gray-900 mb-4">
-                        Clone Settings
-                      </h4>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-semibold text-gray-800 mb-2">
-                            New Module Title
-                          </label>
-                          <input
-                            type="text"
-                            value={newModuleTitle}
-                            onChange={(e) => setNewModuleTitle(e.target.value)}
-                            placeholder="Enter new module title..."
-                            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary-500"
-                          />
-                          <p className="text-xs text-gray-500 mt-2">
-                            This will create a copy of the selected module with
-                            a new title
-                          </p>
-                        </div>
+            {/* Module Title Input for Clone and Create modes */}
+            {(mode === "clone" || mode === "create") && (
+              <InputField
+                label="Module Title"
+                value={newModuleTitle}
+                onChange={setNewModuleTitle}
+                placeholder="Enter module title..."
+                required
+                helperText="A descriptive title for this module"
+              />
+            )}
 
-                        <div className="bg-gray-50 p-4 rounded-xl border">
-                          <h5 className="font-semibold text-gray-900 text-sm mb-2">
-                            Original Module Details
-                          </h5>
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <span className="text-gray-600">Type:</span>
-                              <span className="ml-2 font-medium">
-                                {selectedModule.type}
-                              </span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Fields:</span>
-                              <span className="ml-2 font-medium">
-                                {
-                                  Object.keys(selectedModule.content || {})
-                                    .length
-                                }
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+            {/* Module Type Input for Create mode */}
+            {mode === "create" && (
+              <InputField
+                label="Module Type"
+                value={newModuleType}
+                onChange={setNewModuleType}
+                placeholder="e.g., hero, card, banner"
+                required
+                helperText="The type of module (hero, card, banner, etc.)"
+              />
+            )}
+
+            {/* Module Content Editor for Create mode */}
+            {mode === "create" && (
+              <div className="border border-gray-200 rounded-xl p-4">
+                <h4 className="font-semibold text-gray-900 mb-4">
+                  Module Content
+                </h4>
+                <ModuleContentEditor
+                  content={newModuleContent}
+                  onChange={handleContentChange}
+                  editMode="form"
+                  onEditModeChange={() => {}}
+                />
+              </div>
+            )}
+
+            {/* Preview for Existing and Clone modes */}
+            {(mode === "existing" || mode === "clone") && selectedModule && (
+              <div className="bg-gray-50 p-4 rounded-xl border">
+                <h5 className="font-semibold text-gray-900 text-sm mb-3">
+                  Module Preview
+                </h5>
+                <div className="grid grid-cols-2 gap-4 text-sm mb-3">
+                  <div>
+                    <span className="text-gray-600">Type:</span>
+                    <span className="ml-2 font-medium">
+                      {selectedModule.type}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Fields:</span>
+                    <span className="ml-2 font-medium">
+                      {Object.keys(selectedModule.content || {}).length}
+                    </span>
+                  </div>
+                </div>
+                {selectedModule.content &&
+                  Object.keys(selectedModule.content).length > 0 && (
+                    <div className="mt-2">
+                      <h6 className="text-xs font-semibold text-gray-600 mb-2">
+                        Content Preview:
+                      </h6>
+                      <pre className="text-xs bg-white p-2 rounded border overflow-auto max-h-32">
+                        {JSON.stringify(selectedModule.content, null, 2)}
+                      </pre>
                     </div>
                   )}
-                </>
-              ) : (
-                <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-xl">
-                  <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-500">No modules available to clone</p>
-                  <p className="text-gray-400 text-sm mt-1">
-                    Create a new module instead
-                  </p>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-900">Create New Module</h3>
-
-              <div className="grid grid-cols-1 gap-4">
-                <InputField
-                  label="Module Type"
-                  value={selectedModule?.type || ""}
-                  onChange={() => {}}
-                  placeholder="e.g., hero, card, banner"
-                  required
-                  helperText="The type of module (hero, card, banner, etc.)"
-                />
-
-                <InputField
-                  label="Module Title"
-                  value={newModuleTitle}
-                  onChange={(value) => setNewModuleTitle(value)}
-                  placeholder="e.g., Homepage Hero"
-                  required
-                  helperText="A descriptive title for this module"
-                />
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-800 mb-2">
-                    Initial Content (JSON)
-                  </label>
-                  <textarea
-                    value={JSON.stringify(
-                      selectedModule?.content || {},
-                      null,
-                      2
-                    )}
-                    onChange={() => {}}
-                    rows={6}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm font-mono outline-none focus:border-primary-500 bg-gray-50"
-                    placeholder='{"key": "value"}'
-                    disabled
-                  />
-                  <p className="text-xs text-gray-500 mt-2">
-                    Content will be copied from the selected module
-                  </p>
-                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {message && (
             <div
@@ -1392,49 +1563,25 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
               Cancel
             </button>
 
-            {mode === "copy" ? (
-              <button
-                onClick={handleCreateModule}
-                disabled={
-                  !selectedModuleId || !newModuleTitle.trim() || creatingModule
-                }
-                className={`px-6 py-3 rounded-xl text-white font-semibold transition-all duration-200 ${
-                  !selectedModuleId || !newModuleTitle.trim() || creatingModule
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
-                }`}
-                type="button"
-              >
-                {creatingModule ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Cloning...
-                  </>
-                ) : (
-                  "Clone Module"
-                )}
-              </button>
-            ) : (
-              <button
-                onClick={handleCreateModule}
-                disabled={creatingModule || !newModuleTitle.trim()}
-                className={`px-6 py-3 rounded-xl text-white font-semibold transition-all duration-200 ${
-                  creatingModule || !newModuleTitle.trim()
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
-                }`}
-                type="button"
-              >
-                {creatingModule ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Creating...
-                  </>
-                ) : (
-                  "Create Module"
-                )}
-              </button>
-            )}
+            <button
+              onClick={modeConfig.buttonAction}
+              disabled={modeConfig.disabled}
+              className={`px-6 py-3 rounded-xl text-white font-semibold transition-all duration-200 ${
+                modeConfig.disabled
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
+              }`}
+              type="button"
+            >
+              {creatingModule ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  {mode === "clone" ? "Cloning..." : "Creating..."}
+                </>
+              ) : (
+                modeConfig.buttonText
+              )}
+            </button>
           </div>
         </div>
       </div>
@@ -2090,7 +2237,7 @@ export default function EditPage() {
                     <Hash className="w-4 h-4" />
                     Slug:{" "}
                     <span className="font-mono bg-gray-100 px-3 py-1.5 rounded-lg text-gray-800 border">
-                      /{pageData.slug}
+                      {pageData.slug === "home" ? "/" : `/${pageData.slug}`}
                     </span>
                   </p>
                 </div>
@@ -2267,7 +2414,13 @@ export default function EditPage() {
 
                       <InputField
                         label="Slug"
-                        value={pageFields.slug}
+                        value={
+                          pageFields.slug === "home"
+                            ? "/"
+                            : pageData.type !== "default"
+                            ? `/${pageData.type}/${pageFields.slug}`
+                            : `/${pageFields.slug}`
+                        }
                         onChange={(value) =>
                           setPageFields({ ...pageFields, slug: value })
                         }
@@ -2275,7 +2428,7 @@ export default function EditPage() {
                         required
                         icon={<Hash className="w-4 h-4" />}
                         error={fieldErrors.slug}
-                        helperText="Use lowercase letters, numbers, and hyphens only"
+                        readOnly={true}
                       />
 
                       <InputField

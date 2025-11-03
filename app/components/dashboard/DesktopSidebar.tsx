@@ -6,7 +6,6 @@ import BrandSection from "./BrandSection";
 import NavigationItemWrapper from "./NavigationItemWrapper";
 import { classNames } from "@/lib/classNames";
 import type { NavigationItem as NavItemType } from "@/app/admin/dashboard/layout";
-import { SIDEBAR_ITEMS } from "@/app/admin/dashboard/layout";
 
 interface DesktopSidebarProps {
   isExpanded: boolean;
@@ -15,6 +14,7 @@ interface DesktopSidebarProps {
   onToggle: () => void;
   onItemClick: (id: string, href?: string) => void;
   onClose?: () => void;
+  sidebarItems: NavItemType[];
 }
 
 const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
@@ -23,6 +23,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   activeItem,
   onToggle,
   onItemClick,
+  sidebarItems,
 }) => {
   const pathname = usePathname() || "/";
 
@@ -31,11 +32,11 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
     if (activeItem) return activeItem;
 
     // Check exact matches first
-    const exactMatch = SIDEBAR_ITEMS.find((it) => it.href === pathname);
+    const exactMatch = sidebarItems.find((it) => it.href === pathname);
     if (exactMatch) return exactMatch.id;
 
     // Check children for exact matches
-    for (const item of SIDEBAR_ITEMS) {
+    for (const item of sidebarItems) {
       if (item.children) {
         const childMatch = item.children.find(
           (child) => child.href === pathname
@@ -45,13 +46,13 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
     }
 
     // Fallback to startsWith matches
-    const startsWithMatch = SIDEBAR_ITEMS.find(
+    const startsWithMatch = sidebarItems.find(
       (it) => it.href && pathname.startsWith(it.href)
     );
     if (startsWithMatch) return startsWithMatch.id;
 
     // Check children for startsWith matches
-    for (const item of SIDEBAR_ITEMS) {
+    for (const item of sidebarItems) {
       if (item.children) {
         const childStartsWithMatch = item.children.find(
           (child) => child.href && pathname.startsWith(child.href)
@@ -60,8 +61,8 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       }
     }
 
-    return SIDEBAR_ITEMS[0]?.id || "";
-  }, [activeItem, pathname]);
+    return sidebarItems[0]?.id || "";
+  }, [activeItem, pathname, sidebarItems]);
 
   return (
     <aside
@@ -79,7 +80,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
 
       <nav className="px-3 py-6 flex-1 overflow-auto" aria-label="Sidebar">
         <ul className="space-y-1" role="menubar" aria-orientation="vertical">
-          {SIDEBAR_ITEMS.map((item) => (
+          {sidebarItems.map((item) => (
             <NavigationItemWrapper
               key={item.id}
               item={item as NavItemType}

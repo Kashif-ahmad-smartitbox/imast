@@ -2,8 +2,8 @@
 
 import { X, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { SIDEBAR_ITEMS } from "@/app/admin/dashboard/layout";
 import BrandSection from "./BrandSection";
+import type { NavigationItem } from "@/app/admin/dashboard/layout";
 
 interface MobileDrawerProps {
   isExpanded: boolean;
@@ -12,6 +12,7 @@ interface MobileDrawerProps {
   onToggle: () => void;
   onItemClick: (id: string, href?: string) => void;
   onClose?: () => void;
+  sidebarItems: NavigationItem[];
 }
 
 const useBodyScrollLock = (isLocked: boolean) => {
@@ -28,6 +29,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
   activeItem,
   onItemClick,
   onClose,
+  sidebarItems,
 }) => {
   const drawerRef = useRef<HTMLDivElement>(null);
   const firstDrawerButtonRef = useRef<HTMLButtonElement>(null);
@@ -55,7 +57,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
   const handleItemClick = useCallback(
     (itemId: string, href?: string) => {
-      const item = SIDEBAR_ITEMS.find((it) => it.id === itemId);
+      const item = sidebarItems.find((it) => it.id === itemId);
 
       if (item?.children && !href) {
         // If it's a parent item with children and no specific href, toggle submenu
@@ -66,7 +68,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
         onClose?.();
       }
     },
-    [toggleSubmenu, onItemClick, onClose]
+    [toggleSubmenu, onItemClick, onClose, sidebarItems]
   );
 
   // Close drawer when clicking outside
@@ -124,7 +126,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
           <nav className="flex-1 overflow-auto">
             <ul className="space-y-2" role="navigation">
-              {SIDEBAR_ITEMS.map((item) => (
+              {sidebarItems.map((item) => (
                 <li key={item.id}>
                   {item.children ? (
                     <>

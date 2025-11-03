@@ -16,6 +16,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
 
+  // If slug is "home", show 404 since homepage is handled by "/" route
+  if (slug === "home") {
+    notFound();
+  }
+
   try {
     const response: PageResponse = await getPageWithContent(slug);
 
@@ -75,6 +80,11 @@ export async function generateMetadata({
 export default async function Page({ params }: { params: any }) {
   const { slug } = await params;
 
+  // If slug is "home", show 404 since homepage is handled by "/" route
+  if (slug === "home") {
+    notFound();
+  }
+
   const response: PageResponse = await getPageWithContent(slug);
 
   if (response.message === "Not found" || !response.page) {
@@ -104,7 +114,6 @@ export default async function Page({ params }: { params: any }) {
   const layout = (page.layout || [])
     .slice()
     .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
-
   return (
     <main>
       {layout.map((item: any, idx: number) => (

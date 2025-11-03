@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Download,
   Image as ImageIcon,
@@ -16,15 +16,18 @@ import {
   Copy,
   Trash2,
   Filter,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
-  getAllMedia as apiGetAllMedia,
+  listMedia as apiListMedia,
   uploadMultipleMedia as apiUploadMultipleMedia,
   deleteMedia as apiDeleteMedia,
 } from "@/app/services/modules/media";
 import { API_BASE_URL } from "@/app/services/api";
 import { getCookie } from "@/app/lib/cookies";
 import CommonDashHeader from "@/app/components/common/CommonDashHeader";
+import { useModal } from "@/components/global/GlobalModalProvider";
 
 // Types
 interface MediaItem {
@@ -64,7 +67,6 @@ const FILE_TYPE_COLORS = {
   default: "from-gray-500 to-gray-700",
 };
 
-// Utility functions
 const formatSize = (kb: number): string => {
   if (kb < 1024) return `${Math.round(kb)} KB`;
   if (kb < 1024 * 1024) return `${(kb / 1024).toFixed(1)} MB`;
@@ -136,7 +138,15 @@ const mapServerItemToMediaItem = (serverItem: any): MediaItem => {
   };
 };
 
-// Main Component
+// Pagination state shape
+type PaginationState = {
+  page: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+};
+
 const MediaLibrary: React.FC = () => {
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [filter, setFilter] = useState("");
@@ -150,35 +160,62 @@ const MediaLibrary: React.FC = () => {
   const [sortBy, setSortBy] = useState<"name" | "date" | "size">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
+  const modal = useModal();
+
+  // Pagination
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(20);
+  const [total, setTotal] = useState<number>(0);
+
   const getAuthToken = useCallback((): string => {
     return getCookie("token") || "";
   }, []);
 
-  const loadMedia = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const serverData: any = await apiGetAllMedia();
-      const itemsArray: any[] = Array.isArray(serverData)
-        ? serverData
-        : Array.isArray(serverData?.items)
-        ? serverData.items
-        : [];
+  const loadMedia = useCallback(
+    async (p = page, l = limit) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = getAuthToken();
+        const resp: any = await apiListMedia(p, l, token);
+        const itemsArray: any[] = Array.isArray(resp)
+          ? resp
+          : Array.isArray(resp?.items)
+          ? resp.items
+          : [];
 
-      const mapped = itemsArray.map(mapServerItemToMediaItem);
-      setMedia(mapped);
-    } catch (err) {
-      console.error("Failed to load media:", err);
-      setError("Failed to load media. Please try again.");
-      setMedia([]);
-    } finally {
-      setLoading(false);
-    }
+        const mapped = itemsArray.map(mapServerItemToMediaItem);
+        setMedia(mapped);
+
+        if (typeof resp?.total === "number") setTotal(resp.total);
+        else setTotal(mapped.length);
+
+        if (typeof resp?.page === "number") setPage(resp.page);
+        else setPage(p);
+
+        if (typeof resp?.limit === "number") setLimit(resp.limit);
+        else setLimit(l);
+      } catch (err) {
+        console.error("Failed to load media:", err);
+        setError("Failed to load media. Please try again.");
+        setMedia([]);
+        setTotal(0);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [getAuthToken, page, limit]
+  );
+
+  useEffect(() => {
+    void loadMedia(1, limit);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    loadMedia();
-  }, [loadMedia]);
+    void loadMedia(page, limit);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, limit]);
 
   const handleFiles = useCallback(
     async (files: FileList | null) => {
@@ -187,8 +224,7 @@ const MediaLibrary: React.FC = () => {
       setIsUploading(true);
       setError(null);
 
-      // Validate file sizes (max 50MB per file)
-      const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+      const maxSize = 50 * 1024 * 1024;
       const oversizedFiles = Array.from(files).filter(
         (file) => file.size > maxSize
       );
@@ -203,7 +239,6 @@ const MediaLibrary: React.FC = () => {
         return;
       }
 
-      // Create local preview items
       const localPreviewItems: MediaItem[] = Array.from(files).map((file) => {
         const id = `local-${Date.now()}-${Math.random()
           .toString(36)
@@ -225,17 +260,14 @@ const MediaLibrary: React.FC = () => {
         const token = getAuthToken();
         const fileArray = Array.from(files);
 
-        // Initialize upload progress
         const progress: UploadProgress = {};
         fileArray.forEach((file) => {
-          progress[file.name] = 10; // Start at 10% to show something is happening
+          progress[file.name] = 10;
         });
         setUploadProgress(progress);
 
-        // Call the upload API with just files and token
         const result = await apiUploadMultipleMedia(fileArray, token);
 
-        // Simulate progress updates since the API might not support progress events
         const progressInterval = setInterval(() => {
           setUploadProgress((current) => {
             const updated = { ...current };
@@ -251,7 +283,6 @@ const MediaLibrary: React.FC = () => {
         if (result.success && result.data) {
           clearInterval(progressInterval);
 
-          // Set progress to 100% on success (visual)
           setUploadProgress((current) => {
             const completed = { ...current };
             Object.keys(completed).forEach((filename) => {
@@ -260,7 +291,6 @@ const MediaLibrary: React.FC = () => {
             return completed;
           });
 
-          // Normalize upload response
           const uploadedItems: any[] = Array.isArray(result.data)
             ? result.data
             : Array.isArray(result.data?.items)
@@ -269,12 +299,11 @@ const MediaLibrary: React.FC = () => {
 
           const mappedReturned = uploadedItems.map(mapServerItemToMediaItem);
 
-          // Wait a moment to show completion, then refresh canonical list from server
           setTimeout(async () => {
             setMedia((current) => current.filter((item) => !item.isLocal));
             setUploadProgress({});
             try {
-              await loadMedia();
+              await loadMedia(1, limit);
             } catch (e) {
               console.warn(
                 "refresh after upload failed, falling back to mapped items",
@@ -298,7 +327,6 @@ const MediaLibrary: React.FC = () => {
           setError(err.message || "Failed to upload files. Please try again.");
         }
 
-        // Remove local preview items on failure
         setTimeout(() => {
           setMedia((current) => current.filter((item) => !item.isLocal));
           setUploadProgress({});
@@ -307,7 +335,7 @@ const MediaLibrary: React.FC = () => {
         setIsUploading(false);
       }
     },
-    [getAuthToken]
+    [getAuthToken, loadMedia, limit]
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -317,34 +345,57 @@ const MediaLibrary: React.FC = () => {
     }
   };
 
-  const handleDelete = async (item: MediaItem) => {
-    if (item.isLocal) {
-      if (item.src.startsWith("blob:")) {
-        URL.revokeObjectURL(item.src);
-      }
-      setMedia((prev) => prev.filter((mediaItem) => mediaItem.id !== item.id));
-      return;
-    }
-
-    try {
-      const token = getAuthToken();
-      const result = await apiDeleteMedia(item.id, token);
-
-      if (result.success) {
+  // Delete uses modal.confirm
+  const handleDelete = useCallback(
+    async (item: MediaItem) => {
+      if (item.isLocal) {
+        if (item.src.startsWith("blob:")) {
+          URL.revokeObjectURL(item.src);
+        }
         setMedia((prev) =>
           prev.filter((mediaItem) => mediaItem.id !== item.id)
         );
-        if (preview?.id === item.id) {
-          setPreview(null);
-        }
-      } else {
-        throw new Error(result.message || "Delete failed");
+        return;
       }
-    } catch (err) {
-      console.error("Delete error:", err);
-      setError("Failed to delete file. Please try again.");
-    }
-  };
+
+      try {
+        const confirmOk = await modal.confirm({
+          title: "Delete file",
+          body: (
+            <div className="text-sm text-gray-600">
+              Are you sure you want to permanently delete{" "}
+              <strong className="text-gray-900">{item.name}</strong>? This
+              action cannot be undone.
+            </div>
+          ),
+          confirmText: "Delete",
+          cancelText: "Cancel",
+          size: "sm",
+        });
+
+        if (!confirmOk) return;
+
+        const token = getAuthToken();
+        const result = await apiDeleteMedia(item.id, token);
+
+        if (result.success) {
+          const newTotal = Math.max(0, total - 1);
+          const lastPage = Math.max(1, Math.ceil(newTotal / limit));
+          if (page > lastPage) {
+            setPage(lastPage);
+          } else {
+            void loadMedia(page, limit);
+          }
+        } else {
+          throw new Error(result.message || "Delete failed");
+        }
+      } catch (err) {
+        console.error("Delete error:", err);
+        setError("Failed to delete file. Please try again.");
+      }
+    },
+    [modal, getAuthToken, loadMedia, page, limit, total]
+  );
 
   const handleDownload = (item: MediaItem) => {
     if (item.src.startsWith("blob:")) {
@@ -379,8 +430,7 @@ const MediaLibrary: React.FC = () => {
     navigator.clipboard
       .writeText(item.src)
       .then(() => {
-        // You could add a toast notification here
-        console.log("URL copied to clipboard");
+        // optional toast
       })
       .catch((err) => {
         console.error("Failed to copy URL:", err);
@@ -394,14 +444,12 @@ const MediaLibrary: React.FC = () => {
         item.type.toLowerCase().includes(filter.toLowerCase())
     );
 
-    // Apply file type filter
     if (fileTypeFilter !== "all") {
       filtered = filtered.filter((item) =>
         item.type.startsWith(fileTypeFilter)
       );
     }
 
-    // Apply sorting
     filtered.sort((a, b) => {
       let comparison = 0;
       switch (sortBy) {
@@ -436,8 +484,112 @@ const MediaLibrary: React.FC = () => {
     return Array.from(types);
   }, [media]);
 
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(total / limit)),
+    [total, limit]
+  );
+
+  const paginationState: PaginationState = useMemo(
+    () => ({
+      page,
+      total,
+      totalPages,
+      hasNext: page < totalPages,
+      hasPrev: page > 1,
+    }),
+    [page, total, totalPages]
+  );
+
+  const onPageChange = useCallback(
+    (newPage: number) => {
+      if (newPage >= 1 && newPage <= totalPages && !loading) {
+        setPage(newPage);
+      }
+    },
+    [totalPages, loading]
+  );
+
+  // Small Pagination component matching Pages design
+  const Pagination: React.FC<{
+    pagination: PaginationState;
+    onPageChange: (p: number) => void;
+    loading: boolean;
+  }> = ({ pagination, onPageChange, loading }) => {
+    const { page: p, totalPages: tp, hasNext, hasPrev } = pagination;
+    if (tp <= 1) return null;
+
+    // compute pages to show (max 5)
+    const pagesToShow = Math.min(5, tp);
+    const pagesArr = Array.from({ length: pagesToShow }, (_, i) => {
+      let pageNum;
+      if (tp <= 5) {
+        pageNum = i + 1;
+      } else if (p <= 3) {
+        pageNum = i + 1;
+      } else if (p >= tp - 2) {
+        pageNum = tp - 4 + i;
+      } else {
+        pageNum = p - 2 + i;
+      }
+      return pageNum;
+    }).filter((n) => n >= 1 && n <= tp);
+
+    return (
+      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div className="text-sm text-gray-500">
+          Showing page {p} of {tp}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onPageChange(p - 1)}
+            disabled={!hasPrev || loading}
+            className={`p-2 rounded-lg border border-gray-300 transition-colors ${
+              !hasPrev || loading
+                ? "opacity-50 cursor-not-allowed text-gray-400"
+                : "text-gray-600 hover:bg-gray-100 hover:border-gray-400"
+            }`}
+            aria-label="Previous page"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+
+          <div className="flex items-center gap-1">
+            {pagesArr.map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => onPageChange(pageNum)}
+                disabled={loading}
+                className={`min-w-[2rem] px-2 py-1 text-sm rounded-lg transition-colors ${
+                  p === pageNum
+                    ? "bg-primary-600 text-white border border-primary-600"
+                    : "text-gray-600 border border-gray-300 hover:bg-gray-100"
+                } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {pageNum}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => onPageChange(p + 1)}
+            disabled={!hasNext || loading}
+            className={`p-2 rounded-lg border border-gray-300 transition-colors ${
+              !hasNext || loading
+                ? "opacity-50 cursor-not-allowed text-gray-400"
+                : "text-gray-600 hover:bg-gray-100 hover:border-gray-400"
+            }`}
+            aria-label="Next page"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -496,25 +648,23 @@ const MediaLibrary: React.FC = () => {
           </div>
         </div>
 
-        {/* Stats and Controls */}
+        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-2xl p-6 border border-gray-200">
-            <div className="text-2xl font-bold text-gray-900">
-              {media.length}
-            </div>
+            <div className="text-2xl font-bold text-gray-900">{total}</div>
             <div className="text-sm text-gray-600">Total Files</div>
           </div>
           <div className="bg-white rounded-2xl p-6 border border-gray-200">
             <div className="text-2xl font-bold text-gray-900">
               {media.filter((item) => item.type.startsWith("image/")).length}
             </div>
-            <div className="text-sm text-gray-600">Images</div>
+            <div className="text-sm text-gray-600">Images (on page)</div>
           </div>
           <div className="bg-white rounded-2xl p-6 border border-gray-200">
             <div className="text-2xl font-bold text-gray-900">
               {media.filter((item) => item.type.startsWith("video/")).length}
             </div>
-            <div className="text-sm text-gray-600">Videos</div>
+            <div className="text-sm text-gray-600">Videos (on page)</div>
           </div>
           <div className="bg-white rounded-2xl p-6 border border-gray-200">
             <div className="text-2xl font-bold text-gray-900">
@@ -526,7 +676,7 @@ const MediaLibrary: React.FC = () => {
                 ).length
               }
             </div>
-            <div className="text-sm text-gray-600">Other Files</div>
+            <div className="text-sm text-gray-600">Other Files (on page)</div>
           </div>
         </div>
 
@@ -551,7 +701,6 @@ const MediaLibrary: React.FC = () => {
         {/* Controls Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl p-4 border border-gray-200">
           <div className="flex items-center gap-4">
-            {/* View Toggle */}
             <div className="flex bg-gray-100 rounded-lg p-1">
               <button
                 onClick={() => setViewMode("grid")}
@@ -577,7 +726,6 @@ const MediaLibrary: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* File Type Filter */}
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Filter className="h-4 w-4 text-gray-400" />
@@ -609,7 +757,6 @@ const MediaLibrary: React.FC = () => {
               </div>
             </div>
 
-            {/* Sort Options */}
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
@@ -654,7 +801,6 @@ const MediaLibrary: React.FC = () => {
               </div>
             </div>
 
-            {/* Sort Order Toggle */}
             <button
               onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
               className="p-2.5 border border-gray-300 rounded-xl hover:border-gray-400 bg-white text-gray-700 hover:text-gray-900 transition-all duration-200 group relative"
@@ -673,7 +819,6 @@ const MediaLibrary: React.FC = () => {
                 </span>
               </div>
 
-              {/* Tooltip */}
               <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
                 {sortOrder === "asc" ? "Ascending order" : "Descending order"}
                 <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 w-2 h-2 bg-gray-900 rotate-45"></div>
@@ -681,6 +826,7 @@ const MediaLibrary: React.FC = () => {
             </button>
           </div>
         </div>
+
         {/* Media Grid/List */}
         <section>
           {loading ? (
@@ -904,6 +1050,94 @@ const MediaLibrary: React.FC = () => {
             </div>
           )}
         </section>
+
+        {/* Pagination + limit selector */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setPage(1)}
+              disabled={page === 1 || loading}
+              className="px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-50"
+            >
+              First
+            </button>
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1 || loading}
+              className="px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            <div className="px-3 py-2 rounded-lg border border-gray-200 bg-white">
+              <span className="text-sm font-medium">
+                Page <strong>{page}</strong> of {totalPages}
+              </span>
+            </div>
+
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages || loading}
+              className="px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-50"
+            >
+              Next
+            </button>
+            <button
+              onClick={() => setPage(totalPages)}
+              disabled={page === totalPages || loading}
+              className="px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-50"
+            >
+              Last
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-gray-600">
+              Showing {media.length} of {total} results
+            </div>
+
+            <div className="relative inline-block">
+              <select
+                value={limit}
+                onChange={(e) => {
+                  const newLimit = Number(e.target.value) || 20;
+                  setLimit(newLimit);
+                  setPage(1);
+                }}
+                className="appearance-none pl-3 pr-10 py-2 border border-gray-300 rounded-xl outline-none bg-white text-sm font-medium text-gray-700 hover:border-gray-400 transition-all duration-200 cursor-pointer"
+                aria-label="Items per page"
+              >
+                <option value={10}>10 / page</option>
+                <option value={20}>20 / page</option>
+                <option value={40}>40 / page</option>
+                <option value={100}>100 / page</option>
+              </select>
+
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg
+                  className="h-4 w-4 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Compact pagination block matching Pages component */}
+        <Pagination
+          pagination={paginationState}
+          onPageChange={onPageChange}
+          loading={loading}
+        />
 
         {/* Preview Modal */}
         {preview && (

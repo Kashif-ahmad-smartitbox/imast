@@ -18,7 +18,7 @@ import {
 } from "@/app/services/modules/auth";
 import { getCookie, removeCookie, setCookie } from "@/app/lib/cookies";
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;

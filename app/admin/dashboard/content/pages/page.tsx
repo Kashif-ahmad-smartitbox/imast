@@ -193,7 +193,12 @@ const PageRow: React.FC<{
 
       <td className="px-6 py-4">
         <div className="flex items-center gap-1 text-gray-600">
-          <Link className="w-3 h-3" />/{page.slug || page._id}
+          <Link className="w-3 h-3" />
+          {page.slug === "home"
+            ? "/"
+            : `${page.type !== "default" ? `/${page.type}` : ""}/${
+                page.slug || page._id
+              }`}
         </div>
       </td>
 
@@ -334,19 +339,14 @@ const Pages: React.FC = () => {
     [router]
   );
 
-  const handleView = useCallback(
-    (page: PageItem) => {
-      const publicPath = page.slug
-        ? `/pages/${page.slug}`
-        : `/pages/id/${page._id}`;
-      if (typeof window !== "undefined") {
-        window.open(publicPath, "_blank", "noopener,noreferrer");
-      } else {
-        router.push(publicPath);
-      }
-    },
-    [router]
-  );
+  const handleView = useCallback((page: PageItem) => {
+    const publicPath =
+      page.type !== "default" ? `/${page.type}/${page.slug}` : `/${page.slug}`;
+
+    const targetUrl = page.slug === "home" ? "/" : publicPath;
+
+    window.open(targetUrl, "_blank", "noopener,noreferrer");
+  }, []);
 
   const handleCreatePage = useCallback(() => {
     router.push("/admin/pages/new");

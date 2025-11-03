@@ -67,7 +67,7 @@ export default function AdminLogin() {
 
       setCookie("token", data.accessToken, 7, "/", "Lax");
 
-      router.push("/admin/dashboard");
+      window.location.replace("/admin/dashboard");
     } catch (err: any) {
       setError(err?.message || "An unexpected error occurred.");
     } finally {

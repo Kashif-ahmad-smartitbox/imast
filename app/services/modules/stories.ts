@@ -5,16 +5,19 @@ export interface StoryItem {
   _id: string;
   title: string;
   slug: string;
-  excerpt?: string;
-  content?: string;
-  author?: string;
-  tags?: string[];
-  status: "draft" | "published" | "scheduled" | "archived";
-  publishedAt?: string | null;
-  createdBy?: string;
+  subtitle: string;
+  excerpt: string;
+  body: string;
+  image: string;
+  featured: boolean;
+  tags: string[];
+  status: "draft" | "published";
+  publishedAt: string;
+  metaTitle: string;
+  metaDescription: string;
+  createdBy: string;
   createdAt: string;
   updatedAt: string;
-  __v?: number;
 }
 
 export interface StoryResponse {
@@ -26,24 +29,28 @@ export interface StoryResponse {
 
 export interface StoryCreatePayload {
   title: string;
-  slug?: string;
-  excerpt?: string;
-  content?: string;
-  author?: string;
-  tags?: string[];
-  status?: "draft" | "published" | "scheduled";
-  publishedAt?: string | null;
+  subtitle: string;
+  body: string;
+  tags: string[];
+  image: string;
+  status: string;
+  featured: boolean;
+  metaTitle: string;
+  metaDescription: string;
 }
 
 export interface StoryUpdatePayload {
-  title?: string;
-  slug?: string;
-  excerpt?: string;
-  content?: string;
-  author?: string;
-  tags?: string[];
-  status?: "draft" | "published" | "scheduled" | "archived";
-  publishedAt?: string | null;
+  title: string;
+  subtitle: string;
+  excerpt: string;
+  body: string;
+  image: string;
+  featured: boolean;
+  tags: string[];
+  status: "draft" | "published";
+  publishedAt: string;
+  metaTitle: string;
+  metaDescription: string;
 }
 
 export interface StoryCreateResponse {
@@ -59,13 +66,22 @@ export interface StoryDeleteResponse {
   storyId: string;
 }
 
+export interface StoryQueryParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  featured?: boolean;
+}
+
 export interface ApiOptions {
   useCookies?: boolean;
   signal?: AbortSignal;
   headers?: Record<string, string>;
 }
 
-// Common request configuration helper
 const getRequestConfig = (opts?: ApiOptions): RequestInit => {
   const token = getCookie("token");
   const headers: Record<string, string> = {
@@ -84,8 +100,29 @@ const getRequestConfig = (opts?: ApiOptions): RequestInit => {
   };
 };
 
-export const getStories = async (opts?: ApiOptions): Promise<StoryResponse> => {
-  return api.get<StoryResponse>("/admin/stories", getRequestConfig(opts));
+const buildQueryString = (params: StoryQueryParams): string => {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      searchParams.append(key, String(value));
+    }
+  });
+
+  const queryString = searchParams.toString();
+  return queryString ? `?${queryString}` : "";
+};
+
+export const getStories = async (
+  params?: StoryQueryParams,
+  opts?: ApiOptions
+): Promise<StoryResponse> => {
+  const queryString = params ? buildQueryString(params) : "";
+
+  return api.get<StoryResponse>(
+    `/admin/stories${queryString}`,
+    getRequestConfig(opts)
+  );
 };
 
 export const getStory = async (
@@ -97,19 +134,6 @@ export const getStory = async (
   }
   return api.get<{ story: StoryItem }>(
     `/admin/stories/${id}`,
-    getRequestConfig(opts)
-  );
-};
-
-export const getStoryWithContent = async (
-  slug: string,
-  opts?: ApiOptions
-): Promise<{ story: StoryItem }> => {
-  if (!slug) {
-    throw new Error("Story slug is required");
-  }
-  return api.get<{ story: StoryItem }>(
-    `/admin/stories/slug/${slug}`,
     getRequestConfig(opts)
   );
 };
@@ -162,7 +186,6 @@ export const deleteStory = async (
 export default {
   getStories,
   getStory,
-  getStoryWithContent,
   createStory,
   updateStory,
   deleteStory,

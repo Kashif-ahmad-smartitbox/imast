@@ -4,18 +4,18 @@ import {
   Home,
   FileText,
   Image,
-  BarChart2,
   Users,
-  Settings,
-  Globe,
   LucideIcon,
+  UserStar,
+  DatabaseBackup,
+  FormInput,
 } from "lucide-react";
 import DashHeader from "@/components/dashboard/DashHeader";
 import MobileDrawer from "@/components/dashboard/MobileDrawer";
-import React, { useEffect, useState, useCallback } from "react";
-import { AuthProvider } from "@/app/services/context/AuthContext";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import DesktopSidebar from "@/components/dashboard/DesktopSidebar";
 import ExpandSidebarButton from "@/components/dashboard/ExpandSidebarButton";
+import { useAuth } from "@/app/services/context/AuthContext";
 
 const SIDEBAR_W = 280;
 const SIDEBAR_COMPACT_W = 72;
@@ -34,7 +34,8 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-export const SIDEBAR_ITEMS: NavigationItem[] = [
+// Base sidebar items without role filtering
+const BASE_SIDEBAR_ITEMS: NavigationItem[] = [
   { href: "/admin/dashboard", id: "overview", label: "Overview", Icon: Home },
   {
     id: "content",
@@ -54,30 +55,65 @@ export const SIDEBAR_ITEMS: NavigationItem[] = [
         label: "Blogs",
         Icon: FileText,
       },
+      {
+        href: "/admin/dashboard/content/case-studies",
+        id: "case-studies",
+        label: "Case Studies",
+        Icon: FileText,
+      },
     ],
   },
   { href: "/admin/dashboard/media", id: "media", label: "Media", Icon: Image },
-  // {
-  //   href: "/admin/dashboard/analytics",
-  //   id: "analytics",
-  //   label: "Analytics",
-  //   Icon: BarChart2,
-  // },
   { href: "/admin/dashboard/team", id: "team", label: "Team", Icon: Users },
   {
-    href: "/admin/dashboard/seo",
-    id: "seo",
-    label: "SEO",
-    Icon: Globe,
-    badge: 12,
+    href: "/admin/dashboard/subscribers",
+    id: "subscribers",
+    label: "Subscribers",
+    Icon: UserStar,
   },
   {
-    href: "/admin/dashboard/setting",
-    id: "settings",
-    label: "Settings",
-    Icon: Settings,
+    href: "/admin/dashboard/forms",
+    id: "forms",
+    label: "Forms",
+    Icon: FormInput,
+  },
+  {
+    href: "/admin/dashboard/backup",
+    id: "backup",
+    label: "Backup",
+    Icon: DatabaseBackup,
   },
 ];
+
+// Pre-defined menu items for each role
+const ADMIN_ITEMS = BASE_SIDEBAR_ITEMS.filter((item) => item.id !== "backup");
+const EDITOR_ITEMS = BASE_SIDEBAR_ITEMS.filter(
+  (item) =>
+    item.id === "overview" || item.id === "content" || item.id === "media"
+);
+
+// Hook to get filtered sidebar items based on user role
+const useFilteredSidebarItems = () => {
+  const { user, loading } = useAuth();
+
+  return useMemo(() => {
+    // If still loading, return empty array to prevent flash
+    if (loading) {
+      return [];
+    }
+
+    const userRole = user?.role;
+
+    if (userRole === "admin") {
+      return ADMIN_ITEMS;
+    } else if (userRole === "editor") {
+      return EDITOR_ITEMS;
+    }
+
+    // Default for unknown roles or no user
+    return BASE_SIDEBAR_ITEMS;
+  }, [user?.role, loading]);
+};
 
 const useKeyboardShortcuts = (callbacks: { [key: string]: () => void }) => {
   useEffect(() => {
@@ -102,7 +138,14 @@ export default function ImastLayout({ children }: LayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const { user, loading } = useAuth();
+  const SIDEBAR_ITEMS = useFilteredSidebarItems();
+
+  console.log("user---role", user?.role);
+
   const getActiveItem = useCallback(() => {
+    if (SIDEBAR_ITEMS.length === 0) return "overview";
+
     // Exact match first
     const exactMatch = SIDEBAR_ITEMS.find((item) => item.href === pathname);
     if (exactMatch) return exactMatch.id;
@@ -135,7 +178,7 @@ export default function ImastLayout({ children }: LayoutProps) {
 
     // Default to overview
     return "overview";
-  }, [pathname]);
+  }, [pathname, SIDEBAR_ITEMS]);
 
   const activeItem = getActiveItem();
 
@@ -179,49 +222,65 @@ export default function ImastLayout({ children }: LayoutProps) {
     setDrawerOpen(false);
   }, []);
 
-  return (
-    <AuthProvider>
-      <div
-        className="min-h-screen antialiased bg-gray-50 text-gray-900"
-        style={
-          {
-            ["--sidebar-w"]: `${SIDEBAR_W}px`,
-            ["--sidebar-compact-w"]: `${SIDEBAR_COMPACT_W}px`,
-            ["--header-h"]: `${HEADER_H}px`,
-          } as React.CSSProperties
-        }
-      >
-        <div className="flex h-screen">
-          <DesktopSidebar
-            isExpanded={sidebarExpanded}
-            isMobile={false}
-            activeItem={activeItem}
-            onToggle={handleSidebarToggle}
-            onItemClick={handleItemClick}
-          />
-
-          {!sidebarExpanded && (
-            <ExpandSidebarButton onExpand={handleSidebarToggle} />
-          )}
-
-          <MobileDrawer
-            isExpanded={false}
-            isMobile={drawerOpen}
-            activeItem={activeItem}
-            onToggle={handleSidebarToggle}
-            onItemClick={handleItemClick}
-            onClose={handleDrawerClose}
-          />
-
-          <div className="flex-1 flex flex-col min-w-0">
-            <DashHeader onMenuClick={handleMenuOpen} activeItem={activeItem} />
-
-            <main className="flex-1 min-h-0 overflow-auto p-6 bg-gray-50/30">
-              {children}
-            </main>
-          </div>
+  // Show loading state while auth is being determined
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
-    </AuthProvider>
+    );
+  }
+
+  return (
+    <div
+      className="min-h-screen antialiased bg-gray-50 text-gray-900"
+      style={
+        {
+          ["--sidebar-w"]: `${SIDEBAR_W}px`,
+          ["--sidebar-compact-w"]: `${SIDEBAR_COMPACT_W}px`,
+          ["--header-h"]: `${HEADER_H}px`,
+        } as React.CSSProperties
+      }
+    >
+      <div className="flex h-screen">
+        <DesktopSidebar
+          isExpanded={sidebarExpanded}
+          isMobile={false}
+          activeItem={activeItem}
+          onToggle={handleSidebarToggle}
+          onItemClick={handleItemClick}
+          sidebarItems={SIDEBAR_ITEMS}
+        />
+
+        {!sidebarExpanded && (
+          <ExpandSidebarButton onExpand={handleSidebarToggle} />
+        )}
+
+        <MobileDrawer
+          isExpanded={false}
+          isMobile={drawerOpen}
+          activeItem={activeItem}
+          onToggle={handleSidebarToggle}
+          onItemClick={handleItemClick}
+          onClose={handleDrawerClose}
+          sidebarItems={SIDEBAR_ITEMS}
+        />
+
+        <div className="flex-1 flex flex-col min-w-0">
+          <DashHeader
+            onMenuClick={handleMenuOpen}
+            activeItem={activeItem}
+            sidebarItems={SIDEBAR_ITEMS}
+          />
+
+          <main className="flex-1 min-h-0 overflow-auto p-6 bg-gray-50/30">
+            {children}
+          </main>
+        </div>
+      </div>
+    </div>
   );
 }

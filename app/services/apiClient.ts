@@ -24,7 +24,6 @@ export async function apiClient<T>(
 
     const text = await res.text();
 
-    // Handle empty responses (like for 204 No Content)
     if (!text) {
       return {} as T;
     }
@@ -32,11 +31,9 @@ export async function apiClient<T>(
     return JSON.parse(text) as T;
   } catch (error) {
     if (error instanceof Error) {
-      // Re-throw existing API errors
       throw error;
     }
 
-    // Handle network errors or other unexpected errors
     const apiError = new Error(
       typeof error === "string" ? error : "Network request failed"
     ) as ApiError;
@@ -45,7 +42,6 @@ export async function apiClient<T>(
   }
 }
 
-// Add the request method that was missing
 export const request = <T>(
   endpoint: string,
   options: RequestInit = {}
@@ -54,7 +50,7 @@ export const request = <T>(
 };
 
 export const api = {
-  request, // Add the request method
+  request,
   get: <T>(endpoint: string, options?: RequestInit) =>
     apiClient<T>(endpoint, { method: "GET", ...options }),
 

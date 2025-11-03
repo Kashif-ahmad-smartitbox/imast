@@ -37,6 +37,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const isComposingRef = useRef(false);
   const lastHtmlRef = useRef(value);
   const buttonClickTimeRef = useRef<number>(0);
+  const isInitializedRef = useRef(false);
 
   // State
   const [isFocused, setIsFocused] = useState(false);
@@ -108,18 +109,38 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   }, [onChange]);
 
-  // Sync external value changes to editor
+  // Sync external value changes to editor - FIXED VERSION
   useEffect(() => {
-    if (!editorRef.current || value === lastHtmlRef.current) return;
+    if (!editorRef.current) return;
 
-    const cursorPosition = saveSelection();
-    lastHtmlRef.current = value;
-    editorRef.current.innerHTML = value;
+    // Don't update during IME composition
+    if (isComposingRef.current) return;
 
-    if (cursorPosition !== null) {
-      setTimeout(() => restoreSelection(cursorPosition), 0);
+    // Only update if the value is different from current content
+    if (value !== lastHtmlRef.current) {
+      const cursorPosition = saveSelection();
+      lastHtmlRef.current = value;
+
+      // Always set the innerHTML, even for empty values
+      editorRef.current.innerHTML = value;
+
+      if (cursorPosition !== null) {
+        setTimeout(
+          () => restoreSelection(cursorPosition),
+          CURSOR_RESTORE_DELAY
+        );
+      }
     }
   }, [value, saveSelection, restoreSelection]);
+
+  // Initialize editor with value on first render
+  useEffect(() => {
+    if (editorRef.current && !isInitializedRef.current) {
+      isInitializedRef.current = true;
+      editorRef.current.innerHTML = value;
+      lastHtmlRef.current = value;
+    }
+  }, [value]);
 
   // Debounced command execution
   const execCommand = useCallback(
@@ -282,13 +303,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     },
     [execCommand, addLink]
   );
-
-  // Initialize editor
-  useEffect(() => {
-    if (editorRef.current && !value.trim()) {
-      editorRef.current.innerHTML = "";
-    }
-  }, [value]);
 
   // Toolbar Button Component
   const ToolbarButton: React.FC<{

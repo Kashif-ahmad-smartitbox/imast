@@ -1,9 +1,9 @@
 "use client";
 
-import { SIDEBAR_ITEMS } from "@/app/admin/dashboard/layout";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { Bell, Menu, Search, User, LogOut } from "lucide-react";
 import { useAuth } from "@/app/services/context/AuthContext";
+import type { NavigationItem } from "@/app/admin/dashboard/layout";
 
 const cx = (...x: Array<string | false | null | undefined>) =>
   x.filter(Boolean).join(" ");
@@ -11,6 +11,7 @@ const cx = (...x: Array<string | false | null | undefined>) =>
 type DashHeaderProps = {
   onMenuClick: () => void;
   activeItem: string;
+  sidebarItems: NavigationItem[];
   notificationsCount?: number;
   onSearchOpen?: () => void;
 };
@@ -18,6 +19,7 @@ type DashHeaderProps = {
 const DashHeader: React.FC<DashHeaderProps> = ({
   onMenuClick,
   activeItem,
+  sidebarItems,
   notificationsCount = 0,
   onSearchOpen,
 }) => {
@@ -26,7 +28,7 @@ const DashHeader: React.FC<DashHeaderProps> = ({
   const { user, logout, loading } = useAuth();
 
   const activeItemLabel =
-    SIDEBAR_ITEMS.find((item) => item.id === activeItem)?.label || "Dashboard";
+    sidebarItems.find((item) => item.id === activeItem)?.label || "Dashboard";
 
   // Key shortcut for search (⌘K / Ctrl+K)
   const handleKeydown = useCallback(

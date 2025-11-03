@@ -18,6 +18,13 @@ export type UploadResult = {
   message?: string;
 };
 
+export type MediaListResponse = {
+  items: MediaItem[];
+  total: number;
+  page: number;
+  limit: number;
+};
+
 function buildAuthHeaders(token?: string, cookie?: string): Headers {
   const headers = new Headers();
   if (token) headers.set("Authorization", `Bearer ${token}`);
@@ -26,11 +33,50 @@ function buildAuthHeaders(token?: string, cookie?: string): Headers {
 }
 
 export const getAllMedia = async (): Promise<MediaItem[]> => {
-  return api.get<MediaItem[]>("/admin/uploads/media");
+  // Backwards compatible: fetch first page with a reasonably large limit
+  const resp = await listMedia(1, 100);
+  return resp.items;
 };
 
 export const getMediaById = async (id: string): Promise<MediaItem> => {
   return api.get<MediaItem>(`/admin/uploads/media/${encodeURIComponent(id)}`);
+};
+
+export const listMedia = async (
+  page: number = 1,
+  limit: number = 20,
+  token?: string,
+  cookie?: string
+): Promise<MediaListResponse> => {
+  const safePage = Math.max(1, Math.floor(page));
+  const safeLimit = Math.min(100, Math.max(1, Math.floor(limit)));
+
+  const qs = new URLSearchParams({
+    page: String(safePage),
+    limit: String(safeLimit),
+  }).toString();
+
+  const url = `${API_BASE_URL}/admin/uploads/media?${qs}`;
+  const headers = buildAuthHeaders(token, cookie);
+
+  const res = await fetch(url, {
+    method: "GET",
+    headers,
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`listMedia failed: ${res.status} ${text}`);
+  }
+
+  const data = (await res.json()) as MediaListResponse;
+  // sanitize/ensure fields exist
+  return {
+    items: data.items ?? [],
+    total: typeof data.total === "number" ? data.total : 0,
+    page: typeof data.page === "number" ? data.page : safePage,
+    limit: typeof data.limit === "number" ? data.limit : safeLimit,
+  };
 };
 
 export const uploadMedia = async (
@@ -124,6 +170,7 @@ export const buildAuthHeaderObject = (token?: string, cookie?: string) => {
 export default {
   getAllMedia,
   getMediaById,
+  listMedia,
   uploadMedia,
   uploadMultipleMedia,
   deleteMedia,

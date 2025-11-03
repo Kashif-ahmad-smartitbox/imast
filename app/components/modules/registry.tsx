@@ -77,6 +77,71 @@ const ServicesHeroHeader = dynamic(
   }
 );
 
+const StoriesShow = dynamic(() => import("@/components/common/StoriesShow"), {
+  ssr: false,
+});
+
+const Blogs = dynamic(() => import("@/components/pages/Blogs"), {
+  ssr: false,
+});
+
+const Contact = dynamic(() => import("@/components/common/ContactSection"), {
+  ssr: false,
+});
+
+const MapComponent = dynamic(() => import("@/components/common/MapComponent"), {
+  ssr: false,
+});
+
+const WhyWeExistSection = dynamic(
+  () => import("@/components/sections/WhyWeExistSection"),
+  {
+    ssr: false,
+  }
+);
+
+const WordsFromFounder = dynamic(
+  () => import("@/components/sections/WordsFromFounder"),
+  {
+    ssr: false,
+  }
+);
+
+const MeetTheMaestros = dynamic(
+  () => import("@/components/sections/MeetTheMaestros"),
+  {
+    ssr: false,
+  }
+);
+
+const LifeVideoSection = dynamic(
+  () => import("@/components/sections/LifeVideoSection"),
+  {
+    ssr: false,
+  }
+);
+
+const ImastWhyChooseSection = dynamic(
+  () => import("@/components/sections/ImastWhyChooseSection"),
+  {
+    ssr: false,
+  }
+);
+
+const ImastIntegrationsSection = dynamic(
+  () => import("@/components/sections/ImastIntegrationsSection"),
+  {
+    ssr: false,
+  }
+);
+
+const CareerSection = dynamic(
+  () => import("@/components/sections/CareerSection"),
+  {
+    ssr: false,
+  }
+);
+
 export type ModuleComponentProps = {
   data: any;
 };
@@ -103,6 +168,17 @@ const registry: Record<string, ComponentType<ModuleComponentProps>> = {
   heroheader: HeroHeader,
   solutionheroheader: SolutionHeroHeader,
   servicesheroheader: ServicesHeroHeader,
+  storiesshow: StoriesShow,
+  blogs: Blogs,
+  contact: Contact,
+  map: MapComponent,
+  whyweexistsection: WhyWeExistSection,
+  showfounder: WordsFromFounder,
+  meetthemaestros: MeetTheMaestros,
+  lifevideosection: LifeVideoSection,
+  imastwhychoose2: ImastWhyChooseSection,
+  integrationssection: ImastIntegrationsSection,
+  careers: CareerSection,
 };
 
 export default registry;

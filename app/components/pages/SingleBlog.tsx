@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { getBlogBySlug } from "@/app/services/modules/blog";
 import { Loader2, Calendar, Clock, ArrowLeft, Share2, Tag } from "lucide-react";
 import Link from "next/link";
@@ -79,37 +79,7 @@ function SingleBlog() {
   }
 
   if (error || !blog) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4 bg-white">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-2xl">📝</span>
-          </div>
-          <h2 className="text-2xl text-gray-900 mb-3">
-            {error ? "Something went wrong" : "Article not found"}
-          </h2>
-          <p className="text-gray-600 mb-8 leading-relaxed">
-            {error ||
-              "The article you're looking for doesn't exist or may have been moved."}
-          </p>
-          <div className="flex gap-3 justify-center">
-            <Link
-              href="/blogs"
-              className="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Articles
-            </Link>
-            <button
-              onClick={() => window.location.reload()}
-              className="inline-flex items-center px-6 py-3 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 border border-gray-300 font-medium"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+    return notFound();
   }
 
   const readingTime = blog.readingTime || calculateReadingTime(blog.body);

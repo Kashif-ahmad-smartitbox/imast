@@ -1,12 +1,11 @@
 "use client";
 import React, { useState, useCallback } from "react";
-import Image from "next/image";
+import Link from "next/link";
 import {
   FaMapMarkerAlt,
   FaPhone,
   FaEnvelope,
   FaPaperPlane,
-  FaHeart,
   FaArrowRight,
   FaFacebookF,
   FaTwitter,
@@ -19,11 +18,7 @@ import {
   FaComments,
 } from "react-icons/fa";
 import { SiThreads } from "react-icons/si";
-import Link from "next/link";
-
-// =============================================================================
-// Types
-// =============================================================================
+import SubscribersApi from "@/services/modules/subscribers";
 
 interface SocialLink {
   id: string;
@@ -76,33 +71,14 @@ interface FooterData {
   };
 }
 
-interface FooterColumnProps {
-  title: string;
-  items: NavigationLink[];
-}
-
-interface ContactRowProps {
-  icon: React.ComponentType<{ className?: string; size?: number }>;
-  label: React.ReactNode;
-}
-
-interface SocialButtonProps {
-  href: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string; size?: number }>;
-}
-
 // =============================================================================
-// Icon Mapping
-// =============================================================================
-
+// Icon Mapping & helpers
 const getIconComponent = (iconName: string) => {
-  const iconMap = {
+  const iconMap: Record<string, any> = {
     FaMapMarkerAlt,
     FaPhone,
     FaEnvelope,
     FaPaperPlane,
-    FaHeart,
     FaArrowRight,
     FaFacebookF,
     FaTwitter,
@@ -115,74 +91,65 @@ const getIconComponent = (iconName: string) => {
     FaComments,
     SiThreads,
   };
-
-  return iconMap[iconName as keyof typeof iconMap] || FaEnvelope;
+  return iconMap[iconName] || FaEnvelope;
 };
 
-// =============================================================================
-// Helper Components
-// =============================================================================
+const SocialButton: React.FC<{
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string; size?: number }>;
+}> = ({ href, label, icon: Icon }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={label}
+    className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 text-gray-700 hover:shadow-md transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 hover:border-primary-200 hover:text-primary-600"
+  >
+    <Icon className="w-4 h-4" />
+  </a>
+);
 
-const SocialButton: React.FC<SocialButtonProps> = ({
-  href,
-  label,
-  icon: Icon,
-}) => {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={label}
-      className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 text-gray-700 hover:shadow-md transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 hover:border-primary-200 hover:text-primary-600"
-    >
-      <Icon className="w-4 h-4" />
-    </a>
-  );
-};
+const FooterColumn: React.FC<{ title: string; items: NavigationLink[] }> = ({
+  title,
+  items,
+}) => (
+  <div className="space-y-4">
+    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+      <div className="w-1 h-6 bg-gradient-to-b from-primary-500 to-primary-600 rounded-full mr-3" />
+      {title}
+    </h3>
+    <ul className="space-y-3">
+      {items.map((item) => (
+        <li key={`${item.href}-${item.label}`}>
+          <a
+            href={item.href}
+            className="text-gray-600 hover:text-gray-900 transition-all duration-300 flex items-center group font-medium text-sm"
+          >
+            <FaArrowRight className="mr-2 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all duration-300 w-3 h-3" />
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
-const FooterColumn: React.FC<FooterColumnProps> = ({ title, items }) => {
-  return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-        <div className="w-1 h-6 bg-gradient-to-b from-primary-500 to-primary-600 rounded-full mr-3" />
-        {title}
-      </h3>
-      <ul className="space-y-3">
-        {items.map((item) => (
-          <li key={`${item.href}-${item.label}`}>
-            <a
-              href={item.href}
-              className="text-gray-600 hover:text-gray-900 transition-all duration-300 flex items-center group font-medium text-sm"
-            >
-              <FaArrowRight className="mr-2 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all duration-300 w-3 h-3" />
-              {item.label}
-            </a>
-          </li>
-        ))}
-      </ul>
+const ContactRow: React.FC<{
+  icon: React.ComponentType<{ className?: string; size?: number }>;
+  label: React.ReactNode;
+}> = ({ icon: Icon, label }) => (
+  <div className="flex items-start group">
+    <div className="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center mr-3 mt-0.5 flex-shrink-0 group-hover:bg-gray-50 group-hover:border-gray-300 transition-all duration-300 group-hover:shadow-sm">
+      <Icon className="w-3 h-3 text-gray-600" />
     </div>
-  );
-};
+    <p className="text-gray-600 group-hover:text-gray-900 transition-colors duration-300 font-medium text-sm leading-relaxed">
+      {label}
+    </p>
+  </div>
+);
 
-const ContactRow: React.FC<ContactRowProps> = ({ icon: Icon, label }) => {
-  return (
-    <div className="flex items-start group">
-      <div className="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center mr-3 mt-0.5 flex-shrink-0 group-hover:bg-gray-50 group-hover:border-gray-300 transition-all duration-300 group-hover:shadow-sm">
-        <Icon className="w-3 h-3 text-gray-600" />
-      </div>
-      <p className="text-gray-600 group-hover:text-gray-900 transition-colors duration-300 font-medium text-sm leading-relaxed">
-        {label}
-      </p>
-    </div>
-  );
-};
-
-// =============================================================================
-// Newsletter Form Component
-// =============================================================================
-
-interface NewsletterFormProps {
+const NewsletterForm: React.FC<{
   email: string;
   status: "idle" | "error" | "success";
   message: string;
@@ -192,9 +159,7 @@ interface NewsletterFormProps {
   submittingText: string;
   onEmailChange: (email: string) => void;
   onSubmit: (e: React.FormEvent) => void;
-}
-
-const NewsletterForm: React.FC<NewsletterFormProps> = ({
+}> = ({
   email,
   status,
   message,
@@ -206,12 +171,9 @@ const NewsletterForm: React.FC<NewsletterFormProps> = ({
   onSubmit,
 }) => {
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onEmailChange(e.target.value);
-    },
+    (e: React.ChangeEvent<HTMLInputElement>) => onEmailChange(e.target.value),
     [onEmailChange]
   );
-
   return (
     <form
       onSubmit={onSubmit}
@@ -256,11 +218,7 @@ const NewsletterForm: React.FC<NewsletterFormProps> = ({
   );
 };
 
-// =============================================================================
-// Main Footer Component
-// =============================================================================
-
-const Footer = ({ data }: { data: FooterData }) => {
+const Footer: React.FC<{ data: FooterData }> = ({ data }) => {
   const [email, setEmail] = useState<string>("");
   const [status, setStatus] = useState<"idle" | "error" | "success">("idle");
   const [message, setMessage] = useState<string>("");
@@ -271,22 +229,31 @@ const Footer = ({ data }: { data: FooterData }) => {
     return emailRegex.test(value);
   }, []);
 
+  const deriveNameFromEmail = useCallback((emailAddr: string) => {
+    const local = String(emailAddr || "").split("@")[0];
+    const cleaned = local
+      .replace(/[._-]+/g, " ")
+      .trim()
+      .split(" ")
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+    return cleaned || emailAddr;
+  }, []);
+
   const handleSubscribe = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-
       setStatus("idle");
       setMessage("");
       setIsSubmitting(true);
 
-      // Validation
       if (!email.trim()) {
         setStatus("error");
         setMessage(data.newsletter.errorMessages.empty);
         setIsSubmitting(false);
         return;
       }
-
       if (!validateEmail(email)) {
         setStatus("error");
         setMessage(data.newsletter.errorMessages.invalid);
@@ -294,28 +261,42 @@ const Footer = ({ data }: { data: FooterData }) => {
         return;
       }
 
+      const name = deriveNameFromEmail(email);
+
       try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const res = await SubscribersApi.subscribe({
+          email,
+          name,
+          source: "footer",
+        });
+
+        if (res.message === "Already subscribed") {
+          setStatus("error");
+          setMessage("Already subscribed!!");
+          return;
+        }
 
         setStatus("success");
+
         setMessage(data.newsletter.successMessage);
         setEmail("");
-      } catch (error: any) {
+      } catch (err: any) {
+        console.error("subscribe error:", err);
         setStatus("error");
-        console.log("error", error);
-        setMessage(data.newsletter.errorMessages.generic);
+        setMessage(
+          (err && (err.message || err?.response?.message)) ||
+            data.newsletter.errorMessages.generic
+        );
       } finally {
         setIsSubmitting(false);
       }
     },
-    [email, validateEmail, data.newsletter]
+    [email, validateEmail, data.newsletter, deriveNameFromEmail]
   );
 
   const handleEmailChange = useCallback(
     (value: string) => {
       setEmail(value);
-      // Clear error when user starts typing
       if (status === "error") {
         setStatus("idle");
         setMessage("");
@@ -324,7 +305,6 @@ const Footer = ({ data }: { data: FooterData }) => {
     [status]
   );
 
-  // Format contact info for display
   const formatContactInfo = (contact: ContactInfo) => {
     switch (contact.type) {
       case "address":
@@ -355,7 +335,6 @@ const Footer = ({ data }: { data: FooterData }) => {
 
   return (
     <footer className="bg-white text-gray-900 relative overflow-hidden border-t border-gray-100">
-      {/* Background Elements */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <div
           className="absolute inset-0"
@@ -369,10 +348,8 @@ const Footer = ({ data }: { data: FooterData }) => {
       <div className="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50 pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-gray-50 to-blue-50 rounded-full translate-x-1/3 translate-y-1/3 opacity-50 pointer-events-none" />
 
-      {/* Main Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12">
-          {/* Brand Section */}
           <div className="lg:col-span-2 space-y-6">
             <Link
               href="/"
@@ -400,17 +377,14 @@ const Footer = ({ data }: { data: FooterData }) => {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
             <FooterColumn title="Quick Links" items={data.quickLinks} />
           </div>
 
-          {/* Services */}
           <div>
             <FooterColumn title="Services" items={data.services} />
           </div>
 
-          {/* Contact Information */}
           <div className="lg:col-span-2 space-y-6">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center">
               <div className="w-1 h-6 bg-gradient-to-b from-primary-500 to-primary-600 rounded-full mr-3" />
@@ -432,7 +406,6 @@ const Footer = ({ data }: { data: FooterData }) => {
           </div>
         </div>
 
-        {/* Newsletter Section */}
         <div className="mt-16 pt-12 border-t border-gray-200">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="text-center lg:text-left space-y-3">
@@ -473,7 +446,6 @@ const Footer = ({ data }: { data: FooterData }) => {
         </div>
       </div>
 
-      {/* Bottom Bar */}
       <div className="border-t border-gray-200 bg-gray-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">

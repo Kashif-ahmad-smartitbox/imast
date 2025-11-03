@@ -11,7 +11,7 @@ export interface PageItem {
   keywords?: string[];
   canonicalUrl?: string;
   status: "draft" | "published" | "archived";
-  type: "default" | "solutions" | "services";
+  type: "default" | "solutions" | "services" | "policies";
   publishedAt?: string;
   layout: {
     moduleId: string;
