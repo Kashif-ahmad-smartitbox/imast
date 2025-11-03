@@ -5,6 +5,7 @@ import "./globals.css";
 import { AuthProvider } from "@/services/context/AuthContext";
 import { AlertProvider } from "@/components/alerts/AlertProvider";
 import { GlobalModalProvider } from "@/components/global/GlobalModalProvider";
+import ClientTopLoader from "./components/ClientTopLoader";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -30,6 +31,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.variable} antialiased`}>
+        <ClientTopLoader />
+
         <AuthProvider>
           <GlobalModalProvider>
             <AlertProvider>{children}</AlertProvider>

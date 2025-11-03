@@ -33,6 +33,8 @@ export type HeroData = {
   bgClass?: string;
   bgGradient?: string;
   showScrollIndicator?: boolean;
+  backgroundImage?: string;
+  backgroundOverlayOpacity?: number;
 };
 
 interface SolutionHeroHeaderProps {
@@ -49,9 +51,11 @@ export default function SolutionHeroHeader({
     texts,
     buttons = {},
     primaryColor = "#24357e",
-    bgClass = "bg-gradient-to-br from-primary-50 to-[#24357e]",
-    bgGradient = "linear-gradient(135deg, #141b3a 0%, #1c2554 40%, #24357e 100%)",
+    bgClass = "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950",
+    bgGradient,
     showScrollIndicator = true,
+    backgroundImage,
+    backgroundOverlayOpacity = 0.35,
   } = data;
 
   const primaryBtn = buttons.primary ?? { text: "Get Started", link: "#" };
@@ -63,67 +67,117 @@ export default function SolutionHeroHeader({
   return (
     <section
       aria-labelledby="solution-hero-title"
-      className={`relative overflow-hidden min-h-[80vh] flex items-center ${className}`}
-      style={!bgClass ? { background: bgGradient } : undefined}
+      className={`relative flex items-center overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 py-24 sm:py-32 ${className}`}
+      style={{
+        backgroundImage: backgroundImage
+          ? `url(${backgroundImage})`
+          : undefined,
+        backgroundSize: backgroundImage ? "cover" : undefined,
+        backgroundPosition: backgroundImage ? "center" : undefined,
+      }}
     >
-      <div
-        className={`absolute inset-0 -z-20 ${bgClass}`}
-        aria-hidden
-        style={!bgClass ? { background: bgGradient } : undefined}
-      />
+      {/* Sophisticated geometric background - Same as HeroHeader */}
+      <div aria-hidden="true" className="absolute inset-0">
+        {/* Large geometric shapes */}
+        <div className="absolute top-10 left-10 w-96 h-96 bg-gradient-to-br from-primary-500/5 to-primary-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-gradient-to-tr from-primary-400/5 to-primary-500/10 rounded-full blur-3xl" />
 
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900" />
+        {/* Angular shapes for modern feel */}
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-gray-700/20 to-gray-600/10 transform rotate-45 blur-2xl" />
+        <div className="absolute bottom-1/3 left-1/3 w-48 h-48 bg-gradient-to-tr from-gray-600/15 to-gray-500/10 transform -rotate-12 blur-2xl" />
+      </div>
 
-      <div className="absolute top-1/4 -right-24 w-80 h-80 bg-primary-400/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 -left-24 w-80 h-80 bg-secondary-400/10 rounded-full blur-3xl" />
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 opacity-10">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
+                           linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+            backgroundSize: "50px 50px",
+          }}
+        />
+      </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-8 py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          <div className="lg:col-span-6">
+      {/* Subtle particle effect */}
+      <div aria-hidden="true" className="absolute inset-0 opacity-30">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                           radial-gradient(circle at 75% 75%, rgba(255,255,255,0.08) 1px, transparent 1px)`,
+            backgroundSize: "50px 50px, 70px 70px",
+          }}
+        />
+      </div>
+
+      {backgroundImage && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gray-900"
+          style={{
+            opacity: backgroundOverlayOpacity,
+            mixBlendMode: "multiply",
+          }}
+        />
+      )}
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-6 text-left">
+            {/* Logo */}
             {logo?.src && (
-              <div className="mb-6">
+              <div className="mb-8">
                 <div
-                  className="inline-block rounded-2xl items-center justify-center overflow-hidden bg-white p-2"
-                  style={{ height: logo.size ?? 80 }}
+                  className="inline-flex rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 p-4 items-center justify-center"
+                  style={{ height: logo.size ?? 80, width: logo.size ?? 80 }}
                 >
                   <img
                     src={logo.src}
                     alt={logo.alt ?? texts.title ?? "logo"}
-                    className="w-full h-full object-contain p-3"
+                    className="w-full h-full object-contain"
                     loading="lazy"
                   />
                 </div>
               </div>
             )}
 
+            {/* Subtitle as badge */}
             {texts.subtitle && (
-              <p className="text-sm uppercase tracking-widest text-primary-200/80 mb-3 font-semibold">
-                {texts.subtitle}
-              </p>
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6 backdrop-blur-md shadow-lg">
+                <span className="w-2 h-2 rounded-full mr-2.5 bg-primary-500 animate-pulse" />
+                <span className="text-white text-sm font-semibold tracking-wide">
+                  {texts.subtitle}
+                </span>
+              </div>
             )}
 
+            {/* Title */}
             <h1
               id="solution-hero-title"
-              className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4"
             >
-              {texts.title}
+              <span className="block drop-shadow-lg">{texts.title}</span>
             </h1>
 
+            {/* Description */}
             {texts.description && (
-              <p className="text-lg text-gray-200 max-w-xl mb-8 font-light">
+              <p className="text-sm sm:text-base text-gray-200 max-w-2xl leading-relaxed mb-8">
                 {texts.description}
               </p>
             )}
 
-            <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 items-start">
               {primaryBtn.visible !== false && (
                 <a
                   href={primaryBtn.link}
                   aria-label={primaryBtn.ariaLabel ?? primaryBtn.text}
-                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                  className="group relative px-6 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary-300 overflow-hidden inline-flex items-center gap-2"
                 >
-                  <span>{primaryBtn.text}</span>
-                  <ArrowRight className="w-4 h-4" aria-hidden />
+                  <span className="relative z-10">{primaryBtn.text}</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-primary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </a>
               )}
 
@@ -131,17 +185,39 @@ export default function SolutionHeroHeader({
                 <a
                   href={secondaryBtn.link}
                   aria-label={secondaryBtn.ariaLabel ?? secondaryBtn.text}
-                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                  className="px-6 py-3 rounded-xl text-sm font-semibold border-2 border-white/30 text-white hover:bg-white hover:text-gray-900 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50 backdrop-blur-sm inline-flex items-center gap-2"
                 >
                   <span>{secondaryBtn.text}</span>
-                  <ArrowRight className="w-4 h-4" aria-hidden />
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </a>
               )}
             </div>
           </div>
+
+          {/* Right column - empty but maintains layout */}
+          <div className="lg:col-span-6"></div>
         </div>
       </div>
 
+      {/* Scroll indicator */}
+      {showScrollIndicator && (
+        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-8 z-20">
+          <a
+            href="#content"
+            aria-label="Scroll to content"
+            className="flex flex-col items-center justify-center group"
+          >
+            <div className="w-6 h-10 flex justify-center">
+              <div className="w-1 h-6 bg-white/70 rounded-full animate-bounce" />
+            </div>
+            <span className="text-white text-xs mt-2 opacity-0 group-hover:opacity-70 transition-opacity">
+              Scroll
+            </span>
+          </a>
+        </div>
+      )}
+
+      {/* Wave decoration */}
       <div className="absolute bottom-0 left-0 right-0 pointer-events-none opacity-30">
         <svg
           viewBox="0 0 1440 120"
@@ -161,22 +237,6 @@ export default function SolutionHeroHeader({
           </defs>
         </svg>
       </div>
-
-      {showScrollIndicator && (
-        <div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          aria-hidden
-        >
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-6 h-10 border-2 border-white/10 rounded-full flex justify-center">
-              <div className="w-1.5 h-3 bg-red-500 rounded-full mt-2 animate-bounce"></div>
-            </div>
-            <span className="text-xs text-slate-400 uppercase tracking-widest font-medium">
-              Scroll
-            </span>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

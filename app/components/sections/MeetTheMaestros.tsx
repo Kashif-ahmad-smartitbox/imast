@@ -12,92 +12,197 @@ export type Maestro = {
   linkedin?: string;
 };
 
-export default function MeetTheMaestros({
-  data,
-}: {
+interface MeetTheMaestrosProps {
   data: {
     title?: string;
-    bgColor?: string;
-    cardBg?: string;
-    accent?: string;
+    subtitle?: string;
     members: Maestro[];
+    variant?: "side-by-side" | "stacked" | "elegant";
   };
-}) {
+}
+
+const defaultData = {
+  title: "Meet The Founders",
+  subtitle: "The visionaries behind our journey",
+  variant: "side-by-side" as const,
+};
+
+export default function MeetTheMaestros({ data }: MeetTheMaestrosProps) {
   const {
-    title = "Meet The Maestros",
-    bgColor = "#e06b3b",
-    cardBg = "#ffffff",
-    accent = "#9b3b9b",
+    title = defaultData.title,
+    subtitle = defaultData.subtitle,
+    variant = defaultData.variant,
     members = [],
   } = data ?? {};
 
+  // Ensure we only take the first two members
+  const founders = members.slice(0, 2);
+
+  const variantConfig = {
+    "side-by-side": {
+      container: "bg-white",
+      grid: "grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12",
+      card: "bg-gradient-to-br from-primary-50 to-white rounded-3xl border-2 border-primary-100 p-8 hover:border-primary-200 hover:shadow-lg transition-all duration-500",
+    },
+    stacked: {
+      container: "bg-gradient-to-br from-primary-900 to-primary-800",
+      grid: "grid-cols-1 gap-12 max-w-4xl mx-auto",
+      card: "bg-white rounded-3xl shadow-2xl p-10 hover:scale-[1.02] transition-transform duration-500",
+    },
+    elegant: {
+      container: "bg-gradient-to-br from-primary-50 to-primary-100",
+      grid: "grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center",
+      card: "bg-white rounded-3xl border border-primary-200 p-10 backdrop-blur-sm hover:shadow-xl transition-all duration-500",
+    },
+  };
+
+  const styles = variantConfig[variant];
+
+  const FounderCard = React.useCallback(
+    ({ founder, index }: { founder: Maestro; index: number }) => (
+      <article className={`relative ${styles.card} group`}>
+        {/* Decorative elements */}
+        {variant === "elegant" && (
+          <>
+            <div className="absolute -top-4 -left-4 w-8 h-8 border-t-2 border-l-2 border-primary-300 rounded-tl-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute -top-4 -right-4 w-8 h-8 border-t-2 border-r-2 border-primary-300 rounded-tr-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute -bottom-4 -left-4 w-8 h-8 border-b-2 border-l-2 border-primary-300 rounded-bl-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute -bottom-4 -right-4 w-8 h-8 border-b-2 border-r-2 border-primary-300 rounded-br-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          </>
+        )}
+
+        <div className="flex flex-col items-center text-center">
+          {/* Avatar with enhanced styling */}
+          <div className="relative mb-8">
+            <div className="relative">
+              <div className="w-32 h-32 rounded-2xl border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-br from-primary-200 to-primary-300 p-2">
+                <img
+                  src={founder.avatar}
+                  alt={founder.name}
+                  className="w-full h-full object-cover rounded-xl"
+                  loading="lazy"
+                />
+              </div>
+
+              {/* Founder badge */}
+              <div className="absolute -bottom-2 -right-2 bg-primary-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                Founder
+              </div>
+            </div>
+
+            {/* Decorative background shape */}
+            {variant === "side-by-side" && (
+              <div className="absolute -inset-4 bg-primary-100 rounded-3xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            )}
+          </div>
+
+          {/* Name and Role */}
+          <div className="mb-6">
+            <h3 className="text-2xl font-bold text-primary-900 mb-2">
+              {founder.name}
+            </h3>
+            {founder.role && (
+              <div className="text-lg font-medium text-primary-600">
+                {founder.role}
+              </div>
+            )}
+          </div>
+
+          {/* Bio */}
+          <p className="text-primary-700 leading-relaxed text-base mb-8 max-w-md">
+            {founder.bio}
+          </p>
+
+          {/* LinkedIn Link */}
+          {founder.linkedin && (
+            <a
+              href={founder.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-primary-100 text-primary-700 hover:bg-primary-200 hover:text-primary-800 transition-all duration-300 group/link font-medium"
+              aria-label={`Connect with ${founder.name} on LinkedIn`}
+            >
+              <div className="w-6 h-6 flex items-center justify-center">
+                <Linkedin className="w-4 h-4" />
+              </div>
+              <span>Connect on LinkedIn</span>
+            </a>
+          )}
+        </div>
+      </article>
+    ),
+    [variant, styles.card]
+  );
+
   return (
     <section
-      className="py-16"
-      style={{ background: bgColor }}
-      aria-label="Meet the maestros"
+      className={`py-20 lg:py-28 ${styles.container} relative overflow-hidden`}
+      aria-label="Meet the founders"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <h2 className="text-3xl lg:text-4xl font-bold text-center text-white mb-10">
-          {title}
-        </h2>
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {variant === "stacked" && (
+          <>
+            <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-primary-800 opacity-10 blur-3xl" />
+            <div className="absolute bottom-20 right-20 w-48 h-48 rounded-full bg-primary-700 opacity-10 blur-2xl" />
+          </>
+        )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {members.map((m) => (
-            <article
-              key={m.id}
-              className="rounded-2xl p-8"
-              style={{ background: cardBg }}
-            >
-              <div className="flex items-start gap-6">
-                <img
-                  src={m.avatar}
-                  alt={m.name}
-                  className="w-16 h-16 rounded-full object-cover flex-shrink-0"
-                />
+        {variant === "elegant" && (
+          <>
+            <div className="absolute top-10 left-10 w-24 h-24 border-2 border-primary-200 rounded-lg opacity-20 rotate-45" />
+            <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-primary-200 rounded-full opacity-20" />
+          </>
+        )}
 
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    {m.name}
-                  </h3>
-                  {m.role && (
-                    <div className="text-sm mt-1" style={{ color: accent }}>
-                      {m.role}
-                    </div>
-                  )}
-                  <p className="mt-4 text-gray-700 leading-relaxed text-sm">
-                    {m.bio}
-                  </p>
-
-                  <div className="mt-6">
-                    {m.linkedin && (
-                      <a
-                        href={m.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-sm font-medium text-[#e06b3b] hover:underline"
-                        aria-label={`Open ${m.name} LinkedIn`}
-                      >
-                        <span
-                          className="inline-flex items-center justify-center rounded-md"
-                          style={{
-                            width: 28,
-                            height: 28,
-                            background: "#fff",
-                            boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-                          }}
-                        >
-                          <Linkedin className="w-4 h-4 text-[#e06b3b]" />
-                        </span>
-                        <span className="ml-2">LinkedIn</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </article>
-          ))}
+        {/* Subtle grid pattern */}
+        {/* Subtle grid pattern - Updated to match other components */}
+        <div className="absolute inset-0 opacity-5">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
+                     linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+              backgroundSize: "50px 50px",
+            }}
+          />
         </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header */}
+        <div className="text-center mb-16 lg:mb-20">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 border border-primary-200 mb-6">
+            <div className="w-2 h-2 rounded-full bg-primary-500" />
+            <span className="text-sm font-semibold uppercase tracking-wide text-primary-700">
+              Leadership
+            </span>
+          </div>
+
+          <h2 className="text-4xl lg:text-5xl font-bold text-primary-900 mb-4">
+            {title}
+          </h2>
+          {subtitle && (
+            <p className="text-xl lg:text-2xl text-primary-600 max-w-3xl mx-auto leading-relaxed">
+              {subtitle}
+            </p>
+          )}
+        </div>
+
+        {/* Founders Grid */}
+        {founders.length > 0 ? (
+          <div className={`grid ${styles.grid}`}>
+            {founders.map((founder, index) => (
+              <FounderCard key={founder.id} founder={founder} index={index} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <div className="text-primary-400 text-xl">
+              Founder information coming soon
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

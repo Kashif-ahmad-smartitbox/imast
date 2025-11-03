@@ -142,6 +142,20 @@ const CareerSection = dynamic(
   }
 );
 
+const TestimonialsSection = dynamic(
+  () => import("@/components/sections/TestimonialsSection"),
+  {
+    ssr: false,
+  }
+);
+
+const DynamicHTMLSection = dynamic(
+  () => import("@/components/sections/DynamicHTMLSection"),
+  {
+    ssr: false,
+  }
+);
+
 export type ModuleComponentProps = {
   data: any;
 };
@@ -179,6 +193,8 @@ const registry: Record<string, ComponentType<ModuleComponentProps>> = {
   imastwhychoose2: ImastWhyChooseSection,
   integrationssection: ImastIntegrationsSection,
   careers: CareerSection,
+  testimonials: TestimonialsSection,
+  dynamichtml: DynamicHTMLSection,
 };
 
 export default registry;

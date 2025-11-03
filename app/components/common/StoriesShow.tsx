@@ -323,7 +323,7 @@ function StoriesShow({ data }: any) {
                 <span className="font-semibold">Active filters:</span>
                 {searchTerm && (
                   <span className="bg-primary-100 text-primary-700 px-3 py-2 rounded-full text-sm font-medium">
-                    Search: "{searchTerm}"
+                    Search: &quot;{searchTerm}&quot;
                   </span>
                 )}
                 {featuredFilter !== "all" && (
@@ -423,7 +423,7 @@ function StoriesShow({ data }: any) {
                     <Link
                       key={story._id}
                       href={`/case-studies/${story.slug || story._id}`}
-                      className={`group block bg-white rounded-3xl border border-gray-200/80 hover:shadow-2xl transition-all duration-500 overflow-hidden hover:-translate-y-1`}
+                      className={`group block bg-white rounded-3xl border border-gray-200/80 transition-all duration-500 overflow-hidden hover:-translate-y-1`}
                     >
                       {viewMode === "grid" ? (
                         /* Grid View - Enhanced Design */

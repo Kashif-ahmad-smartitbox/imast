@@ -9,8 +9,6 @@ export interface FounderData {
   title?: string;
   imageSrc: string;
   imageAlt?: string;
-  accentColor?: string;
-  bgShapeColor?: string;
   layout?: "image-left" | "image-right" | "centered";
   showDecoration?: boolean;
   variant?: "default" | "minimal" | "elegant";
@@ -21,20 +19,16 @@ interface WordsFromFounderProps {
   data: FounderData;
 }
 
-// Default configuration
-const defaultData: Partial<FounderData> = {
+const defaultData = {
   heading: "Words From Our Founder",
   title: "Founder IMAST",
   imageAlt: "Founder photo",
-  accentColor: "#e06b3b",
-  bgShapeColor: "#FDEBE6",
-  layout: "image-left",
+  layout: "image-left" as const,
   showDecoration: true,
-  variant: "default",
+  variant: "default" as const,
   badgeText: "Founder's Message",
 };
 
-// Layout configuration
 const layoutConfig = {
   "image-left": {
     imageOrder: "order-1",
@@ -56,166 +50,165 @@ const layoutConfig = {
   },
 } as const;
 
-// Variant configurations
 const variantConfig = {
   default: {
     container: "bg-white",
-    quoteCard: "bg-white/95 rounded-2xl shadow-lg border border-gray-100",
+    quoteCard: "bg-white rounded-2xl border-2 border-primary-100",
     quoteText: "text-gray-700 text-lg leading-relaxed",
-    nameText: "text-gray-900 font-semibold",
-    titleText: "text-orange-600",
+    nameText: "text-gray-900 font-bold text-lg",
+    titleText: "text-primary-600 font-medium",
+    imageContainer:
+      "rounded-2xl border-4 border-white bg-gradient-to-br from-primary-50 to-primary-100 p-4",
     imageStyle: "rounded-xl",
-    imageBorder: "",
     hasAccentBar: true,
-    hasOverlay: false,
+    hasFrame: true,
   },
   minimal: {
-    container: "bg-gray-50",
-    quoteCard: "bg-transparent border-l-4 pl-6",
-    quoteText: "text-gray-600 text-xl leading-relaxed italic",
-    nameText: "text-gray-800 font-medium",
-    titleText: "text-gray-500",
-    imageStyle: "rounded-lg",
-    imageBorder: "",
+    container: "bg-white",
+    quoteCard: "bg-transparent border-l-4 border-primary-300 pl-6",
+    quoteText: "text-gray-600 text-lg leading-relaxed italic",
+    nameText: "text-gray-800 font-semibold",
+    titleText: "text-primary-500",
+    imageContainer: "rounded-lg border-2 border-primary-100 bg-white p-3",
+    imageStyle: "rounded-md",
     hasAccentBar: false,
-    hasOverlay: false,
+    hasFrame: true,
   },
   elegant: {
-    container: "bg-gradient-to-br from-gray-50 to-white",
+    container: "bg-gradient-to-br from-primary-25 to-primary-50",
     quoteCard:
-      "bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50",
-    quoteText: "text-gray-800 text-lg leading-relaxed font-light",
-    nameText: "text-gray-900 font-semibold",
-    titleText: "text-orange-500",
+      "bg-white rounded-3xl border border-primary-100 backdrop-blur-sm",
+    quoteText: "text-gray-800 text-lg leading-relaxed",
+    nameText: "text-gray-900 font-bold text-lg",
+    titleText: "text-primary-600 font-medium",
+    imageContainer:
+      "rounded-3xl border-8 border-white bg-gradient-to-br from-primary-100 to-primary-200 p-6",
     imageStyle: "rounded-2xl",
-    imageBorder: "border-8 border-white",
     hasAccentBar: true,
-    hasOverlay: true,
+    hasFrame: true,
   },
 } as const;
 
-// Helper function for safe data access
-const getSafeData = <T,>(value: T | undefined, defaultValue: T): T => {
-  return value ?? defaultValue;
-};
-
 export default function WordsFromFounder({ data }: WordsFromFounderProps) {
-  // Safely merge provided data with defaults
   const content = {
-    heading: getSafeData(data.heading, defaultData.heading!),
+    heading: data.heading || defaultData.heading,
     quote: data.quote,
     name: data.name,
-    title: getSafeData(data.title, defaultData.title!),
+    title: data.title || defaultData.title,
     imageSrc: data.imageSrc,
-    imageAlt: getSafeData(data.imageAlt, defaultData.imageAlt!),
-    accentColor: getSafeData(data.accentColor, defaultData.accentColor!),
-    bgShapeColor: getSafeData(data.bgShapeColor, defaultData.bgShapeColor!),
-    layout: getSafeData(data.layout, defaultData.layout!),
-    showDecoration: getSafeData(
-      data.showDecoration,
-      defaultData.showDecoration!
-    ),
-    variant: getSafeData(data.variant, defaultData.variant!),
-    badgeText: getSafeData(data.badgeText, defaultData.badgeText!),
+    imageAlt: data.imageAlt || defaultData.imageAlt,
+    layout: data.layout || defaultData.layout,
+    showDecoration: data.showDecoration ?? defaultData.showDecoration,
+    variant: data.variant || defaultData.variant,
+    badgeText: data.badgeText || defaultData.badgeText,
   };
 
   const { imageOrder, textOrder, textAlign, gridClass } =
     layoutConfig[content.layout];
   const variantStyles = variantConfig[content.variant];
 
-  // Reusable components for better code organization
-  const BackgroundDecoration = () => {
-    if (content.variant !== "elegant") return null;
+  const BackgroundDecoration = React.useCallback(() => {
+    if (!content.showDecoration) return null;
 
     return (
-      <div className="absolute inset-0 overflow-hidden" aria-hidden>
-        <div
-          className="absolute -top-24 -right-24 w-48 h-48 rounded-full opacity-5"
-          style={{ background: content.accentColor }}
-        />
-        <div
-          className="absolute -bottom-24 -left-24 w-48 h-48 rounded-full opacity-5"
-          style={{ background: content.accentColor }}
-        />
+      <div
+        className="absolute inset-0 overflow-hidden pointer-events-none"
+        aria-hidden="true"
+      >
+        {/* Geometric patterns */}
+        <div className="absolute top-10 left-10 w-32 h-32 border-2 border-primary-100 rounded-lg opacity-20 rotate-45" />
+        <div className="absolute bottom-10 right-10 w-24 h-24 border-2 border-primary-100 rounded-full opacity-20" />
+
+        {/* Updated Grid Pattern - Same as other components */}
+        <div className="absolute inset-0 opacity-5">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
+                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+              backgroundSize: "50px 50px",
+            }}
+          />
+        </div>
       </div>
     );
-  };
+  }, [content.showDecoration]);
 
-  const ImageComponent = () => (
-    <div className="flex justify-center">
-      <div
-        className={`relative w-full max-w-md ${
-          content.layout === "centered" ? "max-w-sm" : ""
-        }`}
-      >
-        {/* Background Shape */}
-        {content.showDecoration && content.variant !== "minimal" && (
-          <div
-            className={`absolute -left-6 -top-6 w-full h-full rounded-3xl transform ${
-              content.variant === "elegant"
-                ? "rotate-[-6deg] scale-105"
-                : "rotate-[-8deg]"
-            } transition-all duration-500 hover:rotate-[-4deg]`}
-            style={{ background: content.bgShapeColor, zIndex: 0 }}
-            aria-hidden
-          />
-        )}
-
-        {/* Main Image Container */}
+  const ImageComponent = React.useCallback(
+    () => (
+      <div className="flex justify-center">
         <div
-          className={`relative z-10 overflow-hidden ${variantStyles.imageStyle} ${variantStyles.imageBorder} transition-all duration-500 hover:scale-105`}
+          className={`relative w-full max-w-md ${
+            content.layout === "centered" ? "max-w-sm" : ""
+          }`}
         >
-          <img
-            src={content.imageSrc}
-            alt={content.imageAlt}
-            className="w-full h-auto object-cover"
-            loading="lazy"
-          />
+          {/* Main Image Container with Frame */}
+          <div className="relative group">
+            <div
+              className={`${variantStyles.imageContainer} transition-all duration-500 group-hover:scale-[1.02] group-hover:border-primary-200`}
+            >
+              <img
+                src={content.imageSrc}
+                alt={content.imageAlt}
+                className={`w-full h-auto object-cover ${variantStyles.imageStyle} transition-transform duration-500 group-hover:scale-105`}
+                loading="lazy"
+              />
+            </div>
 
-          {/* Overlay for elegant variant */}
-          {variantStyles.hasOverlay && (
-            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+            {/* Decorative corner elements */}
+            {content.showDecoration && variantStyles.hasFrame && (
+              <>
+                <div className="absolute -top-2 -left-2 w-6 h-6 border-t-2 border-l-2 border-primary-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -top-2 -right-2 w-6 h-6 border-t-2 border-r-2 border-primary-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -bottom-2 -left-2 w-6 h-6 border-b-2 border-l-2 border-primary-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -bottom-2 -right-2 w-6 h-6 border-b-2 border-r-2 border-primary-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </>
+            )}
+
+            {/* Elegant badge for elegant variant */}
+            {content.variant === "elegant" && (
+              <div className="absolute -bottom-3 -right-3 bg-white rounded-full shadow-lg px-4 py-2 transform transition-transform duration-500 group-hover:scale-105 border border-primary-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary-400" />
+                  <span className="text-sm font-semibold text-primary-700">
+                    Founder
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Background decorative elements */}
+          {content.showDecoration && content.variant === "elegant" && (
+            <div className="absolute -z-10 -inset-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-3xl opacity-50" />
           )}
         </div>
-
-        {/* Decorative Elements */}
-        {content.showDecoration && content.variant === "elegant" && (
-          <>
-            <div
-              className="absolute -right-4 -bottom-4 w-20 h-20 rounded-2xl opacity-60 transform rotate-12"
-              style={{ background: content.accentColor }}
-              aria-hidden
-            />
-            <div
-              className="absolute -right-2 -bottom-2 w-10 h-10 rounded-xl opacity-40 transform -rotate-6"
-              style={{ background: content.accentColor }}
-              aria-hidden
-            />
-          </>
-        )}
       </div>
-    </div>
+    ),
+    [
+      content.imageSrc,
+      content.imageAlt,
+      content.layout,
+      content.showDecoration,
+      content.variant,
+      variantStyles,
+    ]
   );
 
-  const HeadingComponent = () => {
+  const HeadingComponent = React.useCallback(() => {
     const words = content.heading.split(" ");
     const lastWord = words.pop();
     const firstPart = words.join(" ");
 
     return (
       <div className="mb-8">
-        {content.variant === "minimal" && (
-          <div className="inline-flex items-center gap-3 mb-4">
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{ background: content.accentColor }}
-              aria-hidden
-            />
-            <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-              {content.badgeText}
-            </span>
-          </div>
-        )}
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 border border-primary-200 mb-6">
+          <div className="w-2 h-2 rounded-full bg-primary-400" />
+          <span className="text-sm font-semibold uppercase tracking-wide text-primary-700">
+            {content.badgeText}
+          </span>
+        </div>
 
         <h2
           className={`font-bold text-gray-900 ${
@@ -223,121 +216,132 @@ export default function WordsFromFounder({ data }: WordsFromFounderProps) {
               ? "text-2xl lg:text-3xl"
               : content.variant === "elegant"
               ? "text-3xl lg:text-4xl"
-              : "text-3xl lg:text-4xl"
+              : "text-2xl lg:text-3xl"
           }`}
         >
-          {firstPart}{" "}
-          <span style={{ color: content.accentColor }}>{lastWord}</span>
+          {firstPart} <span className="text-primary-600">{lastWord}</span>
         </h2>
       </div>
     );
-  };
+  }, [content.heading, content.variant, content.badgeText]);
 
-  const QuoteCard = () => (
-    <div
-      className={`${variantStyles.quoteCard} p-6 lg:p-8 relative transition-all duration-500 hover:shadow-xl`}
-    >
-      {/* Accent Bar */}
-      {variantStyles.hasAccentBar && (
-        <div
-          className={`absolute left-0 top-6 bottom-6 w-1 rounded-r ${
-            content.variant === "elegant" ? "rounded-full" : ""
-          }`}
-          style={{ background: content.accentColor }}
-          aria-hidden
-        />
-      )}
-
-      <div className={variantStyles.hasAccentBar ? "pl-6" : ""}>
-        {/* Quote */}
-        <blockquote className={`${variantStyles.quoteText} mb-6`}>
-          "{content.quote}"
-        </blockquote>
-
-        {/* Author */}
-        <AuthorSection />
-      </div>
-
-      {/* Decorative corner for elegant variant */}
-      {content.variant === "elegant" && (
-        <div
-          className="absolute top-0 right-0 w-6 h-6 rounded-bl-full opacity-20"
-          style={{ background: content.accentColor }}
-          aria-hidden
-        />
-      )}
-    </div>
-  );
-
-  const AuthorSection = () => (
-    <div
-      className={`flex items-center gap-4 ${
-        content.variant === "minimal" ? "border-t border-gray-200 pt-4" : ""
-      }`}
-    >
-      {content.variant === "elegant" && (
-        <div
-          className="w-1 h-8 rounded-full"
-          style={{ background: content.accentColor }}
-          aria-hidden
-        />
-      )}
-      <div>
-        <div className={variantStyles.nameText}>
-          {content.name}
+  const AuthorSection = React.useCallback(
+    () => (
+      <div className="flex items-center gap-4">
+        <div className="flex-shrink-0">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg bg-gradient-to-br from-primary-500 to-primary-600 shadow-sm">
+            {content.name.charAt(0)}
+          </div>
+        </div>
+        <div>
+          <div className={variantStyles.nameText}>{content.name}</div>
           {content.title && (
-            <span className={`ml-2 ${variantStyles.titleText}`}>
+            <div className={`${variantStyles.titleText} text-sm mt-1`}>
               {content.title}
-            </span>
+            </div>
           )}
         </div>
-        {content.variant === "elegant" && (
+      </div>
+    ),
+    [content.name, content.title, variantStyles]
+  );
+
+  const QuoteCard = React.useCallback(
+    () => (
+      <div
+        className={`${variantStyles.quoteCard} p-8 lg:p-10 relative transition-all duration-500 group hover:border-primary-200`}
+      >
+        {/* Accent Bar */}
+        {variantStyles.hasAccentBar && (
           <div
-            className="w-16 h-0.5 rounded-full mt-2 opacity-60"
-            style={{ background: content.accentColor }}
-            aria-hidden
+            className="absolute left-0 top-8 bottom-8 w-1 rounded-r-full bg-gradient-to-b from-primary-400 to-primary-500 transition-all duration-500 group-hover:from-primary-500 group-hover:to-primary-600"
+            aria-hidden="true"
           />
         )}
+
+        {/* Quote icon */}
+        <div
+          className="absolute top-6 right-6 opacity-5 group-hover:opacity-10 transition-opacity"
+          aria-hidden="true"
+        >
+          <svg
+            className="w-16 h-16 text-primary-500"
+            fill="currentColor"
+            viewBox="0 0 32 32"
+          >
+            <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
+          </svg>
+        </div>
+
+        <div className={variantStyles.hasAccentBar ? "pl-6" : ""}>
+          {/* Quote */}
+          <blockquote
+            className={`${variantStyles.quoteText} mb-8 relative z-10`}
+          >
+            &quot;{content.quote}&quot;
+          </blockquote>
+
+          {/* Author */}
+          <AuthorSection />
+        </div>
+
+        {/* Corner accents */}
+        {content.variant === "elegant" && (
+          <>
+            <div className="absolute top-4 left-4 w-3 h-3 border-t-2 border-l-2 border-primary-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute top-4 right-4 w-3 h-3 border-t-2 border-r-2 border-primary-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute bottom-4 left-4 w-3 h-3 border-b-2 border-l-2 border-primary-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute bottom-4 right-4 w-3 h-3 border-b-2 border-r-2 border-primary-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          </>
+        )}
       </div>
-    </div>
+    ),
+    [content.quote, variantStyles, AuthorSection]
   );
 
-  const TextContent = () => (
-    <div className={textAlign}>
-      <HeadingComponent />
-      <QuoteCard />
-    </div>
+  const TextContent = React.useCallback(
+    () => (
+      <div className={textAlign}>
+        <HeadingComponent />
+        <QuoteCard />
+      </div>
+    ),
+    [textAlign, HeadingComponent, QuoteCard]
   );
 
-  const CenteredLayout = () => (
-    <div className="text-center max-w-4xl mx-auto">
-      <div className="mb-12">
-        <ImageComponent />
-      </div>
-      <TextContent />
-    </div>
-  );
-
-  const SideBySideLayout = () => (
-    <div className={`grid ${gridClass} gap-12 lg:gap-16 items-center`}>
-      <div className={imageOrder}>
-        <ImageComponent />
-      </div>
-      <div className={textOrder}>
+  const CenteredLayout = React.useCallback(
+    () => (
+      <div className="text-center max-w-4xl mx-auto">
+        <div className="mb-12">
+          <ImageComponent />
+        </div>
         <TextContent />
       </div>
-    </div>
+    ),
+    [ImageComponent, TextContent]
+  );
+
+  const SideBySideLayout = React.useCallback(
+    () => (
+      <div className={`grid ${gridClass} gap-12 lg:gap-16 items-center`}>
+        <div className={imageOrder}>
+          <ImageComponent />
+        </div>
+        <div className={textOrder}>
+          <TextContent />
+        </div>
+      </div>
+    ),
+    [gridClass, imageOrder, textOrder, ImageComponent, TextContent]
   );
 
   return (
     <section
-      className={`py-16 lg:py-24 ${variantStyles.container} ${
-        content.variant === "elegant" ? "overflow-hidden" : ""
-      } relative`}
+      className={`py-16 lg:py-24 ${variantStyles.container} relative overflow-hidden`}
     >
       <BackgroundDecoration />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {content.layout === "centered" ? (
           <CenteredLayout />
         ) : (

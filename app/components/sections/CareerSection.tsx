@@ -5,16 +5,15 @@ import {
   MapPin,
   Briefcase,
   FileText,
-  X,
-  Inbox,
-  Calendar,
   DollarSign,
   Award,
-  Share2,
+  Calendar,
   ExternalLink,
   Filter,
   ChevronDown,
-  Loader2,
+  Users,
+  Clock,
+  Building,
 } from "lucide-react";
 
 export type Job = {
@@ -25,15 +24,13 @@ export type Job = {
   type: "Full-time" | "Part-time" | "Contract" | "Internship" | string;
   summary?: string;
   postedAt?: string;
-  responsibilities?: string[];
-  qualifications?: string[];
-  externalApplyUrl?: string;
-  detailsUrl?: string;
+  externalApplyUrl: string; // Required for external applications
   salary?: string;
   experience?: string;
   tags?: string[];
   urgency?: "Urgent" | "High" | "Normal";
   remote?: boolean;
+  featured?: boolean;
 };
 
 export type CareersData = {
@@ -50,25 +47,16 @@ export type CareersData = {
     showExperience?: boolean;
     showTags?: boolean;
   };
-  styling?: {
-    primaryColor?: string;
-    cardStyle?: "modern" | "classic" | "minimal";
-    showFeaturedJobs?: boolean;
+  stats?: {
+    totalJobs?: number;
+    departments?: number;
+    locations?: number;
   };
 };
 
 export type CareerSectionProps = {
   data: CareersData;
   className?: string;
-  onExternalApply?: (job: Job) => void;
-  onDetailsClick?: (job: Job) => void;
-  onApplicationSubmit?: (application: {
-    job: Job;
-    name: string;
-    email: string;
-    cover: string;
-    resume: File;
-  }) => Promise<void>;
 };
 
 function formatDate(date?: string) {
@@ -90,10 +78,6 @@ function formatDate(date?: string) {
   }
 }
 
-function bytesToMB(bytes: number) {
-  return Math.round((bytes / (1024 * 1024)) * 10) / 10;
-}
-
 function getUrgencyColor(urgency?: string) {
   switch (urgency) {
     case "Urgent":
@@ -105,12 +89,9 @@ function getUrgencyColor(urgency?: string) {
   }
 }
 
-export default function CareerSectionPage({
+export default function CareerSection({
   data,
   className = "",
-  onExternalApply,
-  onDetailsClick,
-  onApplicationSubmit,
 }: CareerSectionProps) {
   const {
     heading = "Join Our Team",
@@ -126,10 +107,10 @@ export default function CareerSectionPage({
       showExperience: true,
       showTags: true,
     },
-    styling = {
-      primaryColor: "primary",
-      cardStyle: "modern",
-      showFeaturedJobs: false,
+    stats = {
+      totalJobs: 0,
+      departments: 0,
+      locations: 0,
     },
   } = data ?? {};
 
@@ -142,16 +123,6 @@ export default function CareerSectionPage({
     "newest"
   );
   const [showFilters, setShowFilters] = useState(false);
-
-  // Modal state
-  const [openJob, setOpenJob] = useState<Job | null>(null);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [cover, setCover] = useState("");
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [formError, setFormError] = useState("");
-  const [copiedJobId, setCopiedJobId] = useState<string | null>(null);
 
   // Derived data
   const departments = useMemo(
@@ -204,168 +175,101 @@ export default function CareerSectionPage({
   }, [jobs, search, department, location, jobType, sortBy]);
 
   const featuredJobs = useMemo(
-    () => filteredAndSortedJobs.filter((job) => job.urgency === "Urgent"),
+    () => filteredAndSortedJobs.filter((job) => job.featured),
     [filteredAndSortedJobs]
   );
 
   const regularJobs = useMemo(
-    () => filteredAndSortedJobs.filter((job) => job.urgency !== "Urgent"),
+    () => filteredAndSortedJobs.filter((job) => !job.featured),
     [filteredAndSortedJobs]
   );
 
-  // Handlers
-  const handleApply = (job: Job) => {
-    if (job.externalApplyUrl) {
-      onExternalApply?.(job);
-      window.open(job.externalApplyUrl, "_blank", "noopener");
-      return;
-    }
-    setOpenJob(job);
-    resetForm();
-  };
+  // Auto-calculated stats if not provided
+  const calculatedStats = useMemo(
+    () => ({
+      totalJobs: stats.totalJobs || jobs.length,
+      departments:
+        stats.departments || new Set(jobs.map((j) => j.department)).size,
+      locations: stats.locations || new Set(jobs.map((j) => j.location)).size,
+    }),
+    [jobs, stats]
+  );
 
-  const resetForm = () => {
-    setName("");
-    setEmail("");
-    setCover("");
-    setResumeFile(null);
-    setFormError("");
-  };
-
-  const closeModal = () => {
-    setOpenJob(null);
-    setFormError("");
-    setSubmitting(false);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormError("");
-    const file = e.target.files?.[0] ?? null;
-    if (!file) {
-      setResumeFile(null);
-      return;
-    }
-
-    const maxBytes = 5 * 1024 * 1024;
-    const allowedTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      setFormError("Please upload a PDF or Word document (.pdf, .doc, .docx).");
-      setResumeFile(null);
-      return;
-    }
-
-    if (file.size > maxBytes) {
-      setFormError(
-        `File too large. Max 5 MB (your file is ${bytesToMB(file.size)} MB).`
-      );
-      setResumeFile(null);
-      return;
-    }
-
-    setResumeFile(file);
-  };
-
-  const submitApplication = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    setFormError("");
-
-    if (!openJob || !resumeFile) return;
-
-    // Validation
-    if (!name.trim()) {
-      setFormError("Please enter your name.");
-      return;
-    }
-    if (!email.trim() || !/^\S+@\S+\.\S+$/.test(email)) {
-      setFormError("Please enter a valid email address.");
-      return;
-    }
-
-    setSubmitting(true);
-
-    try {
-      if (onApplicationSubmit) {
-        await onApplicationSubmit({
-          job: openJob,
-          name: name.trim(),
-          email: email.trim(),
-          cover: cover.trim(),
-          resume: resumeFile,
-        });
-      } else {
-        // Fallback to default behavior
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-
-      setSubmitting(false);
-      closeModal();
-      // Show success message
-      alert(`Application for ${openJob.title} submitted successfully!`);
-    } catch (error) {
-      setSubmitting(false);
-      setFormError("Failed to submit application. Please try again.");
-    }
-  };
-
-  const handleDetailsClick = (job: Job) => {
-    onDetailsClick?.(job);
-    if (job.detailsUrl) {
-      const isExternal = /^https?:\/\//i.test(job.detailsUrl);
-      if (isExternal) {
-        window.open(job.detailsUrl, "_blank", "noopener");
-      } else {
-        window.location.href = job.detailsUrl;
-      }
-    } else {
-      setOpenJob(job);
-    }
-  };
-
-  const copyJobLink = async (job: Job) => {
-    const url = job.detailsUrl || `${window.location.href}#${job.id}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopiedJobId(job.id);
-      setTimeout(() => setCopiedJobId(null), 2000);
-    } catch (err) {
-      console.error("Failed to copy link:", err);
-    }
-  };
-
-  const getCardStyleClasses = () => {
-    switch (styling.cardStyle) {
-      case "classic":
-        return "border-l-4 border-l-primary-500 shadow-md";
-      case "minimal":
-        return "border border-gray-200 bg-white";
-      default: // modern
-        return "rounded-xl border border-gray-100 p-6 shadow-sm bg-white hover:shadow-md transition-shadow duration-300";
-    }
+  const handleExternalApply = (job: Job) => {
+    window.open(job.externalApplyUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
     <section
-      className={`py-16 bg-gray-50 ${className}`}
+      className={`py-20 lg:py-28 bg-white ${className}`}
       aria-labelledby="careers-heading"
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Grid pattern */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
+                           linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+            backgroundSize: "50px 50px",
+          }}
+        />
+      </div>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          {subheading && (
-            <p className="text-primary-600 font-semibold mb-2">{subheading}</p>
-          )}
+        <div className="max-w-4xl mx-auto text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 border border-primary-200 mb-6">
+            <div className="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
+            <span className="text-sm font-semibold uppercase tracking-wide text-primary-700">
+              {subheading}
+            </span>
+          </div>
+
           <h1
             id="careers-heading"
-            className="text-4xl md:text-5xl font-bold text-gray-900 mb-4"
+            className="text-4xl md:text-5xl font-bold text-primary-900 mb-4"
           >
             {heading}
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">{intro}</p>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            {intro}
+          </p>
+        </div>
+
+        {/* Stats */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 rounded-2xl bg-primary-50 border border-primary-100 hover:shadow-lg transition-all duration-300">
+              <div className="w-12 h-12 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-3">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-primary-900">
+                {calculatedStats.totalJobs}
+              </div>
+              <div className="text-primary-700 font-medium">Open Positions</div>
+            </div>
+
+            <div className="text-center p-6 rounded-2xl bg-primary-50 border border-primary-100 hover:shadow-lg transition-all duration-300">
+              <div className="w-12 h-12 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-3">
+                <Building className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-primary-900">
+                {calculatedStats.departments}
+              </div>
+              <div className="text-primary-700 font-medium">Departments</div>
+            </div>
+
+            <div className="text-center p-6 rounded-2xl bg-primary-50 border border-primary-100 hover:shadow-lg transition-all duration-300">
+              <div className="w-12 h-12 rounded-2xl bg-primary-500 flex items-center justify-center mx-auto mb-3">
+                <MapPin className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-primary-900">
+                {calculatedStats.locations}
+              </div>
+              <div className="text-primary-700 font-medium">Locations</div>
+            </div>
+          </div>
         </div>
 
         {/* Controls */}
@@ -382,7 +286,7 @@ export default function CareerSectionPage({
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search roles, skills, keywords..."
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 bg-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
               )}
@@ -391,7 +295,7 @@ export default function CareerSectionPage({
                 {features.enableFilters && (
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className="flex items-center gap-2 px-4 py-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-2 px-4 py-3 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
                   >
                     <Filter size={18} />
                     Filters
@@ -408,7 +312,7 @@ export default function CareerSectionPage({
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as any)}
-                    className="px-4 py-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="px-4 py-3 rounded-xl border border-gray-300 bg-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   >
                     <option value="newest">Newest First</option>
                     <option value="title">Title A-Z</option>
@@ -421,7 +325,7 @@ export default function CareerSectionPage({
 
           {/* Expandable Filters */}
           {showFilters && features.enableFilters && (
-            <div className="mt-4 p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
+            <div className="mt-4 p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -481,9 +385,9 @@ export default function CareerSectionPage({
         {/* Jobs Grid */}
         <div className="max-w-6xl mx-auto">
           {/* Featured Jobs */}
-          {styling.showFeaturedJobs && featuredJobs.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          {featuredJobs.length > 0 && (
+            <div className="mb-12">
+              <h2 className="text-3xl font-bold text-primary-900 mb-8 text-center">
                 Featured Roles
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -492,12 +396,7 @@ export default function CareerSectionPage({
                     key={job.id}
                     job={job}
                     features={features}
-                    styling={styling}
-                    cardStyle={getCardStyleClasses()}
-                    onApply={handleApply}
-                    onDetailsClick={handleDetailsClick}
-                    onCopyLink={copyJobLink}
-                    copiedJobId={copiedJobId}
+                    onApply={handleExternalApply}
                     isFeatured={true}
                   />
                 ))}
@@ -507,20 +406,20 @@ export default function CareerSectionPage({
 
           {/* All Jobs */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              {styling.showFeaturedJobs ? "All Open Roles" : "Open Positions"}
+            <h2 className="text-3xl font-bold text-primary-900 mb-8 text-center">
+              All Open Positions
             </h2>
 
             {filteredAndSortedJobs.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-12">
-                  <Briefcase className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">
+              <div className="text-center py-16">
+                <div className="rounded-2xl border-2 border-dashed border-gray-300 p-16 bg-gray-50">
+                  <Briefcase className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-2">
                     No positions found
                   </h3>
-                  <p className="mt-2 text-gray-500">
-                    Try adjusting your search or filters to find what you're
-                    looking for.
+                  <p className="text-gray-600 max-w-md mx-auto">
+                    Try adjusting your search or filters to find what
+                    you&apos;re looking for.
                   </p>
                 </div>
               </div>
@@ -531,12 +430,7 @@ export default function CareerSectionPage({
                     key={job.id}
                     job={job}
                     features={features}
-                    styling={styling}
-                    cardStyle={getCardStyleClasses()}
-                    onApply={handleApply}
-                    onDetailsClick={handleDetailsClick}
-                    onCopyLink={copyJobLink}
-                    copiedJobId={copiedJobId}
+                    onApply={handleExternalApply}
                     isFeatured={false}
                   />
                 ))}
@@ -545,330 +439,120 @@ export default function CareerSectionPage({
           </div>
         </div>
       </div>
-
-      {/* Application Modal */}
-      {openJob && (
-        <ApplicationModal
-          job={openJob}
-          isOpen={!!openJob}
-          onClose={closeModal}
-          name={name}
-          email={email}
-          cover={cover}
-          resumeFile={resumeFile}
-          submitting={submitting}
-          formError={formError}
-          onNameChange={setName}
-          onEmailChange={setEmail}
-          onCoverChange={setCover}
-          onFileChange={handleFileChange}
-          onSubmit={submitApplication}
-        />
-      )}
     </section>
   );
 }
 
 // Job Card Component
-function JobCard({
-  job,
-  features,
-  styling,
-  cardStyle,
-  onApply,
-  onDetailsClick,
-  onCopyLink,
-  copiedJobId,
-  isFeatured,
-}: any) {
+function JobCard({ job, features, onApply, isFeatured }: any) {
   return (
     <article
-      className={`${cardStyle} ${isFeatured ? "ring-2 ring-primary-200" : ""}`}
+      className={`group relative rounded-2xl p-8 bg-white border-2 border-gray-100 hover:border-primary-300 hover:shadow-2xl transition-all duration-500 ${
+        isFeatured
+          ? "ring-2 ring-primary-200 bg-gradient-to-br from-white to-primary-50"
+          : ""
+      }`}
     >
+      {/* Featured badge */}
+      {isFeatured && (
+        <div className="absolute -top-3 -right-3 bg-primary-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
+          Featured
+        </div>
+      )}
+
       <div className="flex flex-col h-full">
         <div className="flex-1">
           {/* Header */}
-          <div className="flex items-start justify-between gap-4 mb-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {job.title}
-                </h3>
-                {job.urgency && (
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(
-                      job.urgency
-                    )}`}
-                  >
-                    {job.urgency}
-                  </span>
-                )}
-              </div>
-
-              {/* Meta Information */}
-              <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-3">
-                <span className="inline-flex items-center gap-1">
-                  <Briefcase size={14} />
-                  {job.department}
+          <div className="mb-6">
+            <div className="flex items-start justify-between gap-4 mb-3">
+              <h3 className="text-2xl font-bold text-gray-900 group-hover:text-primary-800 transition-colors">
+                {job.title}
+              </h3>
+              {job.urgency && (
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(
+                    job.urgency
+                  )}`}
+                >
+                  {job.urgency}
                 </span>
-                <span className="inline-flex items-center gap-1">
-                  <MapPin size={14} />
-                  {job.location}
-                  {job.remote && " • Remote"}
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <FileText size={14} />
-                  {job.type}
-                </span>
-              </div>
-
-              {/* Additional Info */}
-              <div className="flex flex-wrap items-center gap-3 text-sm text-gray-700 mb-4">
-                {features.showSalary && job.salary && (
-                  <span className="inline-flex items-center gap-1">
-                    <DollarSign size={14} />
-                    {job.salary}
-                  </span>
-                )}
-                {features.showExperience && job.experience && (
-                  <span className="inline-flex items-center gap-1">
-                    <Award size={14} />
-                    {job.experience}
-                  </span>
-                )}
-                {features.showPostedDate && job.postedAt && (
-                  <span className="inline-flex items-center gap-1 ml-auto">
-                    <Calendar size={14} />
-                    {formatDate(job.postedAt)}
-                  </span>
-                )}
-              </div>
-
-              {/* Tags */}
-              {features.showTags && job.tags?.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {job.tags.map((tag: string) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 rounded-md bg-gray-100 text-gray-700 text-xs border border-gray-200"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* Summary */}
-              {job.summary && (
-                <p className="text-gray-600 line-clamp-2">{job.summary}</p>
               )}
             </div>
+
+            {/* Meta Information */}
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-700 mb-4">
+              <span className="inline-flex items-center gap-2">
+                <Briefcase size={16} className="text-primary-500" />
+                {job.department}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <MapPin size={16} className="text-primary-500" />
+                {job.location}
+                {job.remote && " • Remote"}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <FileText size={16} className="text-primary-500" />
+                {job.type}
+              </span>
+            </div>
+
+            {/* Additional Info */}
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
+              {features.showSalary && job.salary && (
+                <span className="inline-flex items-center gap-2">
+                  <DollarSign size={16} className="text-primary-500" />
+                  {job.salary}
+                </span>
+              )}
+              {features.showExperience && job.experience && (
+                <span className="inline-flex items-center gap-2">
+                  <Award size={16} className="text-primary-500" />
+                  {job.experience}
+                </span>
+              )}
+              {features.showPostedDate && job.postedAt && (
+                <span className="inline-flex items-center gap-2 ml-auto">
+                  <Calendar size={16} className="text-primary-500" />
+                  {formatDate(job.postedAt)}
+                </span>
+              )}
+            </div>
+
+            {/* Tags */}
+            {features.showTags && job.tags?.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {job.tags.map((tag: string) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1 rounded-lg bg-primary-100 text-primary-700 text-sm border border-primary-200"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Summary */}
+            {job.summary && (
+              <p className="text-gray-700 leading-relaxed">{job.summary}</p>
+            )}
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => onApply(job)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors duration-200"
-            >
-              Apply Now
-              {job.externalApplyUrl && <ExternalLink size={16} />}
-            </button>
-
-            <button
-              onClick={() => onDetailsClick(job)}
-              className="text-primary-600 hover:text-primary-700 font-medium text-sm"
-            >
-              View Details
-            </button>
-          </div>
-
+        <div className="pt-6 border-t border-gray-100">
           <button
-            onClick={() => onCopyLink(job)}
-            className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-            title="Copy job link"
+            onClick={() => onApply(job)}
+            className="group/btn inline-flex items-center gap-3 w-full px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold hover:from-primary-600 hover:to-primary-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300"
           >
-            {copiedJobId === job.id ? (
-              <span className="text-green-600 text-sm">Copied!</span>
-            ) : (
-              <Share2 size={16} />
-            )}
+            <span>Apply Now</span>
+            <ExternalLink
+              size={18}
+              className="group-hover/btn:translate-x-1 transition-transform"
+            />
           </button>
         </div>
       </div>
     </article>
-  );
-}
-
-// Application Modal Component
-function ApplicationModal({
-  job,
-  isOpen,
-  onClose,
-  name,
-  email,
-  cover,
-  resumeFile,
-  submitting,
-  formError,
-  onNameChange,
-  onEmailChange,
-  onCoverChange,
-  onFileChange,
-  onSubmit,
-}: any) {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl">
-        {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-xl">
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Apply for Position
-              </h2>
-              <p className="text-lg text-primary-600 font-semibold mt-1">
-                {job.title}
-              </p>
-              <p className="text-gray-600 mt-1">
-                {job.department} • {job.location}
-              </p>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <X size={24} />
-            </button>
-          </div>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={onSubmit} className="p-6">
-          <div className="space-y-6">
-            {/* Personal Information */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Personal Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => onNameChange(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => onEmailChange(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Cover Letter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cover Letter (Optional)
-              </label>
-              <textarea
-                value={cover}
-                onChange={(e) => onCoverChange(e.target.value)}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="Tell us why you're interested in this position and what makes you a great fit..."
-              />
-            </div>
-
-            {/* Resume Upload */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Resume *
-              </label>
-              <div className="flex items-center gap-4">
-                <label className="flex-1 cursor-pointer">
-                  <input
-                    type="file"
-                    onChange={onFileChange}
-                    accept=".pdf,.doc,.docx"
-                    className="sr-only"
-                  />
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary-400 transition-colors">
-                    <Inbox className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">
-                      <span className="text-primary-600 font-medium">
-                        Click to upload
-                      </span>{" "}
-                      or drag and drop
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      PDF, DOC, DOCX (Max 5MB)
-                    </p>
-                  </div>
-                </label>
-                {resumeFile && (
-                  <div className="text-sm text-gray-600">
-                    <p className="font-medium">{resumeFile.name}</p>
-                    <p>{bytesToMB(resumeFile.size)} MB</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Error Display */}
-            {formError && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-700 text-sm">{formError}</p>
-              </div>
-            )}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-6 mt-6 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex items-center gap-2 px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                "Submit Application"
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
   );
 }

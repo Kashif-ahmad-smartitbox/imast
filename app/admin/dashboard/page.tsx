@@ -61,8 +61,8 @@ const Overview: React.FC = () => {
           Failed to load data
         </h3>
         <p className="text-gray-500 max-w-md">
-          We couldn't load your dashboard data. Please check your connection and
-          try again.
+          We couldn&apos;t load your dashboard data. Please check your
+          connection and try again.
         </p>
         <button
           onClick={() => loadData()}

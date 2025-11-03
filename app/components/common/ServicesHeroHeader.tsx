@@ -28,6 +28,8 @@ type ServicesData = {
   };
   rightCard?: RightCard;
   showWave?: boolean;
+  backgroundImage?: string;
+  backgroundOverlayOpacity?: number;
 };
 
 interface ServicesHeroHeaderProps {
@@ -47,6 +49,8 @@ export default function ServicesHeroHeader({
     buttons = {},
     rightCard,
     showWave = true,
+    backgroundImage,
+    backgroundOverlayOpacity = 0.35,
   } = data;
 
   const primary = buttons.primary ?? {
@@ -61,49 +65,100 @@ export default function ServicesHeroHeader({
   return (
     <section
       aria-label="Services hero"
-      className={`relative overflow-hidden pt-32 pb-24 text-white bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 ${className}`}
+      className={`relative flex items-center overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 py-24 sm:py-32 ${className}`}
+      style={{
+        backgroundImage: backgroundImage
+          ? `url(${backgroundImage})`
+          : undefined,
+        backgroundSize: backgroundImage ? "cover" : undefined,
+        backgroundPosition: backgroundImage ? "center" : undefined,
+      }}
     >
-      {/* Subtle gradient overlay for depth — fixed */}
-      <div
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-[#24357e]/40 via-[#1b275d]/70 to-[#101526]"
-        aria-hidden
-      />
+      {/* Sophisticated geometric background - Same as HeroHeader */}
+      <div aria-hidden="true" className="absolute inset-0">
+        {/* Large geometric shapes */}
+        <div className="absolute top-10 left-10 w-96 h-96 bg-gradient-to-br from-primary-500/5 to-primary-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-gradient-to-tr from-primary-400/5 to-primary-500/10 rounded-full blur-3xl" />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        {/* Angular shapes for modern feel */}
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-gray-700/20 to-gray-600/10 transform rotate-45 blur-2xl" />
+        <div className="absolute bottom-1/3 left-1/3 w-48 h-48 bg-gradient-to-tr from-gray-600/15 to-gray-500/10 transform -rotate-12 blur-2xl" />
+      </div>
+
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 opacity-10">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
+                           linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+            backgroundSize: "50px 50px",
+          }}
+        />
+      </div>
+
+      {/* Subtle particle effect */}
+      <div aria-hidden="true" className="absolute inset-0 opacity-30">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                           radial-gradient(circle at 75% 75%, rgba(255,255,255,0.08) 1px, transparent 1px)`,
+            backgroundSize: "50px 50px, 70px 70px",
+          }}
+        />
+      </div>
+
+      {backgroundImage && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gray-900"
+          style={{
+            opacity: backgroundOverlayOpacity,
+            mixBlendMode: "multiply",
+          }}
+        />
+      )}
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Left Content */}
-          <div className="lg:col-span-6">
+          {/* Left Content - Keeping original text layout */}
+          <div className="lg:col-span-6 text-left">
             {eyebrow && (
-              <p className="text-lg font-semibold tracking-wide text-primary-500">
-                {eyebrow}
-              </p>
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6 backdrop-blur-md shadow-lg">
+                <span className="w-2 h-2 rounded-full mr-2.5 bg-primary-500 animate-pulse" />
+                <span className="text-white text-sm font-semibold tracking-wide">
+                  {eyebrow}
+                </span>
+              </div>
             )}
 
-            <h1 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight text-white">
-              {title}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
+              <span className="block drop-shadow-lg">{title}</span>
             </h1>
 
             {subtitle && (
-              <p className="mt-6 text-base text-gray-200 max-w-2xl">
+              <p className="text-sm sm:text-base text-gray-200 max-w-2xl leading-relaxed mb-4">
                 {subtitle}
               </p>
             )}
 
             {description && (
-              <p className="mt-4 text-base text-gray-200 max-w-2xl">
+              <p className="text-sm sm:text-base text-gray-200 max-w-2xl leading-relaxed mb-8">
                 {description}
               </p>
             )}
 
-            <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 items-start">
               {primary.visible !== false && (
                 <a
                   href={primary.link}
                   aria-label={primary.ariaLabel ?? primary.text}
-                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                  className="group relative px-6 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary-300 overflow-hidden"
                 >
-                  <span>{primary.text}</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  <span className="relative z-10">{primary.text}</span>
+                  <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-primary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </a>
               )}
 
@@ -111,7 +166,7 @@ export default function ServicesHeroHeader({
                 <a
                   href={secondary.link}
                   aria-label={secondary.ariaLabel ?? secondary.text}
-                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                  className="px-6 py-3 rounded-xl text-sm font-semibold border-2 border-white/30 text-white hover:bg-white hover:text-gray-900 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50 backdrop-blur-sm flex items-center gap-2"
                 >
                   <span>{secondary.text}</span>
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -123,27 +178,29 @@ export default function ServicesHeroHeader({
           {/* Right Feature Card (render only if backend provides rightCard) */}
           <div className="lg:col-span-6">
             {rightCard ? (
-              <div className="relative bg-white rounded-3xl shadow-2xl ring-1 ring-white/10 p-8 md:p-10 lg:p-12">
+              <div className="relative bg-white rounded-3xl shadow-2xl ring-1 ring-white/10 p-8 md:p-10 lg:p-12 backdrop-blur-sm">
                 {rightCard.title && (
-                  <h3 className="text-base font-semibold text-gray-800">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">
                     {rightCard.title}
                   </h3>
                 )}
 
                 {rightCard.subtitle && (
-                  <p className="mt-3 text-gray-500 leading-relaxed">
+                  <p className="text-gray-600 leading-relaxed mb-6">
                     {rightCard.subtitle}
                   </p>
                 )}
 
                 {rightCard.bullets?.length ? (
-                  <ul className="mt-6 space-y-3">
+                  <ul className="space-y-4 mb-8">
                     {rightCard.bullets.map((b, i) => (
-                      <li className="flex items-center gap-3" key={i}>
-                        <span className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-600 text-white text-xs font-bold">
+                      <li className="flex items-start gap-4" key={i}>
+                        <span className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-primary-500 to-primary-600 text-white text-xs font-bold flex-shrink-0">
                           ✓
                         </span>
-                        <span className="text-sm text-gray-500">{b}</span>
+                        <span className="text-gray-700 leading-relaxed">
+                          {b}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -154,14 +211,18 @@ export default function ServicesHeroHeader({
                     <a
                       href={rightCard.cta.link}
                       aria-label={rightCard.cta.ariaLabel ?? rightCard.cta.text}
-                      className="rounded group inline-flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                      className="group relative px-6 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary-300 overflow-hidden inline-flex items-center gap-2"
                     >
-                      <span>{rightCard.cta.text}</span>
+                      <span className="relative z-10">
+                        {rightCard.cta.text}
+                      </span>
                       <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-primary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </a>
                   </div>
                 )}
 
+                {/* Decorative background element */}
                 <div className="absolute -bottom-10 -right-10 w-56 h-56 bg-primary-500 opacity-20 blur-3xl rounded-full" />
               </div>
             ) : (
@@ -171,7 +232,23 @@ export default function ServicesHeroHeader({
         </div>
       </div>
 
-      {/* Soft bottom wave */}
+      {/* Scroll indicator */}
+      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-8 z-20">
+        <a
+          href="#content"
+          aria-label="Scroll to content"
+          className="flex flex-col items-center justify-center group"
+        >
+          <div className="w-6 h-10 flex justify-center">
+            <div className="w-1 h-6 bg-white/70 rounded-full animate-bounce" />
+          </div>
+          <span className="text-white text-xs mt-2 opacity-0 group-hover:opacity-70 transition-opacity">
+            Scroll
+          </span>
+        </a>
+      </div>
+
+      {/* Optional wave - only if showWave is true */}
       {showWave && (
         <div className="absolute bottom-0 left-0 right-0 pointer-events-none opacity-30">
           <svg
