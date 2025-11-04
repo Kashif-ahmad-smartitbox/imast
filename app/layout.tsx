@@ -6,7 +6,7 @@ import { AuthProvider } from "@/services/context/AuthContext";
 import { AlertProvider } from "@/components/alerts/AlertProvider";
 import { GlobalModalProvider } from "@/components/global/GlobalModalProvider";
 import ClientTopLoader from "./components/ClientTopLoader";
-
+import { Analytics } from '@vercel/analytics/next';
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
@@ -38,6 +38,7 @@ export default function RootLayout({
             <AlertProvider>{children}</AlertProvider>
           </GlobalModalProvider>
         </AuthProvider>
+         <Analytics />
       </body>
     </html>
   );
