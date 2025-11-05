@@ -141,8 +141,6 @@ export default function ImastLayout({ children }: LayoutProps) {
   const { user, loading } = useAuth();
   const SIDEBAR_ITEMS = useFilteredSidebarItems();
 
-  console.log("user---role", user?.role);
-
   const getActiveItem = useCallback(() => {
     if (SIDEBAR_ITEMS.length === 0) return "overview";
 
@@ -279,6 +277,18 @@ export default function ImastLayout({ children }: LayoutProps) {
           <main className="flex-1 min-h-0 overflow-auto p-6 bg-gray-50/30">
             {children}
           </main>
+          <div className="mt-auto p-4 border-t border-gray-200 flex self-end">
+            <p className="text-xs text-gray-500 text-center leading-relaxed">
+              Designed with ❤️ and crafted with care by Team{" "}
+              <a
+                className="font-bold text-yellow-500"
+                href="https://smartitbox.in"
+              >
+                SMART ITBOX
+              </a>{" "}
+              Your Business Automation Partner
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -39,7 +39,16 @@ const Backup: React.FC = () => {
       setExporting(true);
       const token = getAccessToken();
       await exportCollectionsDownload(
-        ["pages", "modules", "media", "forms", "subscribers"],
+        [
+          "admins",
+          "pages",
+          "modules",
+          "media",
+          "stories",
+          "blogs",
+          "formsubmissions",
+          "subscribers",
+        ],
         token
       );
       push({

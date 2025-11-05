@@ -388,7 +388,7 @@ export default function EditStory() {
         });
 
         clearAutosave();
-        router.push("/admin/dashboard/content/stories");
+        router.push("/admin/dashboard/content/case-studies");
       } catch (err: any) {
         console.error("Update story failed:", err);
         push({
@@ -444,7 +444,7 @@ export default function EditStory() {
         message: "Story deleted successfully.",
         variant: "success",
       });
-      router.push("/admin/dashboard/content/stories");
+      router.push("/admin/dashboard/content/case-studies");
     } catch (err: any) {
       console.error("Failed delete:", err);
       push({
@@ -554,7 +554,9 @@ export default function EditStory() {
           </p>
           <div className="mt-4">
             <button
-              onClick={() => router.push("/admin/dashboard/content/stories")}
+              onClick={() =>
+                router.push("/admin/dashboard/content/case-studies")
+              }
               className="px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors"
             >
               Back to stories

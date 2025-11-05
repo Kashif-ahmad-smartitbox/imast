@@ -31,13 +31,20 @@ import useWindowSize from "@/app/hooks/useWindowSize";
 const SCROLL_THRESHOLD = 10;
 
 // --- Types
+interface FeatureLink {
+  label: string;
+  href: string;
+}
+
+type Feature = string | FeatureLink;
+
 interface MenuItem {
   icon: string;
   title: string;
   description?: string;
   href: string;
-  gradient: string;
-  features?: string[];
+  gradient?: string;
+  features?: Feature[];
 }
 
 interface CompanyLink {
@@ -508,120 +515,180 @@ function SolutionMega({
 }) {
   const iconSize = isLargeDesktop ? 24 : 20;
   const padding = isLargeDesktop ? "p-6" : "p-5";
-  const titleSize = isLargeDesktop ? "text-lg" : "text-base";
-  const descSize = isLargeDesktop ? "text-sm" : "text-xs";
+  const titleSize = isLargeDesktop ? "text-lg" : "text-sm";
+  const descSize = isLargeDesktop ? "text-xs" : "text-xs";
 
   return (
-    <div className="grid grid-cols-3 gap-8">
-      <div className="col-span-2 grid grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+      {/* Solutions Grid - Enhanced */}
+      <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-2 lg:gap-2">
         {data.solutions.map((s, idx) => {
           const Icon = getIconComponent(s.icon);
           return (
             <Link
               key={s.title}
               href={s.href}
-              className={`${padding} group block rounded-2xl hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gray-200/60 transform hover:-translate-y-1`}
-              style={{ transitionDelay: `${idx * 50}ms` }}
+              className={`${padding} group relative block rounded-2xl hover:shadow-2xl transition-all duration-500 border border-gray-200 hover:border-primary-200/60 transform hover:-translate-y-2 bg-white/80 backdrop-blur-sm overflow-hidden`}
+              style={{ transitionDelay: `${idx * 75}ms` }}
             >
-              <div className="flex items-start gap-4">
-                <div
-                  className={`bg-gradient-to-r from-primary-500 to-primary-600 h-12 w-12 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300 shadow-lg flex-shrink-0`}
-                >
-                  <Icon size={iconSize} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3
-                    className={`font-bold ${titleSize} text-gray-900 group-hover:text-gray-800 mb-2`}
+              {/* Background effects */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+              <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary-200/30 rounded-2xl transition-all duration-500" />
+
+              <div className="relative z-10">
+                <div className="flex items-start gap-4">
+                  <div
+                    className={`bg-gradient-to-br from-primary-500 to-primary-600 h-12 w-12 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg flex-shrink-0`}
                   >
-                    {s.title}
-                  </h3>
-                  <p className={`${descSize} text-gray-600 leading-relaxed`}>
-                    {s.description}
-                  </p>
+                    <Icon
+                      size={iconSize}
+                      className="group-hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3
+                      className={`font-bold ${titleSize} text-gray-900 group-hover:text-primary-700 mb-3 transition-colors duration-300`}
+                    >
+                      {s.title}
+                    </h3>
+                    <p
+                      className={`${descSize} text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300`}
+                    >
+                      {s.description}
+                    </p>
+                  </div>
                 </div>
               </div>
+
+              {/* Hover accent line */}
+              <div className="absolute bottom-0 left-6 right-6 h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
             </Link>
           );
         })}
       </div>
 
-      <div className="bg-gradient-to-br from-primary-50 to-primary-100/80 rounded-2xl p-6 flex flex-col justify-between border border-gray-200/40 relative overflow-hidden">
+      {/* IMAST 360 Card - Enhanced */}
+      <div className="bg-gradient-to-br from-primary-50 to-primary-100/80 rounded-2xl p-6 lg:p-8 flex flex-col justify-between border border-primary-200/40 relative overflow-hidden group hover:shadow-xl transition-all duration-500">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
+                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+              backgroundSize: "40px 40px",
+            }}
+          />
+        </div>
+
+        {/* Animated background elements */}
+        <div className="absolute top-4 right-4 w-16 h-16 bg-primary-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
+        <div className="absolute bottom-4 left-4 w-12 h-12 bg-primary-300 rounded-full mix-blend-multiply filter blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-500" />
+
         <div className="relative z-10">
-          <div className="bg-white rounded-2xl p-3 w-fit mx-auto mb-6 shadow-lg">
+          {/* Logo container with enhanced styling */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 w-fit mx-auto mb-6 shadow-lg group-hover:scale-105 transition-transform duration-500 border border-primary-100">
             <img
               src={data.imast360Logo.src}
               alt={data.imast360Logo.alt}
-              className={isLargeDesktop ? "h-8" : "h-6"}
+              className={
+                isLargeDesktop
+                  ? "h-8"
+                  : "h-6 transition-transform duration-300 group-hover:scale-110"
+              }
             />
           </div>
+
+          {/* Description with better typography */}
           <p
-            className={`text-gray-700 text-center font-medium leading-relaxed ${
+            className={`text-gray-800 text-center font-semibold leading-relaxed ${
               isLargeDesktop ? "text-lg" : "text-base"
-            }`}
+            } group-hover:text-gray-900 transition-colors duration-300`}
           >
             Integrated Business Solution Designed To Foster Rapid Growth
           </p>
         </div>
 
-        <div className="text-center mt-6 relative z-10">
+        {/* Enhanced CTA */}
+        <div className="text-center mt-6 lg:mt-8 relative z-10">
           <Link
-            href="/solutions"
-            className={`inline-flex items-center gap-2 text-red-600 font-semibold hover:gap-3 transition-all duration-300 group ${
+            href="/contact"
+            className={`inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl text-primary-600 font-bold hover:shadow-lg hover:scale-105 transition-all duration-300 group border border-primary-200/60 ${
               isLargeDesktop ? "text-base" : "text-sm"
             }`}
           >
-            Explore All Solutions
+            <span className="bg-gradient-to-r from-primary-600 to-primary-600 bg-[length:0%_2px] bg-left-bottom bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500">
+              Explore All
+            </span>
             <ArrowRight
-              size={14}
-              className="group-hover:translate-x-1 transition-transform"
+              size={16}
+              className="group-hover:translate-x-1 transition-transform duration-300"
             />
           </Link>
         </div>
 
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-red-500 rounded-2xl" />
-        </div>
+        {/* Corner accents */}
+        <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-primary-300/0 group-hover:border-primary-300/50 transition-all duration-500 delay-200" />
+        <div className="absolute bottom-3 left-3 w-3 h-3 border-b border-l border-primary-300/0 group-hover:border-primary-300/50 transition-all duration-500 delay-300" />
       </div>
     </div>
   );
 }
 
-// These components remain exactly the same as in your original code
 function SolutionMegaTablet({ data }: { data: MenuItem[] }) {
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {data.slice(0, 4).map((s) => {
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {data.slice(0, 4).map((s, idx) => {
         const Icon = getIconComponent(s.icon);
         return (
-          <a
+          <Link
             key={s.title}
             href={s.href}
-            className="group block p-3 rounded-xl bg-gray-50 hover:bg-white hover:shadow-md transition-all duration-300 border border-gray-100"
+            className="group block p-4 rounded-xl bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-primary-200/60 transform hover:-translate-y-1"
+            style={{ transitionDelay: `${idx * 50}ms` }}
           >
             <div className="flex items-center gap-3">
               <div
-                className={`bg-gradient-to-r from-primary-500 to-primary-600 h-8 w-8 rounded-lg flex items-center justify-center text-white shadow-md flex-shrink-0`}
+                className={`bg-gradient-to-br from-primary-500 to-primary-600 h-10 w-10 rounded-xl flex items-center justify-center text-white shadow-md flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}
               >
-                <Icon size={16} />
+                <Icon size={18} />
               </div>
-              <div className="min-w-0">
-                <h3 className="font-semibold text-sm text-gray-900 truncate">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-sm text-gray-900 group-hover:text-primary-700 transition-colors duration-300 truncate">
                   {s.title}
                 </h3>
-                <p className="text-xs text-gray-600 truncate">
+                <p className="text-xs text-gray-600 group-hover:text-gray-700 transition-colors duration-300 line-clamp-2 mt-1">
                   {s.description}
                 </p>
               </div>
             </div>
-          </a>
+
+            {/* Hover indicator */}
+            <div className="mt-3 pt-2 border-t border-gray-100 group-hover:border-primary-100 transition-colors duration-300">
+              <div className="inline-flex items-center gap-1 text-primary-600 text-xs font-medium group-hover:gap-1.5 transition-all duration-300">
+                <span>Learn more</span>
+                <ArrowRight
+                  size={12}
+                  className="group-hover:translate-x-0.5 transition-transform"
+                />
+              </div>
+            </div>
+          </Link>
         );
       })}
+
+      {/* Enhanced View All Card */}
       <Link
         href="/solutions"
-        className="col-span-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gradient-to-r from-red-50 to-red-100 text-red-700 font-semibold hover:shadow-md transition-all duration-300 border border-red-200"
+        className="col-span-full flex items-center justify-center gap-3 p-4 rounded-xl bg-gradient-to-r from-primary-50 to-primary-100 text-primary-700 font-semibold hover:shadow-lg transition-all duration-300 border border-primary-200 hover:border-primary-300 transform hover:-translate-y-1 group"
       >
-        View All Solutions
-        <ArrowRight size={14} />
+        <span className="bg-gradient-to-r from-primary-600 to-primary-600 bg-[length:0%_2px] bg-left-bottom bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500">
+          View All Solutions
+        </span>
+        <ArrowRight
+          size={16}
+          className="group-hover:translate-x-1 transition-transform duration-300"
+        />
       </Link>
     </div>
   );
@@ -634,61 +701,121 @@ function ServicesMega({
   data: MenuItem[];
   isLargeDesktop: boolean;
 }) {
-  const iconSize = isLargeDesktop ? 24 : 20;
-  const padding = isLargeDesktop ? "p-6" : "p-5";
-  const titleSize = isLargeDesktop ? "text-xl" : "text-lg";
-  const descSize = isLargeDesktop ? "text-base" : "text-sm";
-  const featureSize = isLargeDesktop ? "text-sm" : "text-xs";
+  const iconSize = isLargeDesktop ? 18 : 16;
+  const padding = isLargeDesktop ? "p-4" : "p-3";
+  const titleSize = isLargeDesktop ? "text-lg" : "text-sm";
+  const descSize = isLargeDesktop ? "text-xs" : "text-xs";
+  const featureSize = isLargeDesktop ? "text-xs" : "text-xs";
 
   return (
-    <div className="grid grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
       {data.map((service, index) => {
         const Icon = getIconComponent(service.icon);
         return (
           <Link
             key={service.title}
             href={service.href}
-            className={`${padding} group block rounded-2xl hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gray-200/60 transform hover:-translate-y-1`}
-            style={{ transitionDelay: `${index * 100}ms` }}
+            className={`${padding} group relative block rounded-xl transition-all duration-300 border border-gray-200/80 bg-white/90 backdrop-blur-sm min-h-[140px] flex flex-col hover:border-primary-300/50 hover:bg-white transform hover:-translate-y-0.5`}
+            style={{
+              transitionDelay: `${index * 30}ms`,
+            }}
           >
-            <div className="flex items-center gap-4 mb-4">
-              <div
-                className={`bg-gradient-to-r from-primary-500 to-primary-600 h-12 w-12 rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0`}
-              >
-                <Icon size={iconSize} />
+            {/* Gradient border effect */}
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary-500/5 to-primary-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            {/* Animated corner accents */}
+            <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-primary-500/0 group-hover:border-primary-500/50 transition-all duration-300 delay-100" />
+            <div className="absolute bottom-2 left-2 w-1.5 h-1.5 border-b border-l border-primary-500/0 group-hover:border-primary-500/50 transition-all duration-300 delay-150" />
+
+            <div className="relative z-10 flex-1 flex flex-col">
+              {/* Icon and Title - Enhanced Compact */}
+              <div className="flex items-center gap-2.5 mb-2.5">
+                <div
+                  className={`bg-gradient-to-br from-primary-500 to-primary-600 h-7 w-7 rounded-lg flex items-center justify-center text-white shadow-md flex-shrink-0 mt-0.5 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}
+                >
+                  <Icon size={iconSize} className="drop-shadow-sm" />
+                </div>
+                <h3
+                  className={`font-semibold ${titleSize} text-gray-900 line-clamp-2 leading-tight flex-1 group-hover:text-primary-700 transition-colors duration-300`}
+                >
+                  {service.title}
+                </h3>
               </div>
-              <h3 className={`font-bold ${titleSize} text-gray-900`}>
-                {service.title}
-              </h3>
+
+              {/* Description - Enhanced Compact */}
+              {service.description && (
+                <p
+                  className={`text-gray-600 mb-2.5 leading-relaxed line-clamp-2 ${descSize} flex-1 group-hover:text-gray-700 transition-colors duration-300`}
+                >
+                  {service.description}
+                </p>
+              )}
+
+              {/* Features List - Enhanced Compact */}
+              {service.features && service.features.length > 0 && (
+                <ul className="space-y-1.5 mb-2.5">
+                  {service.features.slice(0, 2).map((feature, idx) => {
+                    if (typeof feature === "string") {
+                      return (
+                        <li
+                          key={idx}
+                          className={`flex items-center gap-2 ${featureSize} text-gray-700 line-clamp-1 group-hover:text-gray-800 transition-colors duration-300`}
+                          style={{ transitionDelay: `${idx * 50}ms` }}
+                        >
+                          <div className="w-1.5 h-1.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex-shrink-0 group-hover:scale-125 transition-transform duration-300 shadow-sm" />
+                          <span className="truncate">{feature}</span>
+                        </li>
+                      );
+                    } else {
+                      return (
+                        <li
+                          key={idx}
+                          className={`flex items-center gap-2 ${featureSize} text-gray-700 line-clamp-1 group-hover:text-gray-800 transition-colors duration-300`}
+                          style={{ transitionDelay: `${idx * 50}ms` }}
+                        >
+                          <div className="w-1.5 h-1.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex-shrink-0 group-hover:scale-125 transition-transform duration-300 shadow-sm" />
+                          <Link
+                            href={feature.href}
+                            className="hover:underline hover:text-primary-600 transition-colors duration-300 truncate"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {feature.label}
+                          </Link>
+                        </li>
+                      );
+                    }
+                  })}
+
+                  {/* Enhanced "+ more" indicator */}
+                  {service.features.length > 2 && (
+                    <li
+                      className={`flex items-center gap-2 ${featureSize} text-gray-500 group-hover:text-gray-600 transition-colors duration-300`}
+                    >
+                      <div className="w-1.5 h-1.5 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex-shrink-0" />
+                      <span>+{service.features.length - 2} more</span>
+                    </li>
+                  )}
+                </ul>
+              )}
+
+              {/* Enhanced CTA */}
+              <div className="mt-auto pt-1 border-t border-gray-100/50 group-hover:border-primary-100 transition-colors duration-300">
+                <div
+                  className={`inline-flex items-center gap-1.5 text-primary-600 font-semibold group-hover:gap-2 transition-all duration-300 ${featureSize}`}
+                >
+                  <span className="bg-gradient-to-r from-primary-600 to-primary-600 bg-[length:0%_1px] bg-left-bottom bg-no-repeat group-hover:bg-[length:100%_1px] transition-all duration-500">
+                    Learn more
+                  </span>
+                  <ArrowRight
+                    size={12}
+                    className="group-hover:translate-x-0.5 transition-transform duration-300"
+                  />
+                </div>
+              </div>
             </div>
 
-            <p className={`text-gray-600 mb-4 leading-relaxed ${descSize}`}>
-              {service.description}
-            </p>
-
-            {service.features && (
-              <ul className="space-y-2 mb-6">
-                {service.features.map((feature, idx) => (
-                  <li
-                    key={idx}
-                    className={`flex items-center gap-3 ${featureSize} text-gray-700`}
-                  >
-                    <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <div
-              className={`inline-flex items-center gap-2 text-red-600 font-semibold group-hover:gap-3 transition-all duration-300 ${featureSize}`}
-            >
-              Learn More
-              <ArrowRight
-                size={12}
-                className="group-hover:translate-x-1 transition-transform"
-              />
-            </div>
+            {/* Subtle hover glow */}
+            <div className="absolute inset-0 rounded-xl ring-1 ring-primary-500/0 group-hover:ring-primary-500/10 transition-all duration-500" />
           </Link>
         );
       })}
@@ -699,27 +826,46 @@ function ServicesMega({
 function ServicesMegaTablet({ data }: { data: MenuItem[] }) {
   return (
     <div className="grid grid-cols-1 gap-2">
-      {data.map((s) => {
-        const Icon = getIconComponent(s.icon);
+      {data.map((service, index) => {
+        const Icon = getIconComponent(service.icon);
         return (
-          <a
-            key={s.title}
-            href={s.href}
-            className="group flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-white hover:shadow-md transition-all duration-300 border border-gray-100"
+          <Link
+            key={service.title}
+            href={service.href}
+            className="group flex items-center gap-3 p-2.5 rounded-xl bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-md transition-all duration-300 border border-gray-200/80 hover:border-primary-300/50 min-h-[52px] transform hover:-translate-y-0.5"
+            style={{ transitionDelay: `${index * 20}ms` }}
           >
+            {/* Background effect */}
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500/3 to-primary-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
             <div
-              className={`${s.gradient} h-8 w-8 rounded-lg flex items-center justify-center text-white shadow-md flex-shrink-0`}
+              className={`${
+                service.gradient ||
+                "bg-gradient-to-br from-primary-500 to-primary-600"
+              } h-7 w-7 rounded-lg flex items-center justify-center text-white shadow-md flex-shrink-0 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300 relative z-10`}
             >
-              <Icon size={16} />
+              <Icon size={16} className="drop-shadow-sm" />
             </div>
-            <span className="font-semibold text-sm text-gray-900">
-              {s.title}
-            </span>
+
+            <div className="flex-1 min-w-0 relative z-10">
+              <span className="font-semibold text-sm text-gray-900 line-clamp-1 group-hover:text-primary-700 transition-colors duration-300">
+                {service.title}
+              </span>
+              {service.description && (
+                <p className="text-xs text-gray-600 mt-0.5 line-clamp-1 group-hover:text-gray-700 transition-colors duration-300">
+                  {service.description}
+                </p>
+              )}
+            </div>
+
             <ArrowRight
               size={14}
-              className="ml-auto text-gray-400 group-hover:text-red-600"
+              className="ml-1 text-gray-400 group-hover:text-primary-600 group-hover:translate-x-0.5 transition-all duration-300 flex-shrink-0 relative z-10"
             />
-          </a>
+
+            {/* Hover accent line */}
+            <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-primary-500/0 via-primary-500/0 to-primary-500/0 group-hover:from-primary-500/50 group-hover:via-primary-500 group-hover:to-primary-500/50 transition-all duration-500 rounded-full" />
+          </Link>
         );
       })}
     </div>
@@ -734,83 +880,137 @@ function CompanyMega({
   isLargeDesktop: boolean;
 }) {
   const iconSize = isLargeDesktop ? 20 : 18;
-  const padding = isLargeDesktop ? "p-4" : "p-3";
-  const titleSize = isLargeDesktop ? "text-base" : "text-sm";
+  const padding = isLargeDesktop ? "p-5" : "p-4";
+  const titleSize = isLargeDesktop ? "text-lg" : "text-base";
 
   return (
-    <div className="grid grid-cols-3 gap-8">
-      <div className="col-span-2">
-        <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+      {/* Company Links Grid - Enhanced */}
+      <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 lg:gap-2">
           {data.companyLinks.map((link, index) => {
             const Icon = getIconComponent(link.icon);
             return (
               <Link
                 key={link.label}
                 href={link.href}
-                className={`${padding} group flex items-center gap-4 rounded-xl hover:bg-white hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-gray-200/60 transform hover:-translate-y-0.5`}
-                style={{ transitionDelay: `${index * 30}ms` }}
+                className={`${padding} group relative flex items-center gap-4 rounded-xl hover:shadow-xl transition-all duration-500 border border-gray-200 hover:border-primary-200/60 transform hover:-translate-y-1 bg-white/80 backdrop-blur-sm overflow-hidden`}
+                style={{ transitionDelay: `${index * 50}ms` }}
               >
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300 shadow-sm flex-shrink-0">
-                  <Icon size={iconSize} />
+                {/* Background effect */}
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+
+                {/* Animated border */}
+                <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary-200/30 rounded-xl transition-all duration-500" />
+
+                {/* Icon with enhanced styling */}
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg flex-shrink-0 relative z-10">
+                  <Icon
+                    size={iconSize}
+                    className="group-hover:scale-110 transition-transform duration-300"
+                  />
                 </div>
-                <div className="min-w-0">
+
+                {/* Content */}
+                <div className="min-w-0 flex-1 relative z-10">
                   <span
-                    className={`font-semibold text-gray-700 group-hover:text-gray-900 block ${titleSize}`}
+                    className={`font-semibold text-gray-800 group-hover:text-primary-700 block ${titleSize} transition-colors duration-300`}
                   >
                     {link.label}
                   </span>
-                  <span
-                    className={`text-gray-500 group-hover:text-gray-600 transition-colors text-xs`}
-                  >
-                    Learn more →
-                  </span>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="text-primary-600 text-xs font-medium group-hover:gap-2 transition-all duration-300">
+                      Learn more
+                    </span>
+                    <ArrowRight
+                      size={12}
+                      className="text-primary-600 group-hover:translate-x-0.5 transition-transform duration-300"
+                    />
+                  </div>
                 </div>
+
+                {/* Hover accent line */}
+                <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
               </Link>
             );
           })}
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 text-white border border-gray-700 relative overflow-hidden">
-        <div className="relative z-10 text-center">
-          <div className="bg-white/10 rounded-2xl p-3 w-fit mx-auto mb-6 backdrop-blur-sm">
-            <img
-              src={data.logo.src}
-              alt={data.logo.alt}
-              className={isLargeDesktop ? "h-8" : "h-6"}
-            />
-          </div>
-          <h3
-            className={`font-bold mb-4 ${
-              isLargeDesktop ? "text-xl" : "text-lg"
-            }`}
-          >
-            {data.companyMega.title}
-          </h3>
-          <p
-            className={`text-gray-300 leading-relaxed mb-6 ${
-              isLargeDesktop ? "text-base" : "text-sm"
-            }`}
-          >
-            {data.companyMega.description}
-          </p>
-          <a
-            href={data.companyMega.cta.href}
-            className={`inline-flex items-center gap-2 bg-white text-gray-900 rounded-xl font-semibold hover:gap-3 transition-all duration-300 group hover:shadow-lg ${
-              isLargeDesktop ? "px-6 py-3 text-base" : "px-4 py-2 text-sm"
-            }`}
-          >
-            {data.companyMega.cta.text}
-            <ArrowRight
-              size={14}
-              className="group-hover:translate-x-1 transition-transform"
-            />
-          </a>
+      {/* Company Info Card - Enhanced */}
+      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-6 lg:p-8 text-white border border-gray-700 relative overflow-hidden group hover:shadow-2xl transition-all duration-500">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `linear-gradient(to right, white 1px, transparent 1px),
+                             linear-gradient(to bottom, white 1px, transparent 1px)`,
+              backgroundSize: "40px 40px",
+            }}
+          />
         </div>
 
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-600 animate-pulse" />
+        {/* Animated background elements */}
+        <div className="absolute top-4 right-4 w-20 h-20 bg-blue-500/20 rounded-full mix-blend-overlay filter blur-xl opacity-0 group-hover:opacity-40 transition-opacity duration-700" />
+        <div className="absolute bottom-4 left-4 w-16 h-16 bg-purple-500/20 rounded-full mix-blend-overlay filter blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-700 delay-200" />
+
+        <div className="relative z-10 text-center h-full flex flex-col justify-between">
+          {/* Logo container */}
+          <div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 w-fit mx-auto mb-6 border border-white/20 group-hover:scale-105 transition-transform duration-500">
+              <img
+                src={data.logo.src}
+                alt={data.logo.alt}
+                className={
+                  isLargeDesktop
+                    ? "h-8"
+                    : "h-6 transition-transform duration-300 group-hover:scale-110"
+                }
+              />
+            </div>
+
+            {/* Title */}
+            <h3
+              className={`font-bold mb-4 text-white group-hover:text-gray-100 transition-colors duration-300 ${
+                isLargeDesktop ? "text-xl" : "text-lg"
+              }`}
+            >
+              {data.companyMega.title}
+            </h3>
+
+            {/* Description */}
+            <p
+              className={`text-gray-300 leading-relaxed mb-6 group-hover:text-gray-200 transition-colors duration-300 ${
+                isLargeDesktop ? "text-base" : "text-sm"
+              }`}
+            >
+              {data.companyMega.description}
+            </p>
+          </div>
+
+          {/* Enhanced CTA */}
+          <div className="mt-auto">
+            <a
+              href={data.companyMega.cta.href}
+              className={`inline-flex items-center gap-3 bg-white text-gray-900 rounded-xl font-bold hover:shadow-2xl hover:scale-105 transition-all duration-300 group border border-white/20 ${
+                isLargeDesktop ? "px-6 py-3 text-base" : "px-5 py-2.5 text-sm"
+              }`}
+            >
+              <span className="bg-gradient-to-r from-gray-900 to-gray-900 bg-[length:0%_2px] bg-left-bottom bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500">
+                {data.companyMega.cta.text}
+              </span>
+              <ArrowRight
+                size={16}
+                className="group-hover:translate-x-1 transition-transform duration-300"
+              />
+            </a>
+          </div>
         </div>
+
+        {/* Corner accents */}
+        <div className="absolute top-3 right-3 w-2 h-2 border-t border-r border-white/0 group-hover:border-white/30 transition-all duration-500 delay-200" />
+        <div className="absolute bottom-3 left-3 w-2 h-2 border-b border-l border-white/0 group-hover:border-white/30 transition-all duration-500 delay-300" />
       </div>
     </div>
   );
@@ -818,34 +1018,52 @@ function CompanyMega({
 
 function CompanyMegaTablet({ data }: { data: CompanyLink[] }) {
   return (
-    <div className="grid grid-cols-1 gap-2">
-      {data.slice(0, 5).map((link) => {
+    <div className="grid grid-cols-1 gap-3">
+      {data.slice(0, 5).map((link, index) => {
         const Icon = getIconComponent(link.icon);
         return (
           <Link
             key={link.label}
             href={link.href}
-            className="group flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-white hover:shadow-md transition-all duration-300 border border-gray-100"
+            className="group flex items-center gap-3 p-3 rounded-xl bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-primary-200/60 transform hover:-translate-y-0.5"
+            style={{ transitionDelay: `${index * 30}ms` }}
           >
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-600 flex-shrink-0">
+            {/* Background effect */}
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500/3 to-primary-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white shadow-md flex-shrink-0 group-hover:scale-105 transition-transform duration-300 relative z-10">
               <Icon size={16} />
             </div>
-            <span className="font-semibold text-sm text-gray-900">
-              {link.label}
-            </span>
+
+            <div className="flex-1 min-w-0 relative z-10">
+              <span className="font-semibold text-sm text-gray-900 group-hover:text-primary-700 transition-colors duration-300">
+                {link.label}
+              </span>
+            </div>
+
             <ArrowRight
               size={14}
-              className="ml-auto text-gray-400 group-hover:text-red-600"
+              className="ml-1 text-gray-400 group-hover:text-primary-600 group-hover:translate-x-0.5 transition-all duration-300 flex-shrink-0 relative z-10"
             />
+
+            {/* Hover indicator */}
+            <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-primary-500/0 via-primary-500/0 to-primary-500/0 group-hover:from-primary-500/50 group-hover:via-primary-500 group-hover:to-primary-500/50 transition-all duration-500 rounded-full" />
           </Link>
         );
       })}
+
+      {/* Enhanced CTA Card */}
       <Link
         href="/company"
-        className="flex items-center justify-center gap-2 p-3 rounded-xl bg-gradient-to-r from-gray-900 to-gray-800 text-white font-semibold hover:shadow-md transition-all duration-300"
+        className="flex items-center justify-center gap-3 p-4 rounded-xl bg-gradient-to-r from-gray-900 to-gray-800 text-white font-bold hover:shadow-xl transition-all duration-300 border border-gray-700 hover:border-gray-600 transform hover:-translate-y-0.5 group"
       >
-        Learn More About Us
-        <ArrowRight size={14} />
+        <span className="bg-gradient-to-r from-white to-white bg-[length:0%_2px] bg-left-bottom bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500">
+          Learn More About Us
+        </span>
+        <ArrowRight
+          size={16}
+          className="group-hover:translate-x-1 transition-transform duration-300"
+        />
       </Link>
     </div>
   );

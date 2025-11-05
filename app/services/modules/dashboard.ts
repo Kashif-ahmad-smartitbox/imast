@@ -15,6 +15,8 @@ export type DashboardResult = {
     totalUsers: number;
     publishedPages: number;
     mediaItems: number;
+    caseStudies: number;
+    blogs: number;
     monthlyTraffic: { visits?: number | null; changePct?: number | null };
   };
   recentActivity: ActivityItem[];

@@ -320,7 +320,7 @@ export default function CreateStory() {
       clearAutosave();
 
       // Navigate to stories list
-      router.push("/admin/dashboard/content/stories");
+      router.push("/admin/dashboard/content/case-studies");
     } catch (err: any) {
       console.error("Create story failed:", err);
       push({

@@ -25,6 +25,8 @@ export default function Hero({ data }: HeroProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const modalVideoRef = useRef<HTMLVideoElement | null>(null);
   const mounted = useRef(true);
+  const autoplayRetryCount = useRef(0);
+  const maxRetries = 3;
 
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [hasPlayed, setHasPlayed] = useState(false);
@@ -34,7 +36,9 @@ export default function Hero({ data }: HeroProps) {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalVideoPlaying, setIsModalVideoPlaying] = useState(false);
-  const [autoplayAttempted, setAutoplayAttempted] = useState(false);
+  const [autoplayStatus, setAutoplayStatus] = useState<
+    "idle" | "attempting" | "success" | "failed"
+  >("idle");
 
   const { isMobile, isSmallTablet, isTablet } = useWindowSize();
 
@@ -75,6 +79,7 @@ export default function Hero({ data }: HeroProps) {
         setHasPlayed(true);
         setIsPlaying(true);
         setAutoplayBlocked(false);
+        setAutoplayStatus("success");
       }
     };
     const onPause = () => {
@@ -96,7 +101,7 @@ export default function Hero({ data }: HeroProps) {
     v.addEventListener("pause", onPause);
     v.addEventListener("error", onError);
 
-    // Start unmuted for desktop, muted for mobile
+    // Start muted for mobile, unmuted for desktop
     v.muted = isMobile;
 
     return () => {
@@ -133,76 +138,88 @@ export default function Hero({ data }: HeroProps) {
     };
   }, [isModalOpen]);
 
-  // Attempt autoplay with sound on desktop
-  useEffect(() => {
-    if (!isVideoReady || isMobile || autoplayAttempted) return;
+  // Smart autoplay strategy with retries
+  const attemptAutoplay = useCallback(
+    async (retryCount = 0) => {
+      if (!videoRef.current || isMobile) return;
 
-    const v = videoRef.current;
-    if (!v) return;
-
-    const attemptAutoplay = async () => {
-      setAutoplayAttempted(true);
+      const v = videoRef.current;
 
       try {
-        // First try to play with sound (unmuted)
-        const playPromise = v.play();
+        setAutoplayStatus("attempting");
 
-        if (playPromise !== undefined) {
-          await playPromise;
-          // Autoplay with sound succeeded!
-          if (mounted.current) {
-            setHasPlayed(true);
-            setIsPlaying(true);
-            setAutoplayBlocked(false);
-            setIsMuted(false);
-          }
-          if (process.env.NODE_ENV === "development") {
-            console.log("[Hero] Autoplay with sound succeeded");
+        // Strategy 1: Try unmuted autoplay first
+        if (!isMuted) {
+          try {
+            await v.play();
+            if (process.env.NODE_ENV === "development") {
+              console.log("[Hero] Autoplay with sound succeeded");
+            }
+            return true;
+          } catch (unmutedError) {
+            if (process.env.NODE_ENV === "development") {
+              console.warn(
+                "[Hero] Unmuted autoplay failed, trying muted:",
+                unmutedError
+              );
+            }
           }
         }
-      } catch (err) {
-        // Autoplay with sound failed, try muted
+
+        // Strategy 2: Try muted autoplay
+        v.muted = true;
+        setIsMuted(true);
+        await v.play();
+
+        if (process.env.NODE_ENV === "development") {
+          console.log("[Hero] Muted autoplay succeeded");
+        }
+        return true;
+      } catch (error) {
         if (process.env.NODE_ENV === "development") {
           console.warn(
-            "[Hero] Autoplay with sound blocked, trying muted:",
-            err
+            `[Hero] Autoplay attempt ${retryCount + 1} failed:`,
+            error
           );
         }
 
-        try {
-          v.muted = true;
-          setIsMuted(true);
-          await v.play();
-
+        // Strategy 3: Retry with delay for certain error types
+        if (retryCount < maxRetries) {
+          const retryDelay = Math.min(1000 * Math.pow(2, retryCount), 5000); // Exponential backoff
+          setTimeout(() => {
+            if (mounted.current && videoRef.current) {
+              attemptAutoplay(retryCount + 1);
+            }
+          }, retryDelay);
+        } else {
+          // All attempts failed
           if (mounted.current) {
-            setHasPlayed(true);
-            setIsPlaying(true);
-            setAutoplayBlocked(false);
-          }
-          if (process.env.NODE_ENV === "development") {
-            console.log("[Hero] Autoplay with muted video succeeded");
-          }
-        } catch (mutedErr) {
-          // Both attempts failed
-          if (mounted.current) {
-            setHasPlayed(false);
-            setIsPlaying(false);
+            setAutoplayStatus("failed");
             setAutoplayBlocked(true);
           }
-          if (process.env.NODE_ENV === "development") {
-            console.warn("[Hero] Autoplay completely blocked:", mutedErr);
-          }
         }
+        return false;
       }
-    };
+    },
+    [isMuted, isMobile]
+  );
 
-    void attemptAutoplay();
-  }, [isVideoReady, isMobile, autoplayAttempted]);
+  // Attempt autoplay when video is ready
+  useEffect(() => {
+    if (!isVideoReady || isMobile || autoplayStatus !== "idle") return;
+
+    // Small delay to ensure everything is ready
+    const timer = setTimeout(() => {
+      void attemptAutoplay();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [isVideoReady, isMobile, autoplayStatus, attemptAutoplay]);
 
   // Global keyboard (space toggles, m toggles mute)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (isModalOpen) return; // Don't handle keys when modal is open
+      if (isModalOpen) return;
 
       const active = (document.activeElement?.tagName || "").toLowerCase();
       if (active === "input" || active === "textarea") return;
@@ -220,23 +237,36 @@ export default function Hero({ data }: HeroProps) {
     };
   }, [isModalOpen]);
 
-  // Pause when tab hidden
+  // Pause when tab hidden, resume when visible
   useEffect(() => {
     const onVis = () => {
       const v = videoRef.current;
       if (!v) return;
+
       if (document.hidden) {
         if (!v.paused) {
           v.pause();
         }
       } else {
+        // Only resume if we were playing and it's not mobile
         if (hasPlayed && v.paused && !isMobile) {
-          void v.play().catch(() => {
-            /* ignore */
-          });
+          // Small delay before resuming to ensure tab is fully visible
+          setTimeout(() => {
+            if (mounted.current && v.paused) {
+              void v.play().catch((err) => {
+                if (process.env.NODE_ENV === "development") {
+                  console.warn(
+                    "[Hero] Resume after visibility change failed:",
+                    err
+                  );
+                }
+              });
+            }
+          }, 100);
         }
       }
     };
+
     document.addEventListener("visibilitychange", onVis);
     return () => document.removeEventListener("visibilitychange", onVis);
   }, [hasPlayed, isMobile]);
@@ -250,10 +280,17 @@ export default function Hero({ data }: HeroProps) {
 
     const v = videoRef.current;
     if (!v) return;
+
     try {
       if (v.paused) {
-        const p = v.play();
-        if (p !== undefined) await p;
+        // If autoplay was blocked, try our smart autoplay strategy
+        if (autoplayBlocked) {
+          const success = await attemptAutoplay();
+          if (success) return;
+        }
+
+        // Fallback to regular play
+        await v.play();
         if (mounted.current) setIsPlaying(true);
       } else {
         v.pause();
@@ -265,7 +302,7 @@ export default function Hero({ data }: HeroProps) {
       }
       if (mounted.current) setAutoplayBlocked(true);
     }
-  }, [isMobile]);
+  }, [isMobile, autoplayBlocked, attemptAutoplay]);
 
   // toggle mute/unmute
   const toggleMute = useCallback(() => {
@@ -287,7 +324,6 @@ export default function Hero({ data }: HeroProps) {
     setIsModalOpen(false);
     setIsModalVideoPlaying(false);
 
-    // Pause modal video when closing
     const modalVideo = modalVideoRef.current;
     if (modalVideo && !modalVideo.paused) {
       modalVideo.pause();
@@ -311,8 +347,10 @@ export default function Hero({ data }: HeroProps) {
     }
   }, []);
 
-  // Show overlay play button when autoplay blocked or not yet started
-  const showOverlayPlay = autoplayBlocked || (!hasPlayed && !isPlaying);
+  // Show overlay play button when autoplay is blocked
+  const showOverlayPlay =
+    autoplayBlocked ||
+    (!hasPlayed && !isPlaying && autoplayStatus === "failed");
 
   return (
     <>
@@ -332,7 +370,7 @@ export default function Hero({ data }: HeroProps) {
           playsInline
           muted={isMuted}
           loop
-          preload="metadata"
+          preload="auto" // Changed to auto for better loading
           onCanPlay={() => {
             if (process.env.NODE_ENV === "development") {
               console.log("[Hero] onCanPlay fired");

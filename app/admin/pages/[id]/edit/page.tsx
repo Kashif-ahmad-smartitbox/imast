@@ -2694,7 +2694,7 @@ export default function EditPage() {
                     {!isDraftWithoutModules && moduleCount > 1 && (
                       <button
                         onClick={() => setShowReorderModal(true)}
-                        className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-200 font-semibold shadow-lg shadow-gray-500/25 mr-2"
+                        className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-200 font-semibold shadow-lg shadow-gray-500/25 mr-2 cursor-pointer text-sm"
                         type="button"
                       >
                         <GripVertical className="w-4 h-4" />
@@ -2706,7 +2706,7 @@ export default function EditPage() {
                     {!isDraftWithoutModules && (
                       <button
                         onClick={() => setShowAddModuleModal(true)}
-                        className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
+                        className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25 cursor-pointer text-sm"
                         type="button"
                       >
                         <Plus className="w-4 h-4" />
@@ -2804,7 +2804,7 @@ export default function EditPage() {
                                     <>
                                       <button
                                         onClick={() => startEdit(moduleData)}
-                                        className="flex items-center gap-2 px-5 py-2.5 text-sm bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
+                                        className="flex items-center gap-2 px-5 py-2 text-xs bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold cursor-pointer"
                                         type="button"
                                       >
                                         <Edit3 className="w-4 h-4" />
@@ -2814,7 +2814,7 @@ export default function EditPage() {
                                         onClick={() =>
                                           setModuleToRemove(moduleData._id)
                                         }
-                                        className="flex items-center gap-2 px-5 py-2.5 text-sm bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-200 font-semibold shadow-lg shadow-red-500/25"
+                                        className="flex items-center gap-2 px-5 py-2 text-xs bg-transparent text-primary-500 rounded-xl hover:bg-red-700 transition-all duration-200 font-semibold border border-primary-300 hover:text-white cursor-pointer"
                                         type="button"
                                       >
                                         <Trash2 className="w-4 h-4" />
