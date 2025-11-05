@@ -58,6 +58,35 @@ interface WhyChooseIMASTData {
     text: string;
     link: string;
   };
+  award: {
+    awardHeader: {
+      title: string;
+      description: string;
+    };
+    awards: {
+      title: string;
+      issuer: string;
+      year?: number;
+      description: string;
+      media: {
+        type: "image" | "video";
+        src: string;
+        alt?: string;
+        poster?: string;
+        width?: number;
+        height?: number;
+      };
+    }[];
+    autoplayConfig?: {
+      delay?: number;
+      resumeAfterInteraction?: number;
+    };
+    styling?: {
+      backgroundColor?: string;
+      textColor?: string;
+      cardBackground?: string;
+    };
+  };
 }
 
 // --- UI Components
@@ -240,7 +269,7 @@ export default function WhyChooseIMAST({ data }: { data: WhyChooseIMASTData }) {
             </div>
           </aside>
         </div>
-        <ImastAwardsSection awardHeader={data.awardHeader} />
+        <ImastAwardsSection data={data.award} />
       </div>
     </section>
   );

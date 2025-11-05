@@ -16,6 +16,8 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  ArrowRight,
+  Trophy,
 } from "lucide-react";
 
 /* ----- Types ----- */
@@ -46,130 +48,23 @@ type AwardItem = {
 };
 
 interface ImastAwardsSectionProps {
-  awardHeader: {
-    title: string;
-    description: string;
+  data: {
+    awardHeader: {
+      title: string;
+      description: string;
+    };
+    awards: AwardItem[];
+    autoplayConfig?: {
+      delay?: number;
+      resumeAfterInteraction?: number;
+    };
+    styling?: {
+      backgroundColor?: string;
+      textColor?: string;
+      cardBackground?: string;
+    };
   };
-  awards?: AwardItem[];
 }
-
-/* ----- Defaults (kept from your original list) ----- */
-const DEFAULT_AWARDS: AwardItem[] = [
-  {
-    title: "Excellence in Software Engineering",
-    issuer: "Industry Board",
-    year: 2023,
-    description:
-      "Recognised for robust engineering practices and long-term platform reliability.",
-    media: {
-      type: "image",
-      src: "/awards/excellence.jpg",
-      alt: "Trophy on stage",
-      width: 1200,
-      height: 675,
-    },
-  },
-  {
-    title: "Top Innovator Award",
-    issuer: "Tech Innovators",
-    year: 2022,
-    description:
-      "Awarded for pioneering R&D investments and owning the full stack.",
-    media: {
-      type: "video",
-      src: "/awards/innovator.mp4",
-      poster: "/awards/innovator-poster.jpg",
-      alt: "Innovator award clip",
-      width: 1200,
-      height: 675,
-    },
-  },
-  {
-    title: "Customer Trust Award",
-    issuer: "Global Clients Forum",
-    year: 2021,
-    description:
-      "For building strong, long-lasting partnerships with customers across industries.",
-    media: {
-      type: "image",
-      src: "/awards/customer-trust.jpg",
-      alt: "Handshake",
-      width: 1200,
-      height: 675,
-    },
-  },
-  {
-    title: "Best Design System",
-    issuer: "UX Awards",
-    year: 2023,
-    description:
-      "Recognized for creating an intuitive and accessible design system used by thousands of developers.",
-    media: {
-      type: "image",
-      src: "/awards/excellence.jpg",
-      alt: "Design system showcase",
-      width: 1200,
-      height: 675,
-    },
-  },
-  {
-    title: "Sustainability Champion",
-    issuer: "Green Tech Foundation",
-    year: 2022,
-    description:
-      "Awarded for implementing eco-friendly practices and reducing carbon footprint in operations.",
-    media: {
-      type: "image",
-      src: "/awards/excellence.jpg",
-      alt: "Green technology",
-      width: 1200,
-      height: 675,
-    },
-  },
-  {
-    title: "Open Source Contribution",
-    issuer: "Developer Community",
-    year: 2023,
-    description:
-      "Honored for significant contributions to open source projects and community building.",
-    media: {
-      type: "video",
-      src: "/awards/innovator.mp4",
-      poster: "/awards/innovator-poster.jpg",
-      alt: "Open source contribution",
-      width: 1200,
-      height: 675,
-    },
-  },
-  {
-    title: "Global Expansion Excellence",
-    issuer: "International Business Council",
-    year: 2021,
-    description:
-      "Recognized for successful international expansion and cultural adaptation in new markets.",
-    media: {
-      type: "image",
-      src: "/awards/excellence.jpg",
-      alt: "World map with locations",
-      width: 1200,
-      height: 675,
-    },
-  },
-  {
-    title: "Employee Satisfaction Award",
-    issuer: "Great Place to Work",
-    year: 2023,
-    description:
-      "Awarded for exceptional workplace culture and high employee satisfaction scores.",
-    media: {
-      type: "image",
-      src: "/awards/excellence.jpg",
-      alt: "Happy team celebration",
-      width: 1200,
-      height: 675,
-    },
-  },
-];
 
 /* ----- Lightbox Modal ----- */
 function Lightbox({
@@ -204,21 +99,20 @@ function Lightbox({
         if (e.key === "Escape") onClose();
       }}
     >
-      <div className="relative max-w-5xl w-full max-h-[90vh] overflow-hidden rounded-xl bg-white">
+      <div className="relative w-full max-w-5xl max-h-[90vh] overflow-hidden rounded-xl bg-white">
         <button
           aria-label="Close preview"
           onClick={onClose}
-          className="absolute right-3 top-3 z-20 rounded-full bg-white/90 p-2 shadow"
+          className="absolute right-2 top-2 z-20 rounded-full bg-white/90 p-2 shadow sm:right-3 sm:top-3"
         >
           <X className="w-4 h-4" />
         </button>
 
         <div className="w-full h-full flex items-center justify-center bg-black">
           {media.type === "image" ? (
-            <div
-              className="relative w-full"
-              style={{ paddingTop: `${(media.height! / media.width!) * 100}%` }}
-            >
+            <div className="relative w-full h-0 pb-[56.25%]">
+              {" "}
+              {/* 16:9 aspect ratio */}
               <Image
                 src={media.src}
                 alt={media.alt ?? title ?? "Image"}
@@ -234,7 +128,7 @@ function Lightbox({
               poster={media.poster}
               controls
               autoPlay
-              style={{ maxHeight: "90vh", width: "100%", height: "auto" }}
+              className="max-h-[90vh] w-full h-auto"
             />
           )}
         </div>
@@ -258,9 +152,9 @@ function MediaBlock({
   if (!media) return null;
 
   const overlayHeading = (
-    <div className="absolute left-4 right-4 bottom-4 md:bottom-6 flex items-center">
-      <div className="bg-gradient-to-t from-black/70 to-transparent backdrop-blur-sm rounded-md px-3 py-2">
-        <h4 className="text-sm md:text-base font-semibold text-white leading-tight truncate">
+    <div className="absolute left-2 right-2 bottom-2 sm:left-3 sm:right-3 sm:bottom-3 md:left-4 md:right-4 md:bottom-4 flex items-center">
+      <div className="bg-gradient-to-t from-black/70 to-transparent backdrop-blur-sm rounded-md px-2 py-1.5 sm:px-3 sm:py-2 w-full">
+        <h4 className="text-xs sm:text-sm md:text-base font-semibold text-white leading-tight truncate">
           {heading}
         </h4>
       </div>
@@ -269,7 +163,7 @@ function MediaBlock({
 
   if (media.type === "image") {
     return (
-      <div className="relative w-full aspect-[16/9] bg-slate-50 overflow-hidden rounded-t-lg">
+      <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] bg-slate-50 overflow-hidden rounded-t-lg sm:rounded-t-xl">
         <Image
           src={media.src}
           alt={media.alt ?? heading ?? "Award image"}
@@ -284,7 +178,7 @@ function MediaBlock({
   }
 
   return (
-    <div className="relative w-full aspect-[16/9] bg-slate-50 overflow-hidden rounded-t-lg">
+    <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] bg-slate-50 overflow-hidden rounded-t-lg sm:rounded-t-xl">
       {media.poster ? (
         <Image
           src={media.poster}
@@ -305,9 +199,9 @@ function MediaBlock({
             setPlayingFromPoster?.(true);
             onOpenLightbox?.();
           }}
-          className="bg-black/50 hover:bg-black/60 active:bg-black/70 rounded-full p-3 transition-shadow shadow-lg"
+          className="bg-black/50 hover:bg-black/60 active:bg-black/70 rounded-full p-2 sm:p-3 transition-shadow shadow-lg"
         >
-          <Play className="w-6 h-6 text-white" />
+          <Play className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
         </button>
       </div>
 
@@ -324,11 +218,9 @@ function AwardCard({
   award: AwardItem;
   openLightbox: (media?: Media, title?: string) => void;
 }) {
-  const descRef = useRef<HTMLParagraphElement | null>(null);
-
   return (
     <article
-      className="group bg-white rounded-2xl overflow-hidden cursor-pointer flex-shrink-0 w-[350px]"
+      className="group bg-white/90 backdrop-blur-sm rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer flex-shrink-0 w-[280px] xs:w-[300px] sm:w-[320px] md:w-[350px] lg:w-[380px] transition-all duration-500 border border-gray-200/60 hover:border-primary-300/50"
       tabIndex={0}
       aria-labelledby={`award-title-${award.title}`}
       onKeyDown={(e: KeyboardEvent) => {
@@ -336,48 +228,65 @@ function AwardCard({
           openLightbox(award.media, award.title);
         }
       }}
-      // enable scroll snapping
       style={{ scrollSnapAlign: "start" }}
     >
-      <div>
+      {/* Background effect */}
+      <div className="absolute inset-0 rounded-xl sm:rounded-2xl md:rounded-3xl bg-gradient-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+
+      {/* Animated border */}
+      <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary-200/30 rounded-xl sm:rounded-2xl md:rounded-3xl transition-all duration-500" />
+
+      {/* Media Section */}
+      <div
+        className="relative"
+        onClick={() => award.media && openLightbox(award.media, award.title)}
+      >
         <MediaBlock
           media={award.media}
           heading={award.title}
           onOpenLightbox={() => openLightbox(award.media, award.title)}
-          setPlayingFromPoster={() => {}}
         />
+
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      <div className="p-5">
-        <div className="flex items-start gap-4">
+      {/* Content Section */}
+      <div className="p-4 sm:p-5 md:p-6 relative z-10">
+        <div className="flex items-start gap-3 sm:gap-4">
+          {/* Enhanced Icon */}
           <div
-            className="w-10 h-10 rounded-md bg-primary-50 flex items-center justify-center text-primary-600 flex-shrink-0"
+            className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl md:rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white shadow-lg flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500"
             aria-hidden
           >
-            <Award className="w-5 h-5" />
+            <Award className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 group-hover:scale-110 transition-transform duration-300" />
           </div>
 
+          {/* Text Content */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-4 mb-2">
+            {/* Title and Year */}
+            <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
               <h4
                 id={`award-title-${award.title}`}
-                className="text-base font-semibold truncate"
+                className="text-sm sm:text-base md:text-lg font-bold text-gray-900 group-hover:text-primary-700 transition-colors duration-300 line-clamp-2 leading-tight flex-1"
               >
                 {award.title}
               </h4>
               {award.year && (
-                <div className="flex items-center gap-1 text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-full flex-shrink-0">
-                  <Calendar className="w-3 h-3" />
-                  <span>{award.year}</span>
+                <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 bg-gray-50 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full flex-shrink-0 border border-gray-200 group-hover:bg-primary-50 group-hover:border-primary-200 group-hover:text-primary-700 transition-all duration-300">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="font-medium">{award.year}</span>
                 </div>
               )}
             </div>
 
-            <p className="text-sm text-gray-600 mb-2">{award.issuer}</p>
+            {/* Issuer */}
+            <p className="text-xs sm:text-sm md:text-base text-primary-600 font-semibold mb-2 sm:mb-3 group-hover:!text-primary-700 transition-colors duration-300 line-clamp-1">
+              {award.issuer}
+            </p>
 
             <p
-              ref={descRef}
-              className="text-sm text-gray-700 leading-relaxed overflow-hidden"
+              className="text-xs sm:text-sm text-gray-700 leading-relaxed overflow-hidden group-hover:!text-gray-800 transition-colors duration-300"
               style={{
                 display: "-webkit-box",
                 WebkitLineClamp: 3,
@@ -389,16 +298,33 @@ function AwardCard({
           </div>
         </div>
       </div>
+
+      {/* Hover accent line */}
+      <div className="absolute bottom-0 left-4 right-4 sm:left-6 sm:right-6 h-0.5 sm:h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+
+      {/* Corner accents */}
+      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 w-1 h-1 sm:w-2 sm:h-2 border-t border-r border-primary-500/0 group-hover:border-primary-500/50 transition-all duration-500 delay-200" />
+      <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 w-1 h-1 sm:w-2 sm:h-2 border-b border-l border-primary-500/0 group-hover:border-primary-500/50 transition-all duration-500 delay-300" />
     </article>
   );
 }
 
-/* ====== New: Auto-slider (one card at a time) ====== */
-
 export default memo(function ImastAwardsSection({
-  awardHeader,
-  awards = DEFAULT_AWARDS,
+  data,
 }: ImastAwardsSectionProps) {
+  const { awardHeader, awards = [], autoplayConfig = {}, styling = {} } = data;
+
+  const {
+    delay: AUTOPLAY_DELAY = 3000,
+    resumeAfterInteraction: RESUME_AFTER_INTERACTION = 2000,
+  } = autoplayConfig;
+
+  const {
+    backgroundColor = "bg-transparent",
+    textColor = "text-white",
+    cardBackground = "bg-white",
+  } = styling;
+
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -408,10 +334,6 @@ export default memo(function ImastAwardsSection({
   const autoplayTimerRef = useRef<number | null>(null);
   const interactionTimeoutRef = useRef<number | null>(null);
 
-  // Tweakable values
-  const AUTOPLAY_DELAY = 3000; // ms between slides
-  const RESUME_AFTER_INTERACTION = 2000; // ms to wait after interaction to resume
-
   // Scroll-to-index helper
   const scrollToIndex = useCallback(
     (index: number, behavior: ScrollBehavior = "smooth") => {
@@ -420,7 +342,6 @@ export default memo(function ImastAwardsSection({
       const child = container.children[index] as HTMLElement | undefined;
       if (!child) return;
 
-      // offsetLeft should be relative to container in typical layout here
       const left = child.offsetLeft;
       container.scrollTo({ left, behavior });
     },
@@ -444,10 +365,8 @@ export default memo(function ImastAwardsSection({
 
     const onScroll = () => {
       checkScrollButtons();
-      // Keep currentIndex roughly in sync with scroll
       const children = Array.from(container.children) as HTMLElement[];
       if (!children.length) return;
-      // find the child nearest to current scrollLeft
       const scrollLeft = container.scrollLeft;
       let nearest = 0;
       let minDiff = Infinity;
@@ -462,7 +381,6 @@ export default memo(function ImastAwardsSection({
     };
 
     container.addEventListener("scroll", onScroll, { passive: true });
-    // initial check
     checkScrollButtons();
 
     return () => {
@@ -480,7 +398,7 @@ export default memo(function ImastAwardsSection({
       setIsPaused(false);
       interactionTimeoutRef.current = null;
     }, RESUME_AFTER_INTERACTION);
-  }, []);
+  }, [RESUME_AFTER_INTERACTION]);
 
   // Mouse/touch/wheel handlers
   useEffect(() => {
@@ -489,7 +407,6 @@ export default memo(function ImastAwardsSection({
 
     const onEnter = () => setIsPaused(true);
     const onLeave = () => {
-      // small delay for nicer UX
       if (interactionTimeoutRef.current)
         window.clearTimeout(interactionTimeoutRef.current);
       interactionTimeoutRef.current = window.setTimeout(() => {
@@ -519,7 +436,6 @@ export default memo(function ImastAwardsSection({
 
   // Autoplay effect
   useEffect(() => {
-    // clear any existing
     if (autoplayTimerRef.current) {
       window.clearInterval(autoplayTimerRef.current);
       autoplayTimerRef.current = null;
@@ -530,7 +446,6 @@ export default memo(function ImastAwardsSection({
     autoplayTimerRef.current = window.setInterval(() => {
       setCurrentIndex((prev) => {
         const next = (prev + 1) % awards.length;
-        // perform scroll
         scrollToIndex(next, "smooth");
         return next;
       });
@@ -542,7 +457,7 @@ export default memo(function ImastAwardsSection({
         autoplayTimerRef.current = null;
       }
     };
-  }, [isPaused, awards.length, scrollToIndex]);
+  }, [isPaused, awards.length, scrollToIndex, AUTOPLAY_DELAY]);
 
   // Arrow controls
   const goToPrev = () => {
@@ -563,7 +478,7 @@ export default memo(function ImastAwardsSection({
     });
   };
 
-  // Lightbox controls (pause while open)
+  // Lightbox controls
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxMedia, setLightboxMedia] = useState<Media | undefined>(
     undefined
@@ -577,18 +492,17 @@ export default memo(function ImastAwardsSection({
     setLightboxMedia(media);
     setLightboxTitle(title);
     setLightboxOpen(true);
-    // pause while lightbox is open
     setIsPaused(true);
     if (interactionTimeoutRef.current) {
       window.clearTimeout(interactionTimeoutRef.current);
       interactionTimeoutRef.current = null;
     }
   };
+
   const closeLightbox = () => {
     setLightboxOpen(false);
     setLightboxMedia(undefined);
     setLightboxTitle(undefined);
-    // resume after short delay
     if (interactionTimeoutRef.current)
       window.clearTimeout(interactionTimeoutRef.current);
     interactionTimeoutRef.current = window.setTimeout(() => {
@@ -604,13 +518,13 @@ export default memo(function ImastAwardsSection({
   }, []);
 
   return (
-    <section className="relative py-12">
+    <section className={`relative py-8 sm:py-12 md:py-16 ${textColor}`}>
       <div className="max-w-7xl mx-auto">
-        <div className="mb-10">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-primary-100">
+        <div className="mb-8 sm:mb-10 md:mb-12 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold sm:font-extrabold mb-3 sm:mb-4">
             {awardHeader.title}
           </h2>
-          <p className="mt-2 text-sm text-gray-50 max-w-xl">
+          <p className="text-sm sm:text-base md:text-lg opacity-90 max-w-2xl mx-auto leading-relaxed">
             {awardHeader.description}
           </p>
         </div>
@@ -620,10 +534,10 @@ export default memo(function ImastAwardsSection({
           {showLeftArrow && (
             <button
               onClick={goToPrev}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110 -ml-4"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 sm:p-3 shadow-lg transition-all duration-200 hover:scale-110 -ml-2 sm:-ml-4 md:-ml-6"
               aria-label="Scroll left"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-800" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-800" />
             </button>
           )}
 
@@ -631,18 +545,17 @@ export default memo(function ImastAwardsSection({
           {showRightArrow && (
             <button
               onClick={goToNext}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110 -mr-4"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 sm:p-3 shadow-lg transition-all duration-200 hover:scale-110 -mr-2 sm:-mr-4 md:-mr-6"
               aria-label="Scroll right"
             >
-              <ChevronRight className="w-5 h-5 text-gray-800" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-800" />
             </button>
           )}
 
           {/* Slider container */}
           <div
             ref={scrollContainerRef}
-            // scroll snap & smooth
-            className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide"
+            className="flex gap-4 sm:gap-6 md:gap-8 overflow-x-auto pb-6 sm:pb-8 scrollbar-hide"
             style={{
               scrollSnapType: "x mandatory",
               WebkitOverflowScrolling: "touch",
@@ -657,14 +570,15 @@ export default memo(function ImastAwardsSection({
           </div>
         </div>
 
-        <div className="flex justify-center mt-6">
-          <div className="flex items-center gap-2 text-xs text-white">
-            <span>
+        {/* Auto-play status indicator */}
+        <div className="flex justify-center mt-6 sm:mt-8">
+          <div className="flex items-center gap-2 text-xs sm:text-sm opacity-80">
+            <span className="text-center">
               {isPaused
                 ? "Paused — interacting"
                 : "Auto-play slider — hover or scroll to pause"}
             </span>
-            <ChevronRight className="w-3 h-3" />
+            <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
           </div>
         </div>
       </div>

@@ -20,164 +20,98 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-type Item = {
-  icon: React.ComponentType<any>;
+// Types
+type IconName =
+  | "TrendingUp"
+  | "Zap"
+  | "UserCircle"
+  | "Briefcase"
+  | "Package"
+  | "ClipboardList"
+  | "Repeat"
+  | "ShoppingCart"
+  | "Star"
+  | "Users"
+  | "Gift"
+  | "Settings"
+  | "Smartphone";
+
+type ModuleItem = {
+  icon: IconName;
   title: string;
-  desc: string;
+  description: string;
+  learnMoreLink?: string;
 };
 
-type Section = {
+type ModuleSection = {
   title: string;
   color?: string;
-  items: Item[];
+  items: ModuleItem[];
 };
 
-const SECTIONS: Section[] = [
-  {
-    title: "Sales & Business",
-    items: [
-      {
-        icon: TrendingUp,
-        title: "Sales Force Automation (SFA)",
-        desc: "Automate sales journeys with real-time tracking and performance insights.",
-      },
-      {
-        icon: Zap,
-        title: "Lead Management",
-        desc: "Capture, nurture, and convert leads faster with smart automation.",
-      },
-      {
-        icon: UserCircle,
-        title: "CRM / Ticket Management",
-        desc: "Manage customer issues in one system with faster resolutions.",
-      },
-      {
-        icon: Briefcase,
-        title: "HRMS Solution",
-        desc: "Simplify HR, payroll, and performance with one powerful HRMS.",
-      },
-    ],
-  },
-  {
-    title: "Warehouse",
-    items: [
-      {
-        icon: Package,
-        title: "Warehouse Automation",
-        desc: "Digitize warehouse operations for faster, error-free processes.",
-      },
-      {
-        icon: ClipboardList,
-        title: "Inventory Management",
-        desc: "Real-time stock tracking and control across all locations.",
-      },
-      {
-        icon: Repeat,
-        title: "Auto Replenishment",
-        desc: "Smart inventory auto-replenishment using TOC principles for zero stock-outs.",
-      },
-    ],
-  },
-  {
-    title: "Distribution",
-    items: [
-      {
-        icon: Repeat,
-        title: "Distributor Management System (DMS)",
-        desc: "Digitize distributor operations with transparent orders and payments.",
-      },
-      {
-        icon: TrendingUp,
-        title: "Secondary Order Tracking",
-        desc: "Track distributor-to-retailer sales with complete real-time visibility.",
-      },
-    ],
-  },
-  {
-    title: "Retail",
-    items: [
-      {
-        icon: ShoppingCart,
-        title: "Point of Sales (POS)",
-        desc: "Smart billing, invoicing, and promotions at retail counters.",
-      },
-      {
-        icon: Star,
-        title: "Retailer Loyalty",
-        desc: "Reward and retain retailers with customized loyalty programs.",
-      },
-      {
-        icon: Smartphone,
-        title: "Retail App",
-        desc: "Enable retailers with a mobile app for orders, offers, and engagement.",
-      },
-    ],
-  },
-  {
-    title: "Loyalty & Rewards",
-    items: [
-      {
-        icon: Users,
-        title: "Channel Loyalty",
-        desc: "Reward dealers and distributors to boost retention and growth.",
-      },
-      {
-        icon: Users,
-        title: "Influencer Loyalty",
-        desc: "Engage mechanics, carpenters, fitters and other influencers of business with targeted rewards.",
-      },
-      {
-        icon: UserCircle,
-        title: "Customer Loyalty",
-        desc: "Enhance retention with personalized customer loyalty programs.",
-      },
-      {
-        icon: Gift,
-        title: "Rewards & Redemption",
-        desc: "Seamless redemptions via cash, vouchers, or gifts — instantly fulfilled.",
-      },
-    ],
-  },
-  {
-    title: "Service",
-    items: [
-      {
-        icon: Settings,
-        title: "Service Automation",
-        desc: "Automate service requests, scheduling, and case closures with ease.",
-      },
-      {
-        icon: Smartphone,
-        title: "Service Staff App",
-        desc: "Mobile app for service teams with GPS, tasks, and real-time updates.",
-      },
-    ],
-  },
-];
+type ModulesData = {
+  imast360Logo: string;
+  title: string;
+  description: string;
+  sections: ModuleSection[];
+};
 
-export default function ModulesImproved(props: any) {
+// Icon mapping
+const iconMap: Record<IconName, React.ComponentType<any>> = {
+  TrendingUp,
+  Zap,
+  UserCircle,
+  Briefcase,
+  Package,
+  ClipboardList,
+  Repeat,
+  ShoppingCart,
+  Star,
+  Users,
+  Gift,
+  Settings,
+  Smartphone,
+};
+
+interface ModulesImprovedProps {
+  data: ModulesData;
+}
+
+export default function ModulesImproved({ data }: ModulesImprovedProps) {
   const [query, setQuery] = useState("");
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
     () => {
       const map: Record<string, boolean> = {};
-      SECTIONS.forEach((s) => (map[s.title] = true));
+      data.sections.forEach((s) => (map[s.title] = true));
       return map;
     }
   );
 
   const filtered = useMemo(() => {
-    if (!query.trim()) return SECTIONS;
+    if (!query.trim()) return data.sections;
     const q = query.toLowerCase();
-    return SECTIONS.map((s) => ({
-      ...s,
-      items: s.items.filter((i) =>
-        (i.title + i.desc).toLowerCase().includes(q)
-      ),
-    })).filter((s) => s.items.length > 0);
-  }, [query]);
+    return data.sections
+      .map((s) => ({
+        ...s,
+        items: s.items.filter((i) =>
+          (i.title + i.description).toLowerCase().includes(q)
+        ),
+      }))
+      .filter((s) => s.items.length > 0);
+  }, [query, data.sections]);
 
   function toggleSection(title: string) {
     setOpenSections((prev) => ({ ...prev, [title]: !prev[title] }));
+  }
+
+  function handleLearnMore(item: ModuleItem, sectionTitle: string) {
+    if (item.learnMoreLink) {
+      window.open(item.learnMoreLink, "_blank");
+    } else {
+      // Default behavior - you can customize this
+      window.open("/contact", "_blank");
+      console.log(`Learn more about ${item.title} in ${sectionTitle}`);
+    }
   }
 
   return (
@@ -188,17 +122,13 @@ export default function ModulesImproved(props: any) {
           <div className="flex items-center gap-4">
             <div>
               <div className="bg-white rounded my-3 p-3 shadow-md inline-block">
-                <img
-                  src={props.data.imast360Logo}
-                  alt="IMAST360"
-                  className="h-6"
-                />
+                <img src={data.imast360Logo} alt="IMAST360" className="h-6" />
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-                {props.data.title}
+                {data.title}
               </h2>
               <p className="mt-1 text-[#F8EFEF] text-sm sm:text-base max-w-xl">
-                {props.data.description}
+                {data.description}
               </p>
             </div>
           </div>
@@ -238,7 +168,7 @@ export default function ModulesImproved(props: any) {
                   <button
                     onClick={() => toggleSection(section.title)}
                     aria-expanded={!!openSections[section.title]}
-                    className="inline-flex items-center gap-2 text-sm text-white/90 bg-white/6 hover:bg-white/8 px-3 py-2 rounded-lg"
+                    className="inline-flex items-center gap-2 text-sm text-white/90 bg-white/6 hover:bg-white/8 px-3 py-2 rounded-lg transition-colors"
                   >
                     {openSections[section.title] ? (
                       <ChevronUp size={16} />
@@ -262,37 +192,45 @@ export default function ModulesImproved(props: any) {
                     aria-live="polite"
                   >
                     {openSections[section.title] &&
-                      section.items.map((item) => (
-                        <motion.article
-                          key={item.title}
-                          layout
-                          whileHover={{
-                            translateY: -6,
-                            boxShadow: "0px 18px 40px rgba(0,0,0,0.18)",
-                          }}
-                          className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-transform will-change-transform"
-                        >
-                          <div className="flex items-start gap-4">
-                            <div className="flex-none w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow">
-                              <item.icon size={20} aria-hidden />
+                      section.items.map((item) => {
+                        const IconComponent = iconMap[item.icon];
+                        return (
+                          <motion.article
+                            key={item.title}
+                            layout
+                            whileHover={{
+                              translateY: -6,
+                              boxShadow: "0px 18px 40px rgba(0,0,0,0.18)",
+                            }}
+                            className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all will-change-transform"
+                          >
+                            <div className="flex items-start gap-4">
+                              <div className="flex-none w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow">
+                                <IconComponent size={20} aria-hidden />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-gray-900 mb-1">
+                                  {item.title}
+                                </h4>
+                                <p className="text-sm text-gray-600 leading-relaxed">
+                                  {item.description}
+                                </p>
+                              </div>
                             </div>
-                            <div className="flex-1">
-                              <h4 className="font-semibold text-gray-900 mb-1">
-                                {item.title}
-                              </h4>
-                              <p className="text-sm text-gray-600 leading-relaxed">
-                                {item.desc}
-                              </p>
-                            </div>
-                          </div>
 
-                          <div className="mt-4 flex items-center justify-between">
-                            <button className="text-sm px-3 py-1 rounded-md bg-primary-50 text-primary-700 font-medium hover:bg-primary-100">
-                              Learn
-                            </button>
-                          </div>
-                        </motion.article>
-                      ))}
+                            <div className="mt-4 flex items-center justify-between">
+                              <button
+                                onClick={() =>
+                                  handleLearnMore(item, section.title)
+                                }
+                                className="text-sm px-3 py-1 rounded-md bg-primary-50 text-primary-700 font-medium hover:bg-primary-100 transition-colors"
+                              >
+                                Learn More
+                              </button>
+                            </div>
+                          </motion.article>
+                        );
+                      })}
                   </div>
                 </motion.div>
               </div>
