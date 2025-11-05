@@ -149,16 +149,15 @@ export default function ServicesHeroHeader({
               </p>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-3 items-start">
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
               {primary.visible !== false && (
                 <a
                   href={primary.link}
                   aria-label={primary.ariaLabel ?? primary.text}
-                  className="group relative px-6 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary-300 overflow-hidden"
+                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
                   <span className="relative z-10">{primary.text}</span>
                   <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-primary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </a>
               )}
 
@@ -166,7 +165,7 @@ export default function ServicesHeroHeader({
                 <a
                   href={secondary.link}
                   aria-label={secondary.ariaLabel ?? secondary.text}
-                  className="px-6 py-3 rounded-xl text-sm font-semibold border-2 border-white/30 text-white hover:bg-white hover:text-gray-900 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50 backdrop-blur-sm flex items-center gap-2"
+                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
                   <span>{secondary.text}</span>
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

@@ -124,14 +124,7 @@ export default function ImastWhyChooseSection({
 
   return (
     <section className={`relative overflow-hidden py-20 lg:py-28 ${className}`}>
-      {/* Enhanced Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-primary-100">
-        {/* Animated background elements */}
-        <div className="absolute top-10 left-10 w-72 h-72 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-
-        {/* Grid pattern */}
         <div className="absolute inset-0 opacity-10">
           <div
             className="w-full h-full"
@@ -144,14 +137,12 @@ export default function ImastWhyChooseSection({
         </div>
       </div>
 
-      {/* Decorative image */}
       <img
         src="https://res.cloudinary.com/diefvxqdv/image/upload/v1762095775/imast/media/employee-sec8-img.svg"
         alt=""
         className="absolute top-40 left-28 opacity-40 hidden lg:block"
         loading="lazy"
       />
-
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-20 items-start">
           {/* Left Content */}
@@ -196,7 +187,6 @@ export default function ImastWhyChooseSection({
           </div>
         </div>
       </div>
-
       <style jsx>{`
         @keyframes blob {
           0% {

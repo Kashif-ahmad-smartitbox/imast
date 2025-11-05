@@ -156,6 +156,111 @@ const DynamicHTMLSection = dynamic(
   }
 );
 
+const FeaturesSection = dynamic(
+  () => import("@/components/sections/FeaturesSection"),
+  {
+    ssr: false,
+  }
+);
+
+const FeatureCardSection = dynamic(
+  () => import("@/components/sections/FeatureCardSection"),
+  {
+    ssr: false,
+  }
+);
+
+const VerticalsCarousel = dynamic(
+  () => import("@/components/sections/VerticalsCarousel"),
+  {
+    ssr: false,
+  }
+);
+
+const DistributorCompare = dynamic(
+  () => import("@/components/sections/DistributorCompare"),
+  {
+    ssr: false,
+  }
+);
+
+const DMSModulesSection = dynamic(
+  () => import("@/components/sections/DMSModulesSection"),
+  {
+    ssr: false,
+  }
+);
+
+const DistributorModuleWithAccordion = dynamic(
+  () => import("@/components/sections/DistributorModuleWithAccordion"),
+  {
+    ssr: false,
+  }
+);
+
+const RetailModuleCards = dynamic(
+  () => import("@/components/sections/RetailModuleCards"),
+  {
+    ssr: false,
+  }
+);
+
+const SalesStaffModule = dynamic(
+  () => import("@/components/sections/SalesStaffModule"),
+  {
+    ssr: false,
+  }
+);
+
+const LoyaltyPrograms = dynamic(
+  () => import("@/components/sections/LoyaltyPrograms"),
+  {
+    ssr: false,
+  }
+);
+
+const LoyaltyIntro = dynamic(
+  () => import("@/components/sections/LoyaltyIntro"),
+  {
+    ssr: false,
+  }
+);
+
+const LoyaltyLandingSection = dynamic(
+  () => import("@/components/sections/LoyaltyLandingSection"),
+  {
+    ssr: false,
+  }
+);
+
+const HeadingSection = dynamic(
+  () => import("@/components/sections/HeadingSection"),
+  {
+    ssr: false,
+  }
+);
+
+const FeatureGridSection = dynamic(
+  () => import("@/components/sections/FeatureGridSection"),
+  {
+    ssr: false,
+  }
+);
+
+const ModuleShowcase = dynamic(
+  () => import("@/components/sections/ModuleShowcase"),
+  {
+    ssr: false,
+  }
+);
+
+const IntroSection = dynamic(
+  () => import("@/components/sections/IntroSection"),
+  {
+    ssr: false,
+  }
+);
+
 export type ModuleComponentProps = {
   data: any;
 };
@@ -195,6 +300,21 @@ const registry: Record<string, ComponentType<ModuleComponentProps>> = {
   careers: CareerSection,
   testimonials: TestimonialsSection,
   dynamichtml: DynamicHTMLSection,
+  features: FeaturesSection,
+  featurecard: FeatureCardSection,
+  verticalscarousel: VerticalsCarousel,
+  distributorcompare: DistributorCompare,
+  dmsmodules: DMSModulesSection,
+  distributormodulewithaccordion: DistributorModuleWithAccordion,
+  retailmodulecards: RetailModuleCards,
+  salesstaffmodule: SalesStaffModule,
+  loyaltyprograms: LoyaltyPrograms,
+  loyaltyintro: LoyaltyIntro,
+  loyaltylanding: LoyaltyLandingSection,
+  heading: HeadingSection,
+  featuregrid: FeatureGridSection,
+  moduleshowcase: ModuleShowcase,
+  introsection: IntroSection,
 };
 
 export default registry;

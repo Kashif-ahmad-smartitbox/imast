@@ -130,7 +130,7 @@ export default function SolutionHeroHeader({
               <div className="mb-8">
                 <div
                   className="inline-flex rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 p-4 items-center justify-center"
-                  style={{ height: logo.size ?? 80, width: logo.size ?? 80 }}
+                  style={{ height: logo.size ?? 80 }}
                 >
                   <img
                     src={logo.src}
@@ -168,12 +168,12 @@ export default function SolutionHeroHeader({
             )}
 
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 items-start">
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
               {primaryBtn.visible !== false && (
                 <a
                   href={primaryBtn.link}
                   aria-label={primaryBtn.ariaLabel ?? primaryBtn.text}
-                  className="group relative px-6 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary-300 overflow-hidden inline-flex items-center gap-2"
+                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
                   <span className="relative z-10">{primaryBtn.text}</span>
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -185,7 +185,7 @@ export default function SolutionHeroHeader({
                 <a
                   href={secondaryBtn.link}
                   aria-label={secondaryBtn.ariaLabel ?? secondaryBtn.text}
-                  className="px-6 py-3 rounded-xl text-sm font-semibold border-2 border-white/30 text-white hover:bg-white hover:text-gray-900 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50 backdrop-blur-sm inline-flex items-center gap-2"
+                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
                   <span>{secondaryBtn.text}</span>
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

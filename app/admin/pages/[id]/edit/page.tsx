@@ -1061,7 +1061,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   const styles = getTypeStyles();
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl w-full max-w-md">
         <div className="p-6">
           <div className="flex items-center gap-4 mb-4">
@@ -1123,6 +1123,7 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
   const [newModuleContent, setNewModuleContent] = useState<any>({});
   const [creatingModule, setCreatingModule] = useState(false);
   const [message, setMessage] = useState<UpdateMessage | null>(null);
+  const [searchTerm, setSearchTerm] = useState(""); // Add search term state
 
   // Reset form when modal opens/closes or mode changes
   useEffect(() => {
@@ -1142,6 +1143,7 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
     setNewModuleType("");
     setNewModuleContent({});
     setMessage(null);
+    setSearchTerm(""); // Reset search term when mode changes
   };
 
   const loadAvailableModules = async () => {
@@ -1156,6 +1158,19 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
       setLoadingModules(false);
     }
   };
+
+  // Filter modules based on search term
+  const filteredModules = availableModules.filter((module) => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      module.title?.toLowerCase().includes(searchLower) ||
+      module.type?.toLowerCase().includes(searchLower) ||
+      module._id?.toLowerCase().includes(searchLower) ||
+      JSON.stringify(module.content || {})
+        .toLowerCase()
+        .includes(searchLower)
+    );
+  });
 
   const handleAddExistingModule = () => {
     if (!selectedModuleId) {
@@ -1314,7 +1329,7 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="border-b border-gray-200 px-6 py-4">
@@ -1399,6 +1414,18 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
               <div className="space-y-4">
                 <h4 className="font-semibold text-gray-900">Select Module</h4>
 
+                {/* Search Input for Modules */}
+                <div className="relative">
+                  <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search modules by title, type, or content..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm outline-none transition-all duration-200 bg-white"
+                  />
+                </div>
+
                 {loadingModules ? (
                   <div className="text-center py-8">
                     <RefreshCw className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-3" />
@@ -1406,9 +1433,9 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
                       Loading available modules...
                     </p>
                   </div>
-                ) : availableModules.length > 0 ? (
+                ) : filteredModules.length > 0 ? (
                   <div className="space-y-3 max-h-60 overflow-y-auto border border-gray-200 rounded-xl p-4">
-                    {availableModules.map((module) => (
+                    {filteredModules.map((module) => (
                       <label
                         key={module._id}
                         className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors"
@@ -1451,10 +1478,25 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
                 ) : (
                   <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-xl">
                     <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-500">No modules available</p>
-                    <p className="text-gray-400 text-sm mt-1">
-                      Create a new module instead
+                    <p className="text-gray-500">
+                      {searchTerm
+                        ? "No modules match your search"
+                        : "No modules available"}
                     </p>
+                    <p className="text-gray-400 text-sm mt-1">
+                      {searchTerm
+                        ? "Try adjusting your search terms"
+                        : "Create a new module instead"}
+                    </p>
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm("")}
+                        className="mt-3 px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                        type="button"
+                      >
+                        Clear Search
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -1632,7 +1674,7 @@ const ReorderModal: React.FC<ReorderModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="border-b border-gray-200 px-6 py-4">

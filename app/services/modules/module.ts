@@ -117,7 +117,7 @@ export const updateModule = async (
 };
 
 export const getModules = async () => {
-  return api.get<moduleRes>("/admin/modules");
+  return api.get<moduleRes>("/admin/modules?limit=400");
 };
 
 export default {
