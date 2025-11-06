@@ -11,6 +11,7 @@ import {
   Loader,
 } from "lucide-react";
 import { getBlogs, BlogItem, BlogQueryParams } from "@/services/modules/blog";
+import Newsletter from "../common/Newsletter";
 
 type Post = {
   id: string;
@@ -286,60 +287,6 @@ const TagFilter = ({
     </div>
   </div>
 );
-
-const Newsletter = () => {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubmit = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      if (email && email.includes("@")) {
-        setSubscribed(true);
-        setTimeout(() => {
-          setEmail("");
-          setSubscribed(false);
-        }, 3000);
-      }
-    },
-    [email]
-  );
-
-  return (
-    <div className="bg-gradient-to-br from-primary-50 to-pink-50 rounded-2xl p-5 sm:p-6 border border-primary-100">
-      <div className="flex items-center gap-2 mb-2">
-        <BookOpen className="w-5 h-5 text-primary-600 flex-shrink-0" />
-        <h3 className="font-bold text-gray-900">Newsletter</h3>
-      </div>
-      <p className="text-sm text-gray-600 mb-4">
-        Get product updates and practical playbooks — once a month, no spam.
-      </p>
-      {subscribed ? (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-          <p className="text-sm font-semibold text-green-700">
-            ✓ Successfully subscribed!
-          </p>
-        </div>
-      ) : (
-        <div className="flex gap-2">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="flex-1 px-3 sm:px-4 py-2 rounded-xl border border-gray-300 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 min-w-0"
-          />
-          <button
-            onClick={handleSubmit}
-            className="px-4 sm:px-5 py-2 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 transition-colors shadow-md hover:shadow-lg flex-shrink-0"
-          >
-            Subscribe
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
 
 const LoadingState = () => (
   <div className="py-20 bg-gradient-to-b from-gray-50 to-white">
