@@ -99,34 +99,7 @@ export default function LoyaltyLandingSection({ data }: Props) {
   };
 
   return (
-    <section
-      className="relative overflow-hidden"
-      style={{ backgroundColor: background }}
-    >
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute top-10 left-10 w-72 h-72 rounded-full opacity-10 blur-3xl"
-          style={{ backgroundColor: accentColor }}
-        />
-        <div
-          className="absolute bottom-10 right-10 w-96 h-96 rounded-full opacity-5 blur-3xl"
-          style={{ backgroundColor: accentColor }}
-        />
-
-        {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-3">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
-
+    <section className="relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 relative z-10">
         {/* Top: artwork + text */}
         <div
@@ -174,23 +147,8 @@ export default function LoyaltyLandingSection({ data }: Props) {
           >
             <div className="max-w-2xl">
               {/* Badge */}
-              <div
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 backdrop-blur-sm border"
-                style={{
-                  backgroundColor: paleBg(accentColor),
-                  borderColor: `${accentColor}20`,
-                }}
-              >
-                <div
-                  className="w-2 h-2 rounded-full animate-pulse"
-                  style={{ backgroundColor: accentColor }}
-                />
-                <span
-                  className="text-sm font-semibold uppercase tracking-wide"
-                  style={{ color: accentColor }}
-                >
-                  {badge}
-                </span>
+              <div className="text-2xl text-primary-500 font-bold mb-2">
+                {badge}
               </div>
 
               {/* Title */}
@@ -216,28 +174,21 @@ export default function LoyaltyLandingSection({ data }: Props) {
               <FeatureList />
 
               {/* CTA Buttons */}
-              <div className="mt-10 flex flex-col sm:flex-row gap-4">
+              <div className="mt-5 flex flex-col sm:flex-row gap-4">
                 <a
                   href="#get-started"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl text-white font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 group"
-                  style={{
-                    background: `linear-gradient(135deg, ${accentColor}, ${accentColor}dd)`,
-                  }}
+                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
-                  Get Started
+                  <span>Get Started</span>
                   <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
                 </a>
 
                 <a
                   href="#demo"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl border-2 font-bold hover:scale-105 transition-all duration-300 group"
-                  style={{
-                    borderColor: accentColor,
-                    color: accentColor,
-                  }}
+                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 border border-black font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
-                  <Play className="w-5 h-5" />
-                  Watch Demo
+                  <Play className="w-5 h-5 text-black" />
+                  <span className="text-black"> Watch Demo</span>
                 </a>
               </div>
             </div>
@@ -379,44 +330,21 @@ export default function LoyaltyLandingSection({ data }: Props) {
                 <div className="mt-8 flex flex-col sm:flex-row gap-4">
                   <a
                     href={ctaBanner.button.href}
-                    className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-white text-lg font-bold text-gray-900 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 group/button"
+                    className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-white text-black font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                   >
                     {ctaBanner.button.label}
-                    <ArrowRight className="w-5 h-5 transform group-hover/button:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </a>
 
                   <a
                     href="#learn-more"
-                    className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl border-2 border-white/50 text-lg font-bold text-white hover:bg-white/10 hover:border-white transition-all duration-300 backdrop-blur-sm"
+                    className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                   >
                     Learn More
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </a>
                 </div>
               </div>
-
-              {/* Floating decorative elements */}
-              <div
-                className="absolute top-8 left-12 w-4 h-4 rounded-full bg-white/40 backdrop-blur-sm transform group-hover:scale-150 transition-transform duration-500"
-                aria-hidden
-              />
-              <div
-                className="absolute bottom-12 left-24 w-6 h-6 rounded-full bg-white/30 backdrop-blur-sm transform group-hover:scale-125 transition-transform duration-500"
-                aria-hidden
-              />
-              <div
-                className="absolute top-12 right-1/3 w-3 h-3 rounded-full bg-white/50 backdrop-blur-sm transform group-hover:scale-200 transition-transform duration-700"
-                aria-hidden
-              />
-
-              {/* Corner accents */}
-              <div
-                className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-white/30 rounded-tl-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                aria-hidden
-              />
-              <div
-                className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-white/30 rounded-br-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                aria-hidden
-              />
             </div>
           </div>
         )}

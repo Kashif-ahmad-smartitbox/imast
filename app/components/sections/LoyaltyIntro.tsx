@@ -91,28 +91,8 @@ export default function LoyaltyIntro({ data }: { data: Data }) {
   return (
     <section
       className="relative overflow-hidden py-20 lg:py-28"
-      style={{ background: background }}
       aria-labelledby="loyalty-section-heading"
     >
-      {/* Enhanced Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div
           className={`grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center ${
@@ -156,11 +136,8 @@ export default function LoyaltyIntro({ data }: { data: Data }) {
           >
             <div className="max-w-2xl">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 border border-primary-200 mb-6">
-                <div className="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
-                <span className="text-sm font-semibold uppercase tracking-wide text-primary-700">
-                  {badgeText}
-                </span>
+              <div className="font-bold text-primary-500 text-2xl mb-3">
+                {badgeText}
               </div>
               <h2
                 id="loyalty-section-heading"
@@ -197,16 +174,17 @@ export default function LoyaltyIntro({ data }: { data: Data }) {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold hover:shadow-2xl hover:scale-105 transition-all duration-300 shadow-lg group"
+                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
-                  Start Your Loyalty Journey
+                  <span>Start Your Loyalty Journey</span>
                   <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   href="/case-studies"
-                  className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl border-2 border-primary-200 text-primary-700 font-bold hover:bg-primary-50 hover:border-primary-300 transition-all duration-300"
+                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-black border border-black/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
-                  View Case Studies
+                  <span>View Case Studies</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>
@@ -304,7 +282,7 @@ export default function LoyaltyIntro({ data }: { data: Data }) {
 
                 <a
                   href={ctaBanner.button?.href ?? "#contact"}
-                  className="inline-flex items-center gap-3 bg-white text-primary-600 font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 group/btn"
+                  className="rounded group inline-flex items-center gap-3 px-5 py-3 bg-white hover:bg-white/5 text-black hover:text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
                   {ctaBanner.button?.label ?? "Get In Touch"}
                   <ArrowRight className="w-5 h-5 transform group-hover/btn:translate-x-1 transition-transform" />
