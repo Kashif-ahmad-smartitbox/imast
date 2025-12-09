@@ -164,6 +164,7 @@ export default function Header({ data }: { data: HeaderData }) {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
   const scrolled = useScrolled();
   const { isMobile, isSmallTablet, isTablet, isDesktop, isLargeDesktop } =
     useWindowSize();
@@ -188,17 +189,41 @@ export default function Header({ data }: { data: HeaderData }) {
   const handleMouseEnter = useCallback(
     (menuKey: string) => {
       if (isDesktop) {
+        // Clear any pending close timeout
+        if (closeTimeout) {
+          clearTimeout(closeTimeout);
+          setCloseTimeout(null);
+        }
+
         setIsHovering(true);
         setOpenMenu(menuKey);
       }
     },
-    [isDesktop]
+    [isDesktop, closeTimeout]
   );
 
   const handleMouseLeave = useCallback(() => {
-    setIsHovering(false);
-    // Don't close immediately on mouse leave - let click outside handle it
-  }, []);
+    if (isDesktop) {
+      setIsHovering(false);
+
+      // Set a timeout to close the menu after a short delay
+      // This prevents the menu from closing when moving between the button and the menu
+      const timeout = setTimeout(() => {
+        setOpenMenu(null);
+      }, 200); // 200ms delay before closing
+
+      setCloseTimeout(timeout);
+    }
+  }, [isDesktop]);
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimeout) {
+        clearTimeout(closeTimeout);
+      }
+    };
+  }, [closeTimeout]);
 
   const getHeaderHeight = () => {
     if (isMobile) return "h-18";
@@ -300,7 +325,14 @@ export default function Header({ data }: { data: HeaderData }) {
         <div
           ref={containerRef}
           className="absolute left-0 right-0 top-full"
-          onMouseEnter={() => setIsHovering(true)}
+          onMouseEnter={() => {
+            // Clear timeout when entering the mega menu
+            if (closeTimeout) {
+              clearTimeout(closeTimeout);
+              setCloseTimeout(null);
+            }
+            setIsHovering(true);
+          }}
           onMouseLeave={handleMouseLeave}
         >
           <div className={`max-w-7xl mx-auto ${getContainerPadding()}`}>
@@ -351,7 +383,6 @@ export default function Header({ data }: { data: HeaderData }) {
   );
 }
 
-// --- Sub Components
 interface NavItemProps {
   label: string;
   menuKey: string;
@@ -408,7 +439,7 @@ function NavItem({
         className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-0.5 transition-all duration-300 ${
           isOpen
             ? isScrolled
-              ? "bg-gradient-to-r from-red-500 to-red-600 w-4/5"
+              ? "bg-linear-to-r from-red-500 to-red-600 w-4/5"
               : "bg-white w-4/5"
             : "w-0"
         }`}
@@ -434,14 +465,14 @@ function CTAButton({ href, text, isSmallTablet, isTablet }: CTAButtonProps) {
   return (
     <Link
       href={href}
-      className={`inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded shadow-lg hover:shadow-xl transition-all duration-300 font-semibold hover:scale-105 hover:gap-3 group relative overflow-hidden ${buttonSize}`}
+      className={`inline-flex items-center gap-2 bg-linear-to-r from-primary-600 to-primary-700 text-white rounded shadow-lg hover:shadow-xl transition-all duration-300 font-semibold hover:scale-105 hover:gap-3 group relative overflow-hidden ${buttonSize}`}
     >
       <span className="relative z-10">{text}</span>
       <ArrowRight
         size={isTablet ? 12 : 14}
         className="relative z-10 group-hover:translate-x-1 transition-transform"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute inset-0 bg-linear-to-r from-red-700 to-red-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
     </Link>
   );
 }
@@ -532,13 +563,13 @@ function SolutionMega({
               style={{ transitionDelay: `${idx * 75}ms` }}
             >
               {/* Background effects */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+              <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
               <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary-200/30 rounded-2xl transition-all duration-500" />
 
               <div className="relative z-10">
                 <div className="flex items-start gap-4">
                   <div
-                    className={`bg-gradient-to-br from-primary-500 to-primary-600 h-12 w-12 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg flex-shrink-0`}
+                    className={`bg-linear-to-br from-primary-500 to-primary-600 h-12 w-12 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shrink-0`}
                   >
                     <Icon
                       size={iconSize}
@@ -561,14 +592,14 @@ function SolutionMega({
               </div>
 
               {/* Hover accent line */}
-              <div className="absolute bottom-0 left-6 right-6 h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+              <div className="absolute bottom-0 left-6 right-6 h-1 bg-linear-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
             </Link>
           );
         })}
       </div>
 
       {/* IMAST 360 Card - Enhanced */}
-      <div className="bg-gradient-to-br from-primary-50 to-primary-100/80 rounded-2xl p-6 lg:p-8 flex flex-col justify-between border border-primary-200/40 relative overflow-hidden group hover:shadow-xl transition-all duration-500">
+      <div className="bg-linear-to-br from-primary-50 to-primary-100/80 rounded-2xl p-6 lg:p-8 flex flex-col justify-between border border-primary-200/40 relative overflow-hidden group hover:shadow-xl transition-all duration-500">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-5">
           <div
@@ -617,7 +648,7 @@ function SolutionMega({
               isLargeDesktop ? "text-base" : "text-sm"
             }`}
           >
-            <span className="bg-gradient-to-r from-primary-600 to-primary-600 bg-[length:0%_2px] bg-left-bottom bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500">
+            <span className="bg-linear-to-r from-primary-600 to-primary-600 bg-size-[0%_2px] bg-bottom-left bg-no-repeat group-hover:bg-size-[100%_2px] transition-all duration-500">
               Explore All
             </span>
             <ArrowRight
@@ -649,7 +680,7 @@ function SolutionMegaTablet({ data }: { data: MenuItem[] }) {
           >
             <div className="flex items-center gap-3">
               <div
-                className={`bg-gradient-to-br from-primary-500 to-primary-600 h-10 w-10 rounded-xl flex items-center justify-center text-white shadow-md flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}
+                className={`bg-linear-to-br from-primary-500 to-primary-600 h-10 w-10 rounded-xl flex items-center justify-center text-white shadow-md shrink-0 group-hover:scale-110 transition-transform duration-300`}
               >
                 <Icon size={18} />
               </div>
@@ -680,9 +711,9 @@ function SolutionMegaTablet({ data }: { data: MenuItem[] }) {
       {/* Enhanced View All Card */}
       <Link
         href="/solutions"
-        className="col-span-full flex items-center justify-center gap-3 p-4 rounded-xl bg-gradient-to-r from-primary-50 to-primary-100 text-primary-700 font-semibold hover:shadow-lg transition-all duration-300 border border-primary-200 hover:border-primary-300 transform hover:-translate-y-1 group"
+        className="col-span-full flex items-center justify-center gap-3 p-4 rounded-xl bg-linear-to-r from-primary-50 to-primary-100 text-primary-700 font-semibold hover:shadow-lg transition-all duration-300 border border-primary-200 hover:border-primary-300 transform hover:-translate-y-1 group"
       >
-        <span className="bg-gradient-to-r from-primary-600 to-primary-600 bg-[length:0%_2px] bg-left-bottom bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500">
+        <span className="bg-linear-to-r from-primary-600 to-primary-600 bg-size-[0%_2px] bg-bottom-left bg-no-repeat group-hover:bg-size-[100%_2px] transition-all duration-500">
           View All Solutions
         </span>
         <ArrowRight
@@ -715,13 +746,13 @@ function ServicesMega({
           <Link
             key={service.title}
             href={service.href}
-            className={`${padding} group relative block rounded-xl transition-all duration-300 border border-gray-200/80 bg-white/90 backdrop-blur-sm min-h-[140px] flex flex-col hover:border-primary-300/50 hover:bg-white transform hover:-translate-y-0.5`}
+            className={`${padding} group relative rounded-xl transition-all duration-300 border border-gray-200/80 bg-white/90 backdrop-blur-sm min-h-[140px] flex flex-col hover:border-primary-300/50 hover:bg-white transform hover:-translate-y-0.5`}
             style={{
               transitionDelay: `${index * 30}ms`,
             }}
           >
             {/* Gradient border effect */}
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary-500/5 to-primary-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 rounded-xl bg-linear-to-br from-primary-500/5 to-primary-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             {/* Animated corner accents */}
             <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-primary-500/0 group-hover:border-primary-500/50 transition-all duration-300 delay-100" />
@@ -731,7 +762,7 @@ function ServicesMega({
               {/* Icon and Title - Enhanced Compact */}
               <div className="flex items-center gap-2.5 mb-2.5">
                 <div
-                  className={`bg-gradient-to-br from-primary-500 to-primary-600 h-7 w-7 rounded-lg flex items-center justify-center text-white shadow-md flex-shrink-0 mt-0.5 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}
+                  className={`bg-linear-to-br from-primary-500 to-primary-600 h-7 w-7 rounded-lg flex items-center justify-center text-white shadow-md shrink-0 mt-0.5 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}
                 >
                   <Icon size={iconSize} className="drop-shadow-sm" />
                 </div>
@@ -762,7 +793,7 @@ function ServicesMega({
                           className={`flex items-center gap-2 ${featureSize} text-gray-700 line-clamp-1 group-hover:text-gray-800 transition-colors duration-300`}
                           style={{ transitionDelay: `${idx * 50}ms` }}
                         >
-                          <div className="w-1.5 h-1.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex-shrink-0 group-hover:scale-125 transition-transform duration-300 shadow-sm" />
+                          <div className="w-1.5 h-1.5 bg-linear-to-br from-primary-500 to-primary-600 rounded-full shrink-0 group-hover:scale-125 transition-transform duration-300 shadow-sm" />
                           <span className="truncate">{feature}</span>
                         </li>
                       );
@@ -773,7 +804,7 @@ function ServicesMega({
                           className={`flex items-center gap-2 ${featureSize} text-gray-700 line-clamp-1 group-hover:text-gray-800 transition-colors duration-300`}
                           style={{ transitionDelay: `${idx * 50}ms` }}
                         >
-                          <div className="w-1.5 h-1.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex-shrink-0 group-hover:scale-125 transition-transform duration-300 shadow-sm" />
+                          <div className="w-1.5 h-1.5 bg-linear-to-br from-primary-500 to-primary-600 rounded-full shrink-0 group-hover:scale-125 transition-transform duration-300 shadow-sm" />
                           <Link
                             href={feature.href}
                             className="hover:underline hover:text-primary-600 transition-colors duration-300 truncate"
@@ -791,7 +822,7 @@ function ServicesMega({
                     <li
                       className={`flex items-center gap-2 ${featureSize} text-gray-500 group-hover:text-gray-600 transition-colors duration-300`}
                     >
-                      <div className="w-1.5 h-1.5 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex-shrink-0" />
+                      <div className="w-1.5 h-1.5 bg-linear-to-br from-gray-400 to-gray-500 rounded-full shrink-0" />
                       <span>+{service.features.length - 2} more</span>
                     </li>
                   )}
@@ -803,7 +834,7 @@ function ServicesMega({
                 <div
                   className={`inline-flex items-center gap-1.5 text-primary-600 font-semibold group-hover:gap-2 transition-all duration-300 ${featureSize}`}
                 >
-                  <span className="bg-gradient-to-r from-primary-600 to-primary-600 bg-[length:0%_1px] bg-left-bottom bg-no-repeat group-hover:bg-[length:100%_1px] transition-all duration-500">
+                  <span className="bg-linear-to-r from-primary-600 to-primary-600 bg-size-[0%_1px] bg-bottom-left bg-no-repeat group-hover:bg-size-[100%_1px] transition-all duration-500">
                     Learn more
                   </span>
                   <ArrowRight
@@ -836,13 +867,13 @@ function ServicesMegaTablet({ data }: { data: MenuItem[] }) {
             style={{ transitionDelay: `${index * 20}ms` }}
           >
             {/* Background effect */}
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500/3 to-primary-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 rounded-xl bg-linear-to-r from-primary-500/3 to-primary-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             <div
               className={`${
                 service.gradient ||
-                "bg-gradient-to-br from-primary-500 to-primary-600"
-              } h-7 w-7 rounded-lg flex items-center justify-center text-white shadow-md flex-shrink-0 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300 relative z-10`}
+                "bg-linear-to-br from-primary-500 to-primary-600"
+              } h-7 w-7 rounded-lg flex items-center justify-center text-white shadow-md shrink-0 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300 relative z-10`}
             >
               <Icon size={16} className="drop-shadow-sm" />
             </div>
@@ -860,11 +891,11 @@ function ServicesMegaTablet({ data }: { data: MenuItem[] }) {
 
             <ArrowRight
               size={14}
-              className="ml-1 text-gray-400 group-hover:text-primary-600 group-hover:translate-x-0.5 transition-all duration-300 flex-shrink-0 relative z-10"
+              className="ml-1 text-gray-400 group-hover:text-primary-600 group-hover:translate-x-0.5 transition-all duration-300 shrink-0 relative z-10"
             />
 
             {/* Hover accent line */}
-            <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-primary-500/0 via-primary-500/0 to-primary-500/0 group-hover:from-primary-500/50 group-hover:via-primary-500 group-hover:to-primary-500/50 transition-all duration-500 rounded-full" />
+            <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-linear-to-r from-primary-500/0 via-primary-500/0 to-primary-500/0 group-hover:from-primary-500/50 group-hover:via-primary-500 group-hover:to-primary-500/50 transition-all duration-500 rounded-full" />
           </Link>
         );
       })}
@@ -898,13 +929,13 @@ function CompanyMega({
                 style={{ transitionDelay: `${index * 50}ms` }}
               >
                 {/* Background effect */}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+                <div className="absolute inset-0 rounded-xl bg-linear-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
 
                 {/* Animated border */}
                 <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary-200/30 rounded-xl transition-all duration-500" />
 
                 {/* Icon with enhanced styling */}
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg flex-shrink-0 relative z-10">
+                <div className="h-12 w-12 rounded-xl bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shrink-0 relative z-10">
                   <Icon
                     size={iconSize}
                     className="group-hover:scale-110 transition-transform duration-300"
@@ -930,7 +961,7 @@ function CompanyMega({
                 </div>
 
                 {/* Hover accent line */}
-                <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-linear-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
               </Link>
             );
           })}
@@ -938,7 +969,7 @@ function CompanyMega({
       </div>
 
       {/* Company Info Card - Enhanced */}
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-6 lg:p-8 text-white border border-gray-700 relative overflow-hidden group hover:shadow-2xl transition-all duration-500">
+      <div className="bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-6 lg:p-8 text-white border border-gray-700 relative overflow-hidden group hover:shadow-2xl transition-all duration-500">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div
@@ -997,7 +1028,7 @@ function CompanyMega({
                 isLargeDesktop ? "px-6 py-3 text-base" : "px-5 py-2.5 text-sm"
               }`}
             >
-              <span className="bg-gradient-to-r from-gray-900 to-gray-900 bg-[length:0%_2px] bg-left-bottom bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500">
+              <span className="bg-linear-to-r from-gray-900 to-gray-900 bg-size-[0%_2px] bg-bottom-left bg-no-repeat group-hover:bg-size-[100%_2px] transition-all duration-500">
                 {data.companyMega.cta.text}
               </span>
               <ArrowRight
@@ -1029,9 +1060,9 @@ function CompanyMegaTablet({ data }: { data: CompanyLink[] }) {
             style={{ transitionDelay: `${index * 30}ms` }}
           >
             {/* Background effect */}
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500/3 to-primary-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 rounded-xl bg-linear-to-r from-primary-500/3 to-primary-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white shadow-md flex-shrink-0 group-hover:scale-105 transition-transform duration-300 relative z-10">
+            <div className="h-9 w-9 rounded-lg bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white shadow-md shrink-0 group-hover:scale-105 transition-transform duration-300 relative z-10">
               <Icon size={16} />
             </div>
 
@@ -1043,11 +1074,11 @@ function CompanyMegaTablet({ data }: { data: CompanyLink[] }) {
 
             <ArrowRight
               size={14}
-              className="ml-1 text-gray-400 group-hover:text-primary-600 group-hover:translate-x-0.5 transition-all duration-300 flex-shrink-0 relative z-10"
+              className="ml-1 text-gray-400 group-hover:text-primary-600 group-hover:translate-x-0.5 transition-all duration-300 shrink-0 relative z-10"
             />
 
             {/* Hover indicator */}
-            <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-primary-500/0 via-primary-500/0 to-primary-500/0 group-hover:from-primary-500/50 group-hover:via-primary-500 group-hover:to-primary-500/50 transition-all duration-500 rounded-full" />
+            <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-linear-to-r from-primary-500/0 via-primary-500/0 to-primary-500/0 group-hover:from-primary-500/50 group-hover:via-primary-500 group-hover:to-primary-500/50 transition-all duration-500 rounded-full" />
           </Link>
         );
       })}
@@ -1055,9 +1086,9 @@ function CompanyMegaTablet({ data }: { data: CompanyLink[] }) {
       {/* Enhanced CTA Card */}
       <Link
         href="/company"
-        className="flex items-center justify-center gap-3 p-4 rounded-xl bg-gradient-to-r from-gray-900 to-gray-800 text-white font-bold hover:shadow-xl transition-all duration-300 border border-gray-700 hover:border-gray-600 transform hover:-translate-y-0.5 group"
+        className="flex items-center justify-center gap-3 p-4 rounded-xl bg-linear-to-r from-gray-900 to-gray-800 text-white font-bold hover:shadow-xl transition-all duration-300 border border-gray-700 hover:border-gray-600 transform hover:-translate-y-0.5 group"
       >
-        <span className="bg-gradient-to-r from-white to-white bg-[length:0%_2px] bg-left-bottom bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500">
+        <span className="bg-linear-to-r from-white to-white bg-size-[0%_2px] bg-bottom-left bg-no-repeat group-hover:bg-size-[100%_2px] transition-all duration-500">
           Learn More About Us
         </span>
         <ArrowRight
@@ -1121,7 +1152,7 @@ function MobileMenu({
       onClick={onClose}
     >
       <div
-        className={`absolute left-0 top-0 bottom-0 ${menuWidth} max-w-full h-[100vh] bg-white ${padding} overflow-y-auto transform transition-transform duration-300 shadow-xl`}
+        className={`absolute left-0 top-0 bottom-0 ${menuWidth} max-w-full h-screen bg-white ${padding} overflow-y-auto transform transition-transform duration-300 shadow-xl`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
@@ -1167,7 +1198,7 @@ function MobileMenu({
                       >
                         <Icon
                           size={smallIconSize}
-                          className="text-gray-400 flex-shrink-0"
+                          className="text-gray-400 shrink-0"
                         />
                         <span className="truncate">{item.label}</span>
                       </Link>
@@ -1180,7 +1211,7 @@ function MobileMenu({
 
           <Link
             href={data.cta.href}
-            className={`flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-3 rounded font-semibold mt-4 hover:shadow-lg transition-all duration-300 hover:gap-3 hover:scale-105 ${buttonTextSize}`}
+            className={`flex items-center justify-center gap-2 w-full bg-linear-to-r from-primary-600 to-primary-700 text-white py-3 rounded font-semibold mt-4 hover:shadow-lg transition-all duration-300 hover:gap-3 hover:scale-105 ${buttonTextSize}`}
             onClick={onClose}
           >
             {data.cta.text}
