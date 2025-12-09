@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 
+import { Analytics } from "@vercel/analytics/next";
+import ClientTopLoader from "./components/ClientTopLoader";
 import { AuthProvider } from "@/services/context/AuthContext";
 import { AlertProvider } from "@/components/alerts/AlertProvider";
+import { GoogleTags, GoogleTagsNoscript } from "./components/GoogleTags";
 import { GlobalModalProvider } from "@/components/global/GlobalModalProvider";
-import ClientTopLoader from "./components/ClientTopLoader";
-import { Analytics } from "@vercel/analytics/next";
+
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
@@ -30,7 +32,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <GoogleTags />
+      </head>
       <body className={`${outfit.variable} antialiased`}>
+        <GoogleTagsNoscript />
+
         <ClientTopLoader />
 
         <AuthProvider>

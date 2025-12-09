@@ -45,14 +45,14 @@ export default function ModuleShowcase({ data }: Props) {
   // Configuration based on variant
   const variantConfig = {
     default: {
-      container: "bg-gradient-to-br from-primary-600 to-primary-700",
+      container: "bg-linear-to-br from-primary-600 to-primary-700",
       card: "bg-white border border-primary-100",
       title: "text-white",
       subtitle: "text-primary-100",
     },
     elegant: {
       container:
-        "bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700",
+        "bg-linear-to-br from-primary-500 via-primary-600 to-primary-700",
       card: "bg-white/95 backdrop-blur-sm border border-white/20",
       title: "text-white",
       subtitle: "text-primary-50",
@@ -64,7 +64,7 @@ export default function ModuleShowcase({ data }: Props) {
       subtitle: "text-primary-100",
     },
     gradient: {
-      container: "bg-gradient-to-br from-primary-500 to-primary-800",
+      container: "bg-linear-to-br from-primary-500 to-primary-800",
       card: "bg-white/10 backdrop-blur-sm border border-white/20",
       title: "text-white",
       subtitle: "text-primary-50",
@@ -90,11 +90,11 @@ export default function ModuleShowcase({ data }: Props) {
       }}
     >
       {/* Background decorative elements */}
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+      <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
 
       {/* Featured badge */}
       {card.featured && (
-        <div className="absolute -top-3 -right-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10 backdrop-blur-sm">
+        <div className="absolute -top-3 -right-3 bg-linear-to-r from-primary-500 to-primary-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10 backdrop-blur-sm">
           Featured
         </div>
       )}
@@ -124,32 +124,6 @@ export default function ModuleShowcase({ data }: Props) {
           {card.title}
         </h3>
       )}
-
-      {/* CTA Link */}
-      <div className="text-center mt-auto">
-        <Link href={card.href ?? "#"} legacyBehavior>
-          <a
-            className="inline-flex items-center gap-3 group/link font-semibold transition-all duration-300 hover:gap-4"
-            style={{ color: accentColor }}
-          >
-            <span className="underline decoration-2 underline-offset-4 transition-all duration-300 group-hover/link:underline-offset-2">
-              Learn More
-            </span>
-            <ArrowRight
-              size={18}
-              className="transition-transform duration-300 group-hover/link:translate-x-1"
-            />
-          </a>
-        </Link>
-      </div>
-
-      {/* Hover accent line */}
-      <div
-        className="absolute bottom-0 left-8 right-8 h-1 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"
-        style={{
-          background: `linear-gradient(to right, ${accentColor}40, ${accentColor})`,
-        }}
-      />
     </article>
   );
 
@@ -159,25 +133,6 @@ export default function ModuleShowcase({ data }: Props) {
       style={{ background }}
       aria-labelledby="module-showcase-heading"
     >
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full mix-blend-overlay filter blur-3xl opacity-30 animate-blob" />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-white/5 rounded-full mix-blend-overlay filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-white/10 rounded-full mix-blend-overlay filter blur-3xl opacity-30 animate-blob animation-delay-4000" />
-
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, white 1px, transparent 1px),
-                             linear-gradient(to bottom, white 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-12 lg:mb-16">
@@ -201,7 +156,7 @@ export default function ModuleShowcase({ data }: Props) {
 
           <h2
             id="module-showcase-heading"
-            className={`text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4 ${currentVariant.title}`}
+            className={`text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-4 ${currentVariant.title}`}
           >
             {heading}
           </h2>
@@ -222,32 +177,6 @@ export default function ModuleShowcase({ data }: Props) {
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </section>
   );
 }

@@ -88,26 +88,6 @@ export default function IntroSection({ data }: Props) {
 
   const TextContent = () => (
     <div className="relative h-full flex items-center justify-center px-8 sm:px-12 lg:px-20 py-16 lg:py-24">
-      {/* Background pattern */}
-      {showPattern && currentVariant.pattern && (
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, white 1px, transparent 1px),
-                             linear-gradient(to bottom, white 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      )}
-
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute bottom-10 right-10 w-72 h-72 bg-white/5 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-      </div>
-
       <div className="max-w-2xl relative z-10">
         {/* Badge */}
         {badge && (
@@ -165,13 +145,6 @@ export default function IntroSection({ data }: Props) {
         className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
         priority
       />
-
-      {/* Image overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-      {/* Decorative elements */}
-      <div className="absolute top-6 right-6 w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 rotate-12 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200" />
-      <div className="absolute bottom-6 left-6 w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 -rotate-6 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-300" />
     </div>
   );
 
@@ -197,29 +170,6 @@ export default function IntroSection({ data }: Props) {
           </>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-      `}</style>
     </section>
   );
 }
