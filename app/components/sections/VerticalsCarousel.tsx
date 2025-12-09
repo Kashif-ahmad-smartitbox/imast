@@ -110,28 +110,8 @@ export default function VerticalsCarousel({ data }: VerticalsCarouselProps) {
         className="w-full max-w-[1600px] py-20 px-8 relative overflow-hidden"
         style={{
           background: bgColor,
-          borderRadius: "32px",
         }}
       >
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, white 1px, transparent 1px),
-                               linear-gradient(to bottom, white 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob" />
-          <div className="absolute top-10 right-10 w-72 h-72 bg-white/10 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-          <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-white/10 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-        </div>
-
         <div className="max-w-6xl mx-auto text-center text-white mb-16 relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 mb-6">
             <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
@@ -140,12 +120,12 @@ export default function VerticalsCarousel({ data }: VerticalsCarouselProps) {
             </span>
           </div>
 
-          <h2 className="text-4xl lg:text-5xl font-bold leading-tight mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold leading-tight mb-4">
             {title}
           </h2>
 
           {subtitle && (
-            <p className="text-lg lg:text-xl opacity-95 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-sm lg:text-lg opacity-95 leading-relaxed max-w-3xl mx-auto">
               {subtitle}
             </p>
           )}
@@ -161,8 +141,8 @@ export default function VerticalsCarousel({ data }: VerticalsCarouselProps) {
             <div
               className="w-full h-full"
               style={{
-                backgroundImage: `linear-gradient(to right, white 1px, transparent 1px),
-                                 linear-gradient(to bottom, white 1px, transparent 1px)`,
+                backgroundImage: `linear--linear(to right, white 1px, transparent 1px),
+                                 linear--linear(to bottom, white 1px, transparent 1px)`,
                 backgroundSize: "25px 25px",
               }}
             />
@@ -180,7 +160,7 @@ export default function VerticalsCarousel({ data }: VerticalsCarouselProps) {
               {items.map((item, index) => (
                 <div
                   key={item.id ?? index}
-                  className="flex-shrink-0 transition-all duration-500 ease-out"
+                  className="shrink-0 transition-all duration-500 ease-out"
                   style={{
                     width: `calc(${100 / visibleCount}% - ${
                       ((visibleCount - 1) * 1.5) / visibleCount
@@ -203,10 +183,10 @@ export default function VerticalsCarousel({ data }: VerticalsCarouselProps) {
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                       {/* Overlay on hover */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute inset-0 bg--linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                       {/* Title overlay */}
-                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      <div className="absolute bottom-0 left-0 right-0 p-4 bg--linear-to-t from-black/80 to-transparent transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                         <div className="text-lg font-bold text-white text-center">
                           {item.title}
                         </div>
@@ -223,10 +203,10 @@ export default function VerticalsCarousel({ data }: VerticalsCarouselProps) {
             <button
               onClick={prevSlide}
               aria-label="Previous slide"
-              className="w-16 h-16 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 border border-white/20"
+              className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 border border-white/20"
               disabled={currentIndex === 0}
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
 
             {/* Dots Indicator */}
@@ -250,10 +230,10 @@ export default function VerticalsCarousel({ data }: VerticalsCarouselProps) {
             <button
               onClick={nextSlide}
               aria-label="Next slide"
-              className="w-16 h-16 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 border border-white/20"
+              className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 border border-white/20"
               disabled={currentIndex === maxIndex}
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 

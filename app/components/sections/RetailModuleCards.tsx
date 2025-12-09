@@ -51,7 +51,7 @@ export default function RetailModuleCards({ data }: Props) {
     imageSrc2 = "/images/dashboard-widgets.png",
     imageAlt = "retail artwork",
     reverse = false,
-    background = "#fff7fb",
+    background = "#fffff",
     cardBg = "#ffffff",
     accentColor = "#9b28a0",
     cards = [],
@@ -70,25 +70,6 @@ export default function RetailModuleCards({ data }: Props) {
       style={{ background }}
       aria-labelledby="retail-module-heading"
     >
-      {/* Enhanced Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Enhanced Header Section */}
         <div className="text-center mb-16 lg:mb-20">
@@ -107,7 +88,7 @@ export default function RetailModuleCards({ data }: Props) {
               word.toLowerCase().includes("retail") ? (
                 <span
                   key={index}
-                  className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent"
+                  className="bg-linear-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent"
                   style={{ marginRight: 8 }}
                 >
                   {word}
@@ -295,7 +276,7 @@ export default function RetailModuleCards({ data }: Props) {
 
         {/* Enhanced Cards Grid */}
         <div className="mt-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {cards.map((card, index) => (
               <article
                 key={card.id}
@@ -303,12 +284,12 @@ export default function RetailModuleCards({ data }: Props) {
                 style={{ background: cardBg }}
               >
                 {/* Background decorative element */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+                <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
 
                 {/* Enhanced Icon Container */}
                 <div className="relative mb-6">
                   <div className="absolute -top-2 -left-2 w-16 h-16 bg-primary-100 rounded-2xl transform rotate-6 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                  <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
+                  <div className="relative w-14 h-14 rounded-2xl bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
                     {card.icon ? (
                       <img
                         src={card.icon}
@@ -346,38 +327,12 @@ export default function RetailModuleCards({ data }: Props) {
                 </p>
 
                 {/* Hover accent line */}
-                <div className="absolute bottom-0 left-8 right-8 h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                <div className="absolute bottom-0 left-8 right-8 h-1 bg-linear-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
               </article>
             ))}
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </section>
   );
 }

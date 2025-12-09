@@ -57,25 +57,6 @@ export default function DMSModulesSection({ data }: { data: ModulesData }) {
 
   return (
     <section className="py-20 lg:py-28 bg-white relative overflow-hidden">
-      {/* Background Grid Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-            backgroundSize: "50px 50px",
-          }}
-        />
-      </div>
-
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-primary-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header Section */}
         <div className="text-center mb-16 lg:mb-20">
@@ -99,7 +80,7 @@ export default function DMSModulesSection({ data }: { data: ModulesData }) {
 
         {/* Modules Grid */}
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {items.map((item, index) => {
               const IconComponent = item.icon
                 ? iconMap[item.icon]
@@ -111,12 +92,12 @@ export default function DMSModulesSection({ data }: { data: ModulesData }) {
                   className="group relative bg-white rounded-3xl p-8 border-2 border-gray-100 hover:border-primary-200 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col h-full"
                 >
                   {/* Background gradient on hover */}
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+                  <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
 
                   {/* Icon Container */}
                   <div className="relative mb-6">
                     <div className="absolute -top-2 -left-2 w-16 h-16 bg-primary-100 rounded-2xl transform rotate-6 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                    <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
+                    <div className="relative w-14 h-14 rounded-2xl bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
                       {IconComponent && (
                         <IconComponent
                           size={24}
@@ -132,18 +113,9 @@ export default function DMSModulesSection({ data }: { data: ModulesData }) {
                     {item.title}
                   </h3>
 
-                  <p className="text-gray-600 leading-relaxed text-base flex-grow">
+                  <p className="text-gray-600 leading-relaxed text-base grow">
                     {item.description}
                   </p>
-
-                  {/* Hover accent line */}
-                  <div className="absolute bottom-0 left-8 right-8 h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-
-                  {/* Decorative corner accents */}
-                  <div className="absolute top-4 left-4 w-3 h-3 border-t-2 border-l-2 border-primary-300 rounded-tl-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="absolute top-4 right-4 w-3 h-3 border-t-2 border-r-2 border-primary-300 rounded-tr-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="absolute bottom-4 left-4 w-3 h-3 border-b-2 border-l-2 border-primary-300 rounded-bl-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="absolute bottom-4 right-4 w-3 h-3 border-b-2 border-r-2 border-primary-300 rounded-br-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </article>
               );
             })}

@@ -103,18 +103,6 @@ export default function FeatureCardSimple({ data }: { data: Data }) {
 
   return (
     <section className="py-12 lg:py-16 bg-white relative overflow-hidden">
-      {/* Grid Pattern Overlay */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                           linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-            backgroundSize: "50px 50px",
-          }}
-        />
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div
           className={`rounded-3xl p-6 lg:p-8 ${bgClass ? bgClass : ""}`}

@@ -62,12 +62,12 @@ export default function LoyaltyPrograms({ data }: Props) {
       iconBg: "bg-gray-100",
     },
     modern: {
-      container: "bg-gradient-to-br from-gray-50 to-white",
+      container: "bg-linear-to-br from-gray-50 to-white",
       card: "bg-white/80 backdrop-blur-sm border border-gray-100",
-      iconBg: "bg-gradient-to-br from-primary-500 to-primary-600",
+      iconBg: "bg-linear-to-br from-primary-500 to-primary-600",
     },
     elegant: {
-      container: "bg-gradient-to-br from-primary-25 to-primary-50",
+      container: "bg-linear-to-br from-primary-25 to-primary-50",
       card: "bg-white border border-primary-100",
       iconBg: "bg-primary-100",
     },
@@ -97,8 +97,8 @@ export default function LoyaltyPrograms({ data }: Props) {
         {/* Background decorative elements for modern variant */}
         {variant === "modern" && (
           <>
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
-            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 opacity-0 group-hover:opacity-10 blur-sm transition-opacity duration-500" />
+            <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+            <div className="absolute -inset-1 rounded-2xl bg-linear-to-r from-primary-500 to-primary-600 opacity-0 group-hover:opacity-10 blur-sm transition-opacity duration-500" />
           </>
         )}
 
@@ -106,7 +106,7 @@ export default function LoyaltyPrograms({ data }: Props) {
           {/* Enhanced icon circle */}
           <div className="relative">
             <div
-              className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 ${
+              className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 ${
                 variant === "modern" ? styles.iconBg : `bg-[${accentColor}]`
               } shadow-md`}
               style={
@@ -157,7 +157,7 @@ export default function LoyaltyPrograms({ data }: Props) {
                     key={featureIndex}
                     className="flex items-center gap-2 text-xs text-gray-500"
                   >
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary-500 flex-shrink-0" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary-500 shrink-0" />
                     {feature}
                   </li>
                 ))}
@@ -168,7 +168,7 @@ export default function LoyaltyPrograms({ data }: Props) {
 
         {/* Accent line for minimal variant */}
         {variant === "minimal" && (
-          <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+          <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-linear-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
         )}
       </div>
     );
@@ -179,30 +179,6 @@ export default function LoyaltyPrograms({ data }: Props) {
       className={`${containerPadding} ${styles.container} relative overflow-hidden`}
       aria-labelledby="loyalty-heading"
     >
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Animated background elements for modern variant */}
-        {variant === "modern" && (
-          <>
-            <div className="absolute top-10 left-10 w-60 h-60 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-            <div className="absolute top-10 right-10 w-60 h-60 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-            <div className="absolute bottom-10 left-1/2 w-60 h-60 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-          </>
-        )}
-
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Enhanced Header */}
         <div className="text-center mb-12 lg:mb-16">
@@ -232,7 +208,7 @@ export default function LoyaltyPrograms({ data }: Props) {
 
         {/* Enhanced Programs Grid */}
         <div
-          className={`grid gap-4 lg:gap-6 ${
+          className={`grid gap-4 lg:gap-4 ${
             columns === 2
               ? "grid-cols-1 lg:grid-cols-2"
               : "grid-cols-1 lg:grid-cols-2"
@@ -242,53 +218,7 @@ export default function LoyaltyPrograms({ data }: Props) {
             <ProgramCard key={program.id} program={program} index={index} />
           ))}
         </div>
-
-        {/* Enhanced CTA */}
-        <div className="mt-12 flex justify-center">
-          <a
-            href={ctaHref}
-            className="group relative inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 overflow-hidden"
-            style={{
-              background: `linear-gradient(135deg, ${accentColor}, ${accentColor}dd)`,
-            }}
-          >
-            {/* Shine effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-
-            <span className="relative z-10 mr-2 text-sm">{ctaLabel}</span>
-            <ArrowRight className="relative z-10 w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-
-            {/* Hover background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-600 to-primary-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </a>
-        </div>
       </div>
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </section>
   );
 }

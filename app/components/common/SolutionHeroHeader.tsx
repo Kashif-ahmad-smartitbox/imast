@@ -87,18 +87,6 @@ export default function SolutionHeroHeader({
         <div className="absolute bottom-1/3 left-1/3 w-48 h-48 bg-gradient-to-tr from-gray-600/15 to-gray-500/10 transform -rotate-12 blur-2xl" />
       </div>
 
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                           linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-            backgroundSize: "50px 50px",
-          }}
-        />
-      </div>
-
       {/* Subtle particle effect */}
       <div aria-hidden="true" className="absolute inset-0 opacity-30">
         <div

@@ -105,7 +105,7 @@ function RotatingLogo({
             aria-hidden={!isActive}
             style={{ willChange: "transform, opacity" }}
           >
-            <div className="w-full max-w-[160px] px-4">
+            <div className="w-full max-w-40 px-4">
               <img
                 src={l.url}
                 alt={isActive ? l.alt ?? "" : ""}
@@ -140,7 +140,7 @@ const FeatureCard: React.FC<{
       className="text-center p-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-primary-100 hover:shadow-lg hover:border-primary-200 transition-all duration-300 group"
       style={{ animationDelay: `${index * 200}ms` }}
     >
-      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+      <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
         <IconComponent className="w-8 h-8 text-white" />
       </div>
       <h4 className="text-lg font-bold text-primary-900 mb-2">{title}</h4>
@@ -166,23 +166,11 @@ export default function ImastIntegrationsRotatingSection({
   return (
     <section className={`relative py-20 lg:py-28 overflow-hidden ${className}`}>
       {/* Vibrant Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700">
+      <div className="absolute inset-0 bg-linear-to-br from-primary-500 via-primary-600 to-primary-700">
         {/* Animated background elements */}
         <div className="absolute top-10 left-10 w-72 h-72 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
         <div className="absolute top-10 right-10 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
         <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000" />
-
-        {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, white 1px, transparent 1px),
-                             linear-gradient(to bottom, white 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -214,12 +202,12 @@ export default function ImastIntegrationsRotatingSection({
             return (
               <div key={slot.id} className="relative group">
                 <div
-                  className="relative flex items-center justify-center h-32 rounded-3xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-500 overflow-hidden"
+                  className="relative flex items-center justify-center h-32 rounded-3xl bg-white backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-500 overflow-hidden"
                   aria-label={slot.name ?? slot.id}
                   role="group"
                 >
                   {/* Hover effect background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-linear-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                   {/* Logo container */}
                   <div className="relative z-10 w-full px-4">
@@ -227,7 +215,7 @@ export default function ImastIntegrationsRotatingSection({
                   </div>
 
                   {/* Shine effect on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 </div>
 
                 {/* Slot name */}

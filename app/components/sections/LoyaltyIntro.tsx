@@ -77,7 +77,7 @@ export default function LoyaltyIntro({ data }: { data: Data }) {
         className="text-center p-6 rounded-2xl bg-white/80 border border-primary-100 hover:border-primary-200 transition-all duration-300 group"
         style={{ animationDelay: `${index * 200}ms` }}
       >
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+        <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
           <IconComponent className="w-8 h-8 text-white" />
         </div>
         <div className="text-3xl lg:text-4xl font-bold text-primary-600 mb-2">
@@ -144,11 +144,11 @@ export default function LoyaltyIntro({ data }: { data: Data }) {
                 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-6"
               >
                 We Create and Transform{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-800">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-primary-600 to-primary-800">
                   Loyalty Programs
                 </span>
                 . We Enhance{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-primary-700">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-primary-500 to-primary-700">
                   Traction
                 </span>
                 .
@@ -174,7 +174,7 @@ export default function LoyaltyIntro({ data }: { data: Data }) {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/contact"
-                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-linear-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
                   <span>Start Your Loyalty Journey</span>
                   <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
@@ -211,7 +211,7 @@ export default function LoyaltyIntro({ data }: { data: Data }) {
                   href={card.href ?? "#"}
                   className="group block rounded-3xl bg-white/80 p-6 transition-all duration-500 border border-primary-100 hover:border-primary-300 hover:scale-105"
                 >
-                  <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gradient-to-br from-primary-50 to-primary-100 mb-4">
+                  <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-linear-to-br from-primary-50 to-primary-100 mb-4">
                     {card.image ? (
                       <Image
                         src={card.image}
@@ -222,14 +222,14 @@ export default function LoyaltyIntro({ data }: { data: Data }) {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center">
                           <Sparkles className="w-8 h-8 text-white" />
                         </div>
                       </div>
                     )}
 
                     {/* Hover overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-linear-to-t from-primary-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
 
                   <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-700 transition-colors">
@@ -267,7 +267,7 @@ export default function LoyaltyIntro({ data }: { data: Data }) {
                   priority
                 />
                 <div
-                  className="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-primary-700/80"
+                  className="absolute inset-0 bg-linear-to-r from-primary-900/80 to-primary-700/80"
                   aria-hidden="true"
                 />
               </div>

@@ -63,26 +63,7 @@ export default function FeaturesSection({ data }: Props) {
   const defaultIcons = [Zap, Shield, Users, TrendingUp, Clock, CheckCircle];
 
   return (
-    <section className="py-20 lg:py-28 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-primary-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-
-        {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
-
+    <section className="py-20 lg:py-28 bg-linear-to-br from-gray-50 to-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header Section */}
         <header className="text-center mb-16 lg:mb-20">
@@ -93,21 +74,21 @@ export default function FeaturesSection({ data }: Props) {
             </span>
           </div>
 
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">
             {title}
           </h2>
 
-          <h3 className="mt-6 text-xl lg:text-2xl font-semibold text-gray-800 max-w-4xl mx-auto leading-relaxed">
+          <h3 className="mt-6 text-lg lg:text-xl font-semibold text-gray-800 max-w-4xl mx-auto leading-relaxed">
             {subtitle}
           </h3>
 
-          <p className="mt-6 mx-auto text-lg text-gray-600 max-w-3xl leading-relaxed">
+          <p className="mt-6 mx-auto text-sm text-gray-600 max-w-3xl leading-relaxed">
             {description}
           </p>
         </header>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {features.map((feature, index) => {
             const IconComponent = feature.icon
               ? iconMap[feature.icon]
@@ -118,16 +99,13 @@ export default function FeaturesSection({ data }: Props) {
                 key={feature.id ?? index}
                 className="group relative bg-white rounded-3xl p-8 border-2 border-gray-100 hover:border-primary-200 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
-                {/* Background gradient on hover */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
-
                 {/* Icon Container */}
                 <div className="relative mb-6">
                   <div className="absolute -top-2 -left-2 w-16 h-16 bg-primary-100 rounded-2xl transform rotate-6 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                  <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
+                  <div className="relative w-14 h-14 rounded-2xl bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
                     {IconComponent && (
                       <IconComponent
-                        size={24}
+                        size={20}
                         className="text-white"
                         aria-hidden="true"
                       />
@@ -136,16 +114,16 @@ export default function FeaturesSection({ data }: Props) {
                 </div>
 
                 {/* Content */}
-                <h4 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-primary-800 transition-colors duration-300">
+                <h4 className="text-lg font-bold text-gray-900 mb-4 group-hover:text-primary-800 transition-colors duration-300">
                   {feature.title}
                 </h4>
 
-                <p className="text-gray-600 leading-relaxed text-base">
+                <p className="text-gray-600 leading-relaxed text-sm">
                   {feature.text}
                 </p>
 
                 {/* Hover accent line */}
-                <div className="absolute bottom-0 left-8 right-8 h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                <div className="absolute bottom-0 left-8 right-8 h-1 bg-linear-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
               </article>
             );
           })}

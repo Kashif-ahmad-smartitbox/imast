@@ -100,21 +100,6 @@ export default function HeadingSection({ data }: { data: HeadingData }) {
     <section
       className={`relative overflow-hidden ${spacingConfig[spacing]} ${currentVariant.container}`}
     >
-      {/* Grid Lines Background */}
-      {showGridLines && (
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            opacity: gridOpacity,
-            backgroundImage: `
-              linear-gradient(to right, ${gridColor} 1px, transparent 1px),
-              linear-gradient(to bottom, ${gridColor} 1px, transparent 1px)
-            `,
-            backgroundSize: "50px 50px",
-          }}
-        />
-      )}
-
       {/* Animated background elements for elegant variant */}
       {variant === "elegant" && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -158,7 +143,7 @@ export default function HeadingSection({ data }: { data: HeadingData }) {
 
           {/* Title */}
           <h2
-            className={`text-3xl md:text-4xl lg:text-5xl font-bold leading-tight md:leading-tight lg:leading-tight ${currentVariant.title} w-full`}
+            className={`text-2xl md:text-3xl lg:text-4xl font-bold leading-tight md:leading-tight lg:leading-tight ${currentVariant.title} w-full`}
           >
             {words.map((word, i) => {
               const clean = word.replace(/[^a-zA-Z0-9]/g, "");
@@ -211,7 +196,7 @@ export default function HeadingSection({ data }: { data: HeadingData }) {
           {description && (
             <div className="mt-6 transition-all duration-700 delay-300 w-full">
               <p
-                className={`text-lg md:text-xl leading-relaxed ${currentVariant.description}`}
+                className={`text-sm md:text-lg leading-relaxed ${currentVariant.description}`}
                 style={{
                   maxWidth: align === "center" ? "none" : "42rem",
                   // For center alignment, let the text flow naturally
@@ -224,32 +209,6 @@ export default function HeadingSection({ data }: { data: HeadingData }) {
           )}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </section>
   );
 }

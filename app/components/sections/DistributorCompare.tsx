@@ -90,12 +90,12 @@ export default function DistributorCompare({ data }: { data: Data }) {
 
         {/* Main Content */}
         <div
-          className="relative w-full h-full rounded-2xl p-8 border-2 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 flex flex-col"
+          className="relative w-full h-full rounded-2xl p-8 border-2 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl flex flex-col"
           style={{
             borderColor: bc,
             background: tint,
             boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
-            minHeight: "500px", // Ensure minimum height
+            minHeight: "500px",
           }}
         >
           {/* Decorative Corner Accents */}
@@ -127,7 +127,7 @@ export default function DistributorCompare({ data }: { data: Data }) {
           </h3>
 
           {/* Paragraphs */}
-          <div className="space-y-4 mb-6 flex-grow">
+          <div className="space-y-4 mb-6 grow">
             {col.paragraphs.map((p, i) => (
               <p key={i} className="text-gray-700 leading-relaxed text-base">
                 {p}
@@ -141,7 +141,7 @@ export default function DistributorCompare({ data }: { data: Data }) {
               {col.features.map((feature, index) => (
                 <div key={index} className="flex items-start gap-3">
                   <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                    className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
                     style={{
                       background: bc,
                     }}
@@ -169,26 +169,7 @@ export default function DistributorCompare({ data }: { data: Data }) {
   };
 
   return (
-    <section className="py-20 lg:py-28 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
-      {/* Background Grid Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-            backgroundSize: "50px 50px",
-          }}
-        />
-      </div>
-
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-primary-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-      </div>
-
+    <section className="py-20 lg:py-28 bg-linear-to-br from-gray-50 to-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header Section */}
         <div className="text-center mb-16 lg:mb-20">
@@ -223,38 +204,6 @@ export default function DistributorCompare({ data }: { data: Data }) {
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .animate-blob {
-            animation: none;
-          }
-        }
-      `}</style>
     </section>
   );
 }

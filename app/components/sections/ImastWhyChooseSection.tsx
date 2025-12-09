@@ -58,15 +58,12 @@ const Card: React.FC<{ item: WhyItem; index: number }> = ({ item, index }) => {
   return (
     <article
       aria-labelledby={`why-${item.id}-title`}
-      className="group relative rounded-3xl bg-gradient-to-br from-white to-primary-50 p-8 border-2 border-primary-100 hover:border-primary-300 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
+      className="group relative rounded-3xl bg-white p-8 border border-gray-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-500"
     >
-      {/* Background decorative element */}
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary-500 to-primary-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
-
       {/* Icon with enhanced styling */}
       <div className="relative mb-6">
         <div className="absolute -top-2 -left-2 w-16 h-16 bg-primary-100 rounded-2xl transform rotate-6 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-        <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
+        <div className="relative w-14 h-14 rounded-2xl bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
           {IconComponent && (
             <IconComponent
               size={24}
@@ -84,12 +81,9 @@ const Card: React.FC<{ item: WhyItem; index: number }> = ({ item, index }) => {
         {item.title}
       </h3>
 
-      <p className="text-primary-700 leading-relaxed text-base">
+      <p className="text-gray-600 leading-relaxed text-base">
         {item.description}
       </p>
-
-      {/* Hover accent line */}
-      <div className="absolute bottom-0 left-8 right-8 h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
     </article>
   );
 };
@@ -124,19 +118,6 @@ export default function ImastWhyChooseSection({
 
   return (
     <section className={`relative overflow-hidden py-20 lg:py-28 ${className}`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-primary-100">
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
-
       <img
         src="https://res.cloudinary.com/diefvxqdv/image/upload/v1762095775/imast/media/employee-sec8-img.svg"
         alt=""
@@ -155,23 +136,20 @@ export default function ImastWhyChooseSection({
               </span>
             </div>
 
-            <h2 className="text-4xl lg:text-5xl font-bold text-primary-900 leading-tight">
-              {heading}{" "}
-              <span className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
-                {highlight}
-              </span>
+            <h2 className="text-4xl lg:text-5xl font-bold text-black leading-tight">
+              {heading} <span className="text-primary-500">{highlight}</span>
             </h2>
 
-            <h4 className="mt-6 text-xl lg:text-2xl font-semibold text-primary-800 leading-relaxed">
+            <h4 className="mt-6 text-xl lg:text-2xl font-semibold text-gray-700 leading-relaxed">
               {subtitle}
             </h4>
 
-            <p className="mt-5 text-lg text-primary-700 leading-relaxed">
+            <p className="mt-5 text-lg text-gray-700 leading-relaxed">
               {intro}
             </p>
 
             {/* CTA Button */}
-            <button className="mt-8 inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-primary-300">
+            <button className="mt-8 inline-flex items-center gap-3 px-8 py-3 rounded-2xl bg-linear-to-r from-primary-500 to-primary-600 text-white font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-primary-300">
               Get Started
               <ArrowRight className="w-5 h-5" />
             </button>
@@ -179,7 +157,7 @@ export default function ImastWhyChooseSection({
 
           {/* Right Content - Cards Grid */}
           <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-4">
               {items.map((item, index) => (
                 <Card key={item.id} item={item} index={index} />
               ))}
