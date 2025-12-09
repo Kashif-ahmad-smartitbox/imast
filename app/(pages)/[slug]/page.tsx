@@ -37,26 +37,26 @@ export async function generateMetadata({
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
 
     return {
-      title: page.metaTitle || page.title || "iMast",
+      title: page.metaTitle || page.title || "imast",
       description:
         page.metaDescription ||
         page.excerpt ||
         "Discover expert insights and analysis.",
       keywords: page.keywords?.length ? page.keywords.join(", ") : undefined,
-      authors: [{ name: "iMast" }],
+      authors: [{ name: "imast" }],
       openGraph: {
-        title: page.metaTitle || page.title || "iMast",
+        title: page.metaTitle || page.title || "imast",
         description:
           page.metaDescription ||
           page.excerpt ||
           "Discover expert insights and analysis.",
         type: "website",
         url: `${baseUrl}/${slug}`,
-        siteName: "iMast",
+        siteName: "imast",
       },
       twitter: {
         card: "summary_large_image",
-        title: page.metaTitle || page.title || "iMast",
+        title: page.metaTitle || page.title || "imast",
         description:
           page.metaDescription ||
           page.excerpt ||
