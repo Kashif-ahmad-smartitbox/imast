@@ -449,7 +449,7 @@ function JobCard({ job, features, onApply, isFeatured }: any) {
     <article
       className={`group relative rounded-2xl p-8 bg-white border-2 border-gray-100 hover:border-primary-300 hover:shadow-2xl transition-all duration-500 ${
         isFeatured
-          ? "ring-2 ring-primary-200 bg-gradient-to-br from-white to-primary-50"
+          ? "ring-2 ring-primary-200 bg-linear-to-br from-white to-primary-50"
           : ""
       }`}
     >
@@ -543,7 +543,7 @@ function JobCard({ job, features, onApply, isFeatured }: any) {
         <div className="pt-6 border-t border-gray-100">
           <button
             onClick={() => onApply(job)}
-            className="group/btn inline-flex items-center gap-3 w-full px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold hover:from-primary-600 hover:to-primary-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+            className="group/btn inline-flex items-center gap-3 w-full px-6 py-3 rounded-xl bg-linear-to-r from-primary-500 to-primary-600 text-white font-bold hover:from-primary-600 hover:to-primary-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300"
           >
             <span>Apply Now</span>
             <ExternalLink

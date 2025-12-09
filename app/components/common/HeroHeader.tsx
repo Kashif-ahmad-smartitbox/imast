@@ -40,30 +40,6 @@ export default function HeroHeader({ data }: { data: any }) {
         backgroundPosition: backgroundImage ? "center" : undefined,
       }}
     >
-      {/* Sophisticated geometric background */}
-      <div aria-hidden="true" className="absolute inset-0">
-        {/* Large geometric shapes */}
-        <div className="absolute top-10 left-10 w-96 h-96 bg-gradient-to-br from-primary-500/5 to-primary-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-80 h-80 bg-gradient-to-tr from-primary-400/5 to-primary-500/10 rounded-full blur-3xl" />
-
-        {/* Angular shapes for modern feel */}
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-gray-700/20 to-gray-600/10 transform rotate-45 blur-2xl" />
-        <div className="absolute bottom-1/3 left-1/3 w-48 h-48 bg-gradient-to-tr from-gray-600/15 to-gray-500/10 transform -rotate-12 blur-2xl" />
-      </div>
-
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                           linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-            backgroundSize: "50px 50px",
-          }}
-        />
-      </div>
-
-      {/* Subtle particle effect */}
       <div aria-hidden="true" className="absolute inset-0 opacity-30">
         <div
           className="absolute inset-0"

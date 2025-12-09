@@ -109,8 +109,8 @@ export default function WhyWeExistSection({ data }: WhyWeExistSectionProps) {
     ({ text }: { text: string }) => (
       <div className="group">
         <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 mt-1">
-            <div className="w-6 h-6 rounded-full border-2 border-primary-300 grid place-items-center">
+          <div className="shrink-0 mt-1">
+            <div className="w-6 h-6 rounded-full border-2 border-primary-200 grid place-items-center">
               <div className="w-1.5 h-1.5 rounded-full bg-primary-500" />
             </div>
           </div>
@@ -125,18 +125,18 @@ export default function WhyWeExistSection({ data }: WhyWeExistSectionProps) {
 
   const StatsSection = React.useCallback(
     () => (
-      <div className="grid grid-cols-2 gap-6 pt-8 border-t border-primary-300">
+      <div className="grid grid-cols-2 gap-6 pt-8 border-t border-gray-200">
         <div className="text-center">
-          <div className="text-3xl md:text-4xl font-extrabold text-primary-900 mb-2">
+          <div className="text-3xl md:text-4xl font-extrabold text-primary-700 mb-2">
             {content.stats.projects}
           </div>
-          <div className="text-sm text-primary-700">Projects Delivered</div>
+          <div className="text-sm text-gray-600">Projects Delivered</div>
         </div>
         <div className="text-center">
-          <div className="text-3xl md:text-4xl font-extrabold text-primary-900 mb-2">
+          <div className="text-3xl md:text-4xl font-extrabold text-primary-700 mb-2">
             {content.stats.satisfaction}
           </div>
-          <div className="text-sm text-primary-700">Client Satisfaction</div>
+          <div className="text-sm text-gray-600">Client Satisfaction</div>
         </div>
       </div>
     ),
@@ -146,19 +146,21 @@ export default function WhyWeExistSection({ data }: WhyWeExistSectionProps) {
   const PromiseCard = React.useCallback(
     () => (
       <aside
-        className="absolute -bottom-6 -right-6 bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-primary-300 max-w-xs hidden lg:block"
+        className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-6 shadow-xl border border-gray-200 max-w-xs hidden lg:block"
         aria-labelledby="promise-title"
       >
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-3 h-3 rounded-full bg-primary-500 animate-pulse" />
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
+            <div className="w-3 h-3 rounded-full bg-primary-500" />
+          </div>
           <h4
             id="promise-title"
-            className="text-sm font-semibold text-primary-900"
+            className="text-base font-semibold text-gray-900"
           >
             {content.promise.title}
           </h4>
         </div>
-        <p className="text-sm text-primary-700">
+        <p className="text-sm text-gray-600 pl-11">
           {content.promise.description}
         </p>
       </aside>
@@ -169,16 +171,15 @@ export default function WhyWeExistSection({ data }: WhyWeExistSectionProps) {
   const LogoVisual = React.useCallback(
     () => (
       <div className="relative w-full">
-        <div className="relative rounded-3xl p-6 lg:p-8 aspect-square lg:aspect-auto lg:h-96 flex items-center justify-center shadow-2xl overflow-hidden bg-gradient-to-br from-primary-600 to-primary-500">
-          <div className="relative z-10 p-6 rounded-2xl bg-white bg-opacity-10 border border-white border-opacity-10 backdrop-blur-sm">
-            <div className="w-36 h-36 bg-white rounded-lg flex items-center justify-center">
+        <div className="relative rounded-3xl p-6 lg:p-8 aspect-square lg:aspect-auto lg:h-96 flex items-center justify-center overflow-hidden bg-linear-to-br from-primary-50 to-white border border-gray-100 shadow-sm">
+          <div className="relative z-10 p-8 rounded-2xl bg-white border border-gray-100 shadow-md">
+            <div className="w-40 h-40 bg-primary-50 rounded-xl flex items-center justify-center border-2 border-primary-100">
               {content.logoSrc ? (
                 <img
                   src={content.logoSrc}
                   alt="Company Logo"
-                  className="w-24 h-24 object-contain"
+                  className="w-32 h-32 object-contain"
                   onError={(e) => {
-                    // Fallback if image fails to load
                     const target = e.target as HTMLImageElement;
                     target.style.display = "none";
                     const fallback = target.nextSibling as HTMLElement;
@@ -186,23 +187,19 @@ export default function WhyWeExistSection({ data }: WhyWeExistSectionProps) {
                   }}
                 />
               ) : null}
-              <div className="w-24 h-24 hidden items-center justify-center">
-                <span className="text-2xl font-bold text-primary-600">
-                  LOGO
-                </span>
+              <div className="w-32 h-32 hidden items-center justify-center">
+                <div className="text-center">
+                  <span className="text-3xl font-bold text-primary-600">
+                    LOGO
+                  </span>
+                  <div className="text-sm text-primary-400 mt-1">Company</div>
+                </div>
               </div>
             </div>
           </div>
-
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0 bg-gradient-to-br from-white to-transparent mix-blend-overlay" />
-          </div>
-
-          <div className="absolute top-6 right-6 w-14 h-14 rounded-2xl bg-white bg-opacity-10 border border-white border-opacity-20 rotate-12" />
-          <div className="absolute bottom-6 left-6 w-10 h-10 rounded-xl bg-white bg-opacity-10 border border-white border-opacity-20 -rotate-6" />
         </div>
 
-        <PromiseCard />
+        {/* <PromiseCard /> */}
       </div>
     ),
     [content.logoSrc, PromiseCard]
@@ -211,39 +208,48 @@ export default function WhyWeExistSection({ data }: WhyWeExistSectionProps) {
   const PrincipleCard = React.memo(
     ({ principle, index }: { principle: Principle; index: number }) => (
       <article
-        className="group relative rounded-2xl p-6 md:p-8 bg-primary-50 border border-primary-300 hover:shadow-lg hover:border-primary-500 transition-all duration-300"
+        className="group relative rounded-2xl p-6 md:p-8 bg-white border border-gray-200 hover:shadow-lg hover:border-primary-300 transition-all duration-300"
         aria-labelledby={`principle-${index}-title`}
       >
-        <div className="absolute -top-4 -left-4">
-          <div className="w-8 h-8 rounded-full grid place-items-center bg-primary-100 ring-1 ring-primary-200">
-            <span
-              className="text-sm font-semibold text-primary-700"
-              aria-hidden="true"
-            >
-              {index + 1}
-            </span>
+        <div className="absolute -top-3 -left-3">
+          <div className="w-10 h-10 rounded-xl grid place-items-center bg-primary-500 text-white font-bold">
+            <span aria-hidden="true">{index + 1}</span>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 pt-2">
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-primary-500" />
+            <div className="shrink-0 w-2 h-8 bg-primary-500 rounded-full" />
             <h4
               id={`principle-${index}-title`}
-              className="text-lg font-semibold text-primary-900"
+              className="text-xl font-bold text-gray-900"
             >
               {principle.title}
             </h4>
           </div>
-          <p className="text-primary-700 leading-relaxed">
+          <p className="text-gray-600 leading-relaxed pl-5">
             {principle.description}
           </p>
         </div>
 
-        <div
-          className="bg-primary-500 absolute bottom-0 left-0 w-0 h-1 rounded-full group-hover:w-full transition-all duration-500"
-          aria-hidden="true"
-        />
+        <div className="mt-6 pt-6 border-t border-gray-100">
+          <div className="flex items-center gap-2 text-primary-600 text-sm font-medium">
+            <span>Learn more</span>
+            <svg
+              className="w-4 h-4 group-hover:translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
+            </svg>
+          </div>
+        </div>
       </article>
     )
   );
@@ -252,18 +258,22 @@ export default function WhyWeExistSection({ data }: WhyWeExistSectionProps) {
 
   const PrinciplesSection = React.useCallback(
     () => (
-      <section className="mt-12">
-        <div className="bg-primary-50 rounded-3xl p-6 lg:p-10 border border-primary-300">
-          <div className="text-center mb-8 md:mb-12">
-            <h3 className="text-2xl md:text-3xl font-extrabold text-primary-900 mb-3">
-              {content.principlesSection.title}
-            </h3>
-            <p className="text-base text-primary-700 max-w-2xl mx-auto">
+      <section className="mt-16">
+        <div className="bg-linear-to-b from-primary-50/30 to-white rounded-3xl p-6 lg:p-10 border border-gray-100">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-3 mb-4">
+              <div className="w-12 h-1 bg-primary-500 rounded-full" />
+              <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
+                {content.principlesSection.title}
+              </h3>
+              <div className="w-12 h-1 bg-primary-500 rounded-full" />
+            </div>
+            <p className="text-base text-gray-600 max-w-2xl mx-auto">
               {content.principlesSection.description}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {content.principles.map((principle, index) => (
               <PrincipleCard
                 key={`${principle.title}-${index}`}
@@ -284,37 +294,32 @@ export default function WhyWeExistSection({ data }: WhyWeExistSectionProps) {
 
   return (
     <section
-      className="relative py-14 lg:py-20 overflow-hidden bg-white"
+      className="relative py-16 lg:py-24 overflow-hidden bg-white"
       aria-labelledby="whyweexist-heading"
     >
-      {/* Updated Grid Pattern - Same as other components */}
-      <div className="pointer-events-none absolute inset-0 opacity-5">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                           linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-            backgroundSize: "50px 50px",
-          }}
-        />
-      </div>
+      {/* Background decorative elements */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-primary-50/20 rounded-full -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-50/10 rounded-full translate-x-1/3 translate-y-1/3" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-16">
-          <div className="space-y-8">
-            <header>
-              <h2
-                id="whyweexist-heading"
-                className="text-2xl md:text-3xl font-extrabold text-primary-900"
-              >
-                {content.heading}
-              </h2>
-              <p className="mt-2 text-base text-primary-700 max-w-2xl">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start mb-20">
+          <div className="space-y-10">
+            <header className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-1 bg-primary-500 rounded-full" />
+                <h2
+                  id="whyweexist-heading"
+                  className="text-3xl md:text-4xl font-bold text-gray-900"
+                >
+                  {content.heading}
+                </h2>
+              </div>
+              <p className="text-lg text-gray-600 max-w-2xl leading-relaxed">
                 {content.subheading}
               </p>
             </header>
 
-            <div className="space-y-6">
+            <div className="space-y-8">
               {content.paragraphBlocks.map((text, index) => (
                 <ParagraphBlock key={`paragraph-${index}`} text={text} />
               ))}

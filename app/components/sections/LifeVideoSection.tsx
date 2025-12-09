@@ -156,24 +156,7 @@ export default function LifeVideoSection({ data }: { data: LifeVideoData }) {
       aria-label="Life at IMAST"
     >
       {/* Vibrant Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700">
-        {/* Animated background elements */}
-        <div className="absolute top-0 left-0 w-72 h-72 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
-        <div className="absolute top-0 right-0 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-0 left-1/2 w-72 h-72 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000" />
-
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, white 1px, transparent 1px),
-                             linear-gradient(to bottom, white 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
+      <div className="absolute inset-0 bg-linear-to-br from-primary-500 via-primary-600 to-primary-700"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -189,7 +172,7 @@ export default function LifeVideoSection({ data }: { data: LifeVideoData }) {
 
             <h2 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
               {title.split(" ").slice(0, -1).join(" ")}{" "}
-              <span className="bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-white to-primary-100 bg-clip-text text-transparent">
                 {title.split(" ").slice(-1)}
               </span>
             </h2>
@@ -223,10 +206,10 @@ export default function LifeVideoSection({ data }: { data: LifeVideoData }) {
           <div className="lg:col-span-7" ref={containerRef}>
             <div className="relative">
               {/* Main Carousel Card */}
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-white to-primary-50 p-4">
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-linear-to-br from-white to-primary-50 p-4">
                 <div
                   key={fadeKey}
-                  className="w-full h-[500px] rounded-2xl overflow-hidden bg-gradient-to-br from-primary-100 to-primary-200 transition-all duration-500 ease-out"
+                  className="w-full h-[500px] rounded-2xl overflow-hidden bg-linear-to-br from-primary-100 to-primary-200 transition-all duration-500 ease-out"
                 >
                   {slides[index] ? (
                     <img
@@ -241,7 +224,7 @@ export default function LifeVideoSection({ data }: { data: LifeVideoData }) {
                       decoding="async"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary-200 to-primary-300 flex items-center justify-center">
+                    <div className="w-full h-full bg-linear-to-br from-primary-200 to-primary-300 flex items-center justify-center">
                       <div className="text-primary-500 text-lg">Loading...</div>
                     </div>
                   )}
@@ -255,7 +238,7 @@ export default function LifeVideoSection({ data }: { data: LifeVideoData }) {
                   className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-white bg-opacity-95 backdrop-blur-sm flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50 group"
                   title="Play video"
                 >
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+                  <div className="w-16 h-16 rounded-full bg-linear-to-r from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
                     <Play className="w-8 h-8 text-white fill-current ml-1" />
                   </div>
                 </button>
@@ -322,7 +305,7 @@ export default function LifeVideoSection({ data }: { data: LifeVideoData }) {
             aria-hidden
           />
 
-          <div className="relative z-10 w-full max-w-4xl mx-auto bg-gradient-to-br from-primary-900 to-primary-800 rounded-3xl overflow-hidden shadow-2xl border border-primary-600">
+          <div className="relative z-10 w-full max-w-4xl mx-auto bg-linear-to-br from-primary-900 to-primary-800 rounded-3xl overflow-hidden shadow-2xl border border-primary-600">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-primary-700">
               <h3 className="text-xl font-bold text-white">Life at IMAST</h3>

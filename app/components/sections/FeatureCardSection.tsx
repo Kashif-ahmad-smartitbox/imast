@@ -90,7 +90,7 @@ export default function FeatureCardSimple({ data }: { data: Data }) {
 
     return (
       <div
-        className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+        className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110"
         style={{
           backgroundColor: `${accentColor}15`,
           color: accentColor,
@@ -188,7 +188,7 @@ export default function FeatureCardSimple({ data }: { data: Data }) {
 
                             {/* Chevron */}
                             <div
-                              className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 ${
+                              className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 ${
                                 isOpen ? "bg-red-50" : "bg-white"
                               } ${chevronSide}`}
                             >

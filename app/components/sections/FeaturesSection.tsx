@@ -121,52 +121,11 @@ export default function FeaturesSection({ data }: Props) {
                 <p className="text-gray-600 leading-relaxed text-sm">
                   {feature.text}
                 </p>
-
-                {/* Hover accent line */}
-                <div className="absolute bottom-0 left-8 right-8 h-1 bg-linear-to-r from-primary-500 to-primary-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
               </article>
             );
           })}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .animate-blob {
-            animation: none;
-          }
-          .group:hover .group-hover\\:scale-110 {
-            transform: scale(1);
-          }
-          .group:hover .group-hover\\:-translate-y-2 {
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </section>
   );
 }

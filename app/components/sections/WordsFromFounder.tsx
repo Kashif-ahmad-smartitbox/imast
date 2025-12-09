@@ -75,7 +75,7 @@ const variantConfig = {
     hasFrame: true,
   },
   elegant: {
-    container: "bg-gradient-to-br from-primary-25 to-primary-50",
+    container: "",
     quoteCard:
       "bg-white rounded-3xl border border-primary-100 backdrop-blur-sm",
     quoteText: "text-gray-800 text-lg leading-relaxed",
@@ -107,33 +107,6 @@ export default function WordsFromFounder({ data }: WordsFromFounderProps) {
     layoutConfig[content.layout];
   const variantStyles = variantConfig[content.variant];
 
-  const BackgroundDecoration = React.useCallback(() => {
-    if (!content.showDecoration) return null;
-
-    return (
-      <div
-        className="absolute inset-0 overflow-hidden pointer-events-none"
-        aria-hidden="true"
-      >
-        {/* Geometric patterns */}
-        <div className="absolute top-10 left-10 w-32 h-32 border-2 border-primary-100 rounded-lg opacity-20 rotate-45" />
-        <div className="absolute bottom-10 right-10 w-24 h-24 border-2 border-primary-100 rounded-full opacity-20" />
-
-        {/* Updated Grid Pattern - Same as other components */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
-    );
-  }, [content.showDecoration]);
-
   const ImageComponent = React.useCallback(
     () => (
       <div className="flex justify-center">
@@ -155,16 +128,6 @@ export default function WordsFromFounder({ data }: WordsFromFounderProps) {
               />
             </div>
 
-            {/* Decorative corner elements */}
-            {content.showDecoration && variantStyles.hasFrame && (
-              <>
-                <div className="absolute -top-2 -left-2 w-6 h-6 border-t-2 border-l-2 border-primary-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="absolute -top-2 -right-2 w-6 h-6 border-t-2 border-r-2 border-primary-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="absolute -bottom-2 -left-2 w-6 h-6 border-b-2 border-l-2 border-primary-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="absolute -bottom-2 -right-2 w-6 h-6 border-b-2 border-r-2 border-primary-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </>
-            )}
-
             {/* Elegant badge for elegant variant */}
             {content.variant === "elegant" && (
               <div className="absolute -bottom-3 -right-3 bg-white rounded-full shadow-lg px-4 py-2 transform transition-transform duration-500 group-hover:scale-105 border border-primary-100">
@@ -177,11 +140,6 @@ export default function WordsFromFounder({ data }: WordsFromFounderProps) {
               </div>
             )}
           </div>
-
-          {/* Background decorative elements */}
-          {content.showDecoration && content.variant === "elegant" && (
-            <div className="absolute -z-10 -inset-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-3xl opacity-50" />
-          )}
         </div>
       </div>
     ),
@@ -228,8 +186,8 @@ export default function WordsFromFounder({ data }: WordsFromFounderProps) {
   const AuthorSection = React.useCallback(
     () => (
       <div className="flex items-center gap-4">
-        <div className="flex-shrink-0">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg bg-gradient-to-br from-primary-500 to-primary-600 shadow-sm">
+        <div className="shrink-0">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg bg-linear-to-br from-primary-500 to-primary-600 shadow-sm">
             {content.name.charAt(0)}
           </div>
         </div>
@@ -254,7 +212,7 @@ export default function WordsFromFounder({ data }: WordsFromFounderProps) {
         {/* Accent Bar */}
         {variantStyles.hasAccentBar && (
           <div
-            className="absolute left-0 top-8 bottom-8 w-1 rounded-r-full bg-gradient-to-b from-primary-400 to-primary-500 transition-all duration-500 group-hover:from-primary-500 group-hover:to-primary-600"
+            className="absolute left-0 top-8 bottom-8 w-1 rounded-r-full bg-linear-to-b from-primary-400 to-primary-500 transition-all duration-500 group-hover:from-primary-500 group-hover:to-primary-600"
             aria-hidden="true"
           />
         )}
@@ -339,7 +297,7 @@ export default function WordsFromFounder({ data }: WordsFromFounderProps) {
     <section
       className={`py-16 lg:py-24 ${variantStyles.container} relative overflow-hidden`}
     >
-      <BackgroundDecoration />
+      {/* <BackgroundDecoration /> */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {content.layout === "centered" ? (

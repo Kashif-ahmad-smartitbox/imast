@@ -61,21 +61,11 @@ export default function MeetTheMaestros({ data }: MeetTheMaestrosProps) {
   const FounderCard = React.useCallback(
     ({ founder, index }: { founder: Maestro; index: number }) => (
       <article className={`relative ${styles.card} group`}>
-        {/* Decorative elements */}
-        {variant === "elegant" && (
-          <>
-            <div className="absolute -top-4 -left-4 w-8 h-8 border-t-2 border-l-2 border-primary-300 rounded-tl-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="absolute -top-4 -right-4 w-8 h-8 border-t-2 border-r-2 border-primary-300 rounded-tr-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="absolute -bottom-4 -left-4 w-8 h-8 border-b-2 border-l-2 border-primary-300 rounded-bl-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="absolute -bottom-4 -right-4 w-8 h-8 border-b-2 border-r-2 border-primary-300 rounded-br-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          </>
-        )}
-
         <div className="flex flex-col items-center text-center">
           {/* Avatar with enhanced styling */}
           <div className="relative mb-8">
             <div className="relative">
-              <div className="w-32 h-32 rounded-2xl border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-br from-primary-200 to-primary-300 p-2">
+              <div className="w-32 h-32 rounded-2xl border-4 border-white shadow-2xl overflow-hidden bg-linear-to-br from-primary-200 to-primary-300 p-2">
                 <img
                   src={founder.avatar}
                   alt={founder.name}
@@ -139,36 +129,6 @@ export default function MeetTheMaestros({ data }: MeetTheMaestrosProps) {
       className={`py-20 lg:py-28 ${styles.container} relative overflow-hidden`}
       aria-label="Meet the founders"
     >
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {variant === "stacked" && (
-          <>
-            <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-primary-800 opacity-10 blur-3xl" />
-            <div className="absolute bottom-20 right-20 w-48 h-48 rounded-full bg-primary-700 opacity-10 blur-2xl" />
-          </>
-        )}
-
-        {variant === "elegant" && (
-          <>
-            <div className="absolute top-10 left-10 w-24 h-24 border-2 border-primary-200 rounded-lg opacity-20 rotate-45" />
-            <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-primary-200 rounded-full opacity-20" />
-          </>
-        )}
-
-        {/* Subtle grid pattern */}
-        {/* Subtle grid pattern - Updated to match other components */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                     linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-16 lg:mb-20">
