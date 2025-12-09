@@ -62,7 +62,14 @@ export default function RootLayout({
         <GoogleTags />
       </head>
       <body className={`${outfit.variable} antialiased`}>
-        <GoogleTagsNoscript />
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-M499M7HP"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          ></iframe>
+        </noscript>
 
         <ClientTopLoader />
 
