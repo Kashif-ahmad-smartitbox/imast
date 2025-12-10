@@ -8,16 +8,15 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = (await params) as { slug: string };
 
   try {
     const response = await getStory(slug);
     const story = response.story;
 
-    // If story doesn't exist or is draft, return not found metadata
     if (!story || story.status === "draft") {
       return {
-        title: "Story Not Found | iMast",
+        title: "Story Not Found | imast",
         description:
           "The story you're looking for doesn't exist or may have been moved.",
         robots: "noindex, nofollow",

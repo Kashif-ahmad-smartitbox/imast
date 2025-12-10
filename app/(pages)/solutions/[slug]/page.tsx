@@ -35,7 +35,7 @@ export async function generateMetadata({
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
 
     return {
-      title: page.metaTitle || page.title || "iMast",
+      title: page.metaTitle || page.title || "imast",
       description:
         page.metaDescription ||
         page.excerpt ||
@@ -43,7 +43,7 @@ export async function generateMetadata({
       keywords: page.keywords?.length ? page.keywords.join(", ") : undefined,
       authors: [{ name: "iMast" }],
       openGraph: {
-        title: page.metaTitle || page.title || "iMast",
+        title: page.metaTitle || page.title || "imast",
         description:
           page.metaDescription ||
           page.excerpt ||
@@ -54,7 +54,7 @@ export async function generateMetadata({
       },
       twitter: {
         card: "summary_large_image",
-        title: page.metaTitle || page.title || "iMast",
+        title: page.metaTitle || page.title || "imast",
         description:
           page.metaDescription ||
           page.excerpt ||

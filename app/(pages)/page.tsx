@@ -12,47 +12,60 @@ export async function generateMetadata(): Promise<Metadata> {
 
     if (!response.page) {
       return {
-        title: "Home | iMast",
-        description: "Welcome to iMast - Your platform for insightful content.",
+        title: "Home | imast",
+        description: "Welcome to imast - Your platform for insightful content.",
       };
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
 
     return {
-      title: response.page.metaTitle || response.page.title || "iMast",
+      title: response.page.metaTitle || response.page.title || "imast",
       description:
         response.page.metaDescription ||
         response.page.excerpt ||
         "Discover expert insights and analysis.",
       openGraph: {
-        title: response.page.metaTitle || response.page.title || "iMast",
+        title: response.page.metaTitle || response.page.title || "imast",
         description:
           response.page.metaDescription ||
           response.page.excerpt ||
           "Discover expert insights and analysis.",
         type: "website",
         url: baseUrl,
+        images: [
+          {
+            url: "/favicon.png",
+            width: 1200,
+            height: 630,
+            alt: "IMAST",
+          },
+        ],
       },
       twitter: {
         card: "summary_large_image",
-        title: response.page.metaTitle || response.page.title || "iMast",
+        title: response.page.metaTitle || response.page.title || "imast",
         description:
           response.page.metaDescription ||
           response.page.excerpt ||
           "Discover expert insights and analysis.",
+        images: ["/favicon.png"],
+      },
+      alternates: {
+        canonical: "/",
       },
     };
   } catch (error) {
     console.log("error", error);
     return {
-      title: "Home | iMast",
+      title: "Home | imast",
       description: "Welcome to iMast - Your platform for insightful content.",
     };
   }
 }
 
 export default async function HomePage() {
+  // ... rest of your component code remains the same
   let response: PageWithContentResponse;
 
   try {

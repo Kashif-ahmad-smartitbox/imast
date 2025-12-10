@@ -3,7 +3,6 @@ import { Metadata } from "next";
 import ModuleRenderer from "@/components/modules/ModuleRenderer";
 import { getPageWithContent } from "@/services/modules/pageModule";
 import { notFound } from "next/navigation";
-import ServicesHeroHeader from "@/components/common/ServicesHeroHeader";
 
 type PageResponse = {
   page?: any;

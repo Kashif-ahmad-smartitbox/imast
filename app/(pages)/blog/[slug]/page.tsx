@@ -8,7 +8,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = (await params) as { slug: string };
 
   try {
     const response = await getBlogBySlug(slug);
@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!blog) {
       return {
-        title: "Article Not Found | iMast",
+        title: "Article Not Found | imast",
         description: "The article you're looking for doesn't exist.",
         robots: "noindex, nofollow",
       };
@@ -32,14 +32,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         ?.replace(/<[^>]*>/g, "")
         .substring(0, 160)
         .trim() + "..." ||
-      "Read this insightful article on iMast";
+      "Read this insightful article on imast";
 
     const openGraph: any = {
       type: "article",
       url: canonicalUrl,
       title: blog.title,
       description: metaDescription,
-      siteName: "iMast",
+      siteName: "imast",
       images: [blog.cover || `${baseUrl}/og-image.jpg`],
     };
 
@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   } catch (error) {
     console.log("error", error);
     return {
-      title: "Error | iMast",
+      title: "Error | imast",
       description: "Error loading article",
       robots: "noindex, nofollow",
     };

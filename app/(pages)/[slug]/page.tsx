@@ -9,6 +9,10 @@ type PageResponse = {
   message?: string;
 };
 
+export const metadataBase = new URL(
+  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+);
+
 export async function generateMetadata({
   params,
 }: {
@@ -16,25 +20,46 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
 
-  // If slug is "home", show 404 since homepage is handled by "/" route
+  // If slug is "home", return 404-like metadata (don't call notFound here)
   if (slug === "home") {
-    notFound();
+    return {
+      title: "Page Not Found | imast",
+      description: "This page does not exist.",
+      robots: "noindex, nofollow",
+      openGraph: {
+        title: "Page Not Found | imast",
+        description: "This page does not exist.",
+        url: `${metadataBase}/${slug}`,
+      },
+    };
   }
 
   try {
     const response: PageResponse = await getPageWithContent(slug);
 
     if (response.message === "Not found" || !response.page) {
-      notFound();
+      return {
+        title: "Page Not Found | imast",
+        description: "The page you are looking for does not exist.",
+        robots: "noindex, nofollow",
+        openGraph: {
+          title: "Page Not Found | imast",
+          description: "The page you are looking for does not exist.",
+          url: `${metadataBase}/${slug}`,
+        },
+      };
     }
 
     const page = response.page;
-    // ensure this is a default page
     if ((page.type || "default") !== "default") {
-      notFound();
+      return {
+        title: "Page Not Found | imast",
+        description: "The page you are looking for does not exist.",
+        robots: "noindex, nofollow",
+      };
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || metadataBase.toString();
 
     return {
       title: page.metaTitle || page.title || "imast",
@@ -73,6 +98,7 @@ export async function generateMetadata({
     return {
       title: "Page Not Found",
       description: "The page you are looking for does not exist.",
+      robots: "noindex, nofollow",
     };
   }
 }
