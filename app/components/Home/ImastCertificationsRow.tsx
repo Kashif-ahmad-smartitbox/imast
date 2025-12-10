@@ -144,8 +144,8 @@ export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
                   onMouseLeave={() => handleMouseLeave()}
                 >
                   {/* background layers - pointer-events-none so they don't block hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white to-blue-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-lg pointer-events-none" />
+                  <div className="absolute inset-0 bg-linear-to-br from-white to-blue-50/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-lg pointer-events-none" />
 
                   {/* content above border */}
                   <div className="relative z-10 w-full flex justify-center">
@@ -170,7 +170,7 @@ export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
 
                   {/* custom tooltip (desktop) - visible on hover or when autoplay highlights the badge */}
                   <div
-                    className={`absolute -bottom-14 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 text-white text-xs font-medium rounded-lg transition-all duration-300 pointer-events-none z-30 hidden lg:block ${
+                    className={`absolute -bottom-14 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 text-white text-xs font-medium rounded-lg transition-all duration-300 pointer-events-none hidden lg:block ${
                       isActive
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-2"
@@ -186,7 +186,7 @@ export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
           </div>
 
           {/* horizontal connection line for desktop */}
-          <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-transparent via-gray-300/50 to-transparent hidden lg:block" />
+          <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 h-px bg-linear-to-r from-transparent via-gray-300/50 to-transparent hidden lg:block" />
         </motion.div>
       </div>
     </section>

@@ -73,9 +73,15 @@ export default function FeaturesSection({ data }: Props) {
               {maintitle}
             </span>
           </div>
-
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-            {title}
+            {title.split(" ").map((word, index) => (
+              <span
+                key={index}
+                className={index % 2 === 1 ? "text-primary-500" : ""}
+              >
+                {word}{" "}
+              </span>
+            ))}
           </h2>
 
           <h3 className="mt-6 text-lg lg:text-xl font-semibold text-gray-800 max-w-4xl mx-auto leading-relaxed">

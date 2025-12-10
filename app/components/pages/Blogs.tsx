@@ -144,7 +144,7 @@ function Blogs({ data }: BlogsProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-white">
       <main>
         {/* Hero Section */}
         <HeroSection
@@ -173,7 +173,7 @@ function Blogs({ data }: BlogsProps) {
 
 // Sub-Components
 const LoadingState: React.FC = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
+  <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-white">
     <div className="text-center">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
       <p className="text-gray-700 font-medium">Loading Insights...</p>
@@ -187,7 +187,7 @@ interface ErrorStateProps {
 }
 
 const ErrorState: React.FC<ErrorStateProps> = ({ error, onRetry }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
+  <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-white">
     <div className="text-center max-w-md mx-auto p-8 bg-white rounded-2xl border border-gray-200 shadow-lg">
       <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
         <Eye className="w-8 h-8 text-primary-600" />
@@ -225,23 +225,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   onSearchFocusChange,
   onClearSearch,
 }) => (
-  <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 text-white pt-32 pb-20 -mt-20 relative overflow-hidden">
-    {/* Background Pattern */}
-    <div className="absolute inset-0 opacity-5">
-      <div
-        className="w-full h-full"
-        style={{
-          backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                         linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-          backgroundSize: "50px 50px",
-        }}
-      />
-    </div>
-
-    {/* Geometric Shapes */}
-    <div className="absolute top-10 left-10 w-96 h-96 bg-gradient-to-br from-primary-500/5 to-primary-600/10 rounded-full blur-3xl" />
-    <div className="absolute bottom-10 right-10 w-80 h-80 bg-gradient-to-tr from-primary-400/5 to-primary-500/10 rounded-full blur-3xl" />
-
+  <section className="bg-linear-to-br from-gray-900 via-gray-800 to-gray-950 text-white pt-32 pb-20 -mt-20 relative overflow-hidden">
     <div className="container mx-auto px-6 pt-24 relative z-10">
       <div className="text-center max-w-3xl mx-auto">
         <div className="mb-8">
@@ -299,7 +283,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           isSearchFocused ? "scale-105" : "scale-100"
         }`}
       >
-        <div className="absolute -inset-4 bg-gradient-to-r from-primary-500/10 to-primary-600/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="absolute -inset-4 bg-linear-to-r from-primary-500/10 to-primary-600/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
         <div
           className={`relative bg-white/10 backdrop-blur-md border transition-all duration-300 rounded-2xl overflow-hidden ${
@@ -342,7 +326,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           </div>
 
           {isSearchFocused && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-400 to-primary-500"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-primary-400 to-primary-500"></div>
           )}
         </div>
       </div>
@@ -630,7 +614,7 @@ const Pagination: React.FC<{
                 key={page}
                 onClick={() => onPageChange(page as number)}
                 disabled={loading}
-                className={`min-w-[2.5rem] px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-200 ${
+                className={`min-w-10 px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-200 ${
                   currentPage === page
                     ? "bg-primary-600 text-white border-primary-600 shadow-sm"
                     : "text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
@@ -673,8 +657,8 @@ const FeaturedBlogCard = ({
     <Link href={`/blog/${blog.slug}`} className="block">
       <article className="group relative bg-white rounded-3xl overflow-hidden transition-all duration-700 transform hover:-translate-y-2 border border-gray-200">
         <div className="flex flex-col lg:flex-row h-full">
-          <div className="lg:w-[45%] relative flex-shrink-0">
-            <div className="aspect-[4/3] lg:aspect-auto lg:h-full relative bg-gradient-to-br from-gray-300 to-gray-400 overflow-hidden">
+          <div className="lg:w-[45%] relative shrink-0">
+            <div className="aspect-4/3 lg:aspect-auto lg:h-full relative bg-linear-to-br from-gray-300 to-gray-400 overflow-hidden">
               {blog.cover && !imageError ? (
                 <Image
                   src={blog.cover}
@@ -697,7 +681,7 @@ const FeaturedBlogCard = ({
               {/* Featured Badge */}
               <div className="absolute top-6 left-6 z-10">
                 <div className="relative">
-                  <span className="relative inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold text-sm shadow-2xl border-2 border-white/30">
+                  <span className="relative inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-linear-to-r from-primary-500 to-primary-600 text-white font-bold text-sm shadow-2xl border-2 border-white/30">
                     <Star className="w-4 h-4 fill-white" strokeWidth={2} />
                     Featured
                   </span>
@@ -778,7 +762,7 @@ const FeaturedBlogCard = ({
               </div>
 
               <span className="group/btn relative inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-primary-600 text-white font-bold shadow-lg hover:shadow-xl hover:shadow-primary-500/50 transition-all duration-300 overflow-hidden hover:scale-105">
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover/btn:translate-x-[200%] transition-transform duration-1000"></span>
+                <span className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover/btn:translate-x-[200%] transition-transform duration-1000"></span>
                 <span className="relative">Read Full Article</span>
                 <ArrowRight
                   className="relative w-5 h-5 group-hover/btn:translate-x-1 transition-transform duration-300"
@@ -800,7 +784,7 @@ const BlogCard = ({ blog }: { blog: BlogItem }) => {
     <Link href={`/blog/${blog.slug}`} className="block h-full">
       <article className="group relative bg-white rounded-2xl overflow-hidden transition-all duration-500 transform hover:-translate-y-1 h-full flex flex-col border border-gray-200">
         {/* Image Container */}
-        <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0">
+        <div className="relative aspect-16/10 overflow-hidden bg-linear-to-br from-gray-200 to-gray-300 shrink-0">
           {blog.cover && !imageError ? (
             <Image
               src={blog.cover}
@@ -865,7 +849,7 @@ const BlogCard = ({ blog }: { blog: BlogItem }) => {
           )}
 
           {/* Title */}
-          <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 leading-tight group-hover:text-primary-600 transition-colors duration-300 flex-shrink-0">
+          <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 leading-tight group-hover:text-primary-600 transition-colors duration-300 shrink-0">
             {blog.title}
           </h3>
 
@@ -875,7 +859,7 @@ const BlogCard = ({ blog }: { blog: BlogItem }) => {
           </p>
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto flex-shrink-0">
+          <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto shrink-0">
             <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
               <Calendar className="w-3.5 h-3.5" strokeWidth={2} />
               <time>

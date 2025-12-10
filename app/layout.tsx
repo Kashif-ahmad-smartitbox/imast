@@ -49,6 +49,9 @@ export const metadata: Metadata = {
       "IMAST is a unified ecosystem that integrates intelligent automation and next-gen technology to transform your business operations, enhance customer experiences, and drive extensive ROI.",
     images: ["/favicon.png"],
   },
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({

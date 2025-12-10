@@ -65,7 +65,7 @@ export default function ServicesHeroHeader({
   return (
     <section
       aria-label="Services hero"
-      className={`relative flex items-center overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 py-24 sm:py-32 ${className}`}
+      className={`relative flex items-center overflow-hidden bg-linear-to-br from-gray-900 via-gray-800 to-gray-950 py-24 sm:py-32 ${className}`}
       style={{
         backgroundImage: backgroundImage
           ? `url(${backgroundImage})`
@@ -77,12 +77,12 @@ export default function ServicesHeroHeader({
       {/* Sophisticated geometric background - Same as HeroHeader */}
       <div aria-hidden="true" className="absolute inset-0">
         {/* Large geometric shapes */}
-        <div className="absolute top-10 left-10 w-96 h-96 bg-gradient-to-br from-primary-500/5 to-primary-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-80 h-80 bg-gradient-to-tr from-primary-400/5 to-primary-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-10 left-10 w-96 h-96 bg-linear-to-br from-primary-500/5 to-primary-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-linear-to-tr from-primary-400/5 to-primary-500/10 rounded-full blur-3xl" />
 
         {/* Angular shapes for modern feel */}
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-gray-700/20 to-gray-600/10 transform rotate-45 blur-2xl" />
-        <div className="absolute bottom-1/3 left-1/3 w-48 h-48 bg-gradient-to-tr from-gray-600/15 to-gray-500/10 transform -rotate-12 blur-2xl" />
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-linear-to-br from-gray-700/20 to-gray-600/10 transform rotate-45 blur-2xl" />
+        <div className="absolute bottom-1/3 left-1/3 w-48 h-48 bg-linear-to-tr from-gray-600/15 to-gray-500/10 transform -rotate-12 blur-2xl" />
       </div>
 
       {/* Grid pattern overlay */}
@@ -154,7 +154,7 @@ export default function ServicesHeroHeader({
                 <a
                   href={primary.link}
                   aria-label={primary.ariaLabel ?? primary.text}
-                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-linear-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
                   <span className="relative z-10">{primary.text}</span>
                   <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
@@ -194,7 +194,7 @@ export default function ServicesHeroHeader({
                   <ul className="space-y-4 mb-8">
                     {rightCard.bullets.map((b, i) => (
                       <li className="flex items-start gap-4" key={i}>
-                        <span className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-primary-500 to-primary-600 text-white text-xs font-bold flex-shrink-0">
+                        <span className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-r from-primary-500 to-primary-600 text-white text-xs font-bold shrink-0">
                           ✓
                         </span>
                         <span className="text-gray-700 leading-relaxed">
@@ -210,13 +210,13 @@ export default function ServicesHeroHeader({
                     <a
                       href={rightCard.cta.link}
                       aria-label={rightCard.cta.ariaLabel ?? rightCard.cta.text}
-                      className="group relative px-6 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary-300 overflow-hidden inline-flex items-center gap-2"
+                      className="group relative px-6 py-3 rounded-xl text-sm font-semibold text-white bg-linear-to-r from-primary-500 to-primary-600 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary-300 overflow-hidden inline-flex items-center gap-2"
                     >
                       <span className="relative z-10">
                         {rightCard.cta.text}
                       </span>
                       <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-primary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute inset-0 bg-linear-to-r from-primary-400 to-primary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </a>
                   </div>
                 )}

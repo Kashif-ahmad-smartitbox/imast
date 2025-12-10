@@ -261,6 +261,10 @@ const IntroSection = dynamic(
   }
 );
 
+const ThankYouPage = dynamic(() => import("@/components/ThankYouPage"), {
+  ssr: false,
+});
+
 export type ModuleComponentProps = {
   data: any;
 };
@@ -315,6 +319,7 @@ const registry: Record<string, ComponentType<ModuleComponentProps>> = {
   featuregrid: FeatureGridSection,
   moduleshowcase: ModuleShowcase,
   introsection: IntroSection,
+  thankyoupage: ThankYouPage,
 };
 
 export default registry;

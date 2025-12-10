@@ -204,18 +204,6 @@ export default function CareerSection({
       className={`py-20 lg:py-28 bg-white ${className}`}
       aria-labelledby="careers-heading"
     >
-      {/* Grid pattern */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                           linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-            backgroundSize: "50px 50px",
-          }}
-        />
-      </div>
-
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="max-w-4xl mx-auto text-center mb-16">

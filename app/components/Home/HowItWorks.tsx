@@ -78,7 +78,7 @@ export type HowItWorksData = {
   cloudPlatform: {
     title: string;
     subtitle?: string;
-    statusDots?: string[]; // CSS classes for status dots
+    statusDots?: string[];
   };
   channels: Channel[];
   dataSyncLabel?: string;
@@ -90,6 +90,7 @@ export type HowItWorksData = {
     pretitle?: string;
     description?: string;
   };
+  badges: any;
 };
 
 type Props = {
@@ -147,7 +148,7 @@ export default function HowItWorks({ data }: Props) {
         </div>
 
         <div ref={containerRef} className="relative mb-20">
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-200 via-amber-200 to-violet-200 hidden lg:block"></div>
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-linear-to-b from-primary-200 via-amber-200 to-violet-200 hidden lg:block"></div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {data.steps.map((step, index) => (
@@ -217,14 +218,14 @@ export default function HowItWorks({ data }: Props) {
 
                   <div className="relative">
                     <div className="relative flex items-center justify-center gap-2">
-                      <div className="flex-1 h-0.5 bg-gradient-to-r from-primary-600 to-primary-700"></div>
+                      <div className="flex-1 h-0.5 bg-linear-to-r from-primary-600 to-primary-700"></div>
                       <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-100">
                         <Cpu size={16} className="text-gray-600" />
                         <span className="text-sm font-medium text-gray-700">
                           {data.dataSyncLabel ?? "Real-time Data Sync"}
                         </span>
                       </div>
-                      <div className="flex-1 h-0.5 bg-gradient-to-r from-primary-600 to-primary-700"></div>
+                      <div className="flex-1 h-0.5 bg-linear-to-r from-primary-600 to-primary-700"></div>
                     </div>
                   </div>
 
@@ -261,7 +262,7 @@ export default function HowItWorks({ data }: Props) {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 text-white">
+              <div className="bg-linear-to-br from-gray-900 to-gray-800 rounded-2xl p-6 text-white">
                 {data.cta.pretitle ? (
                   <h5 className="text-sm text-gray-300 mb-1">
                     {data.cta.pretitle}
@@ -285,7 +286,7 @@ export default function HowItWorks({ data }: Props) {
           </div>
         </div>
       </div>
-      <ImastCertificationsRow />
+      <ImastCertificationsRow badges={data.badges} />
     </section>
   );
 }
@@ -316,7 +317,7 @@ function StepCard({
 
       <div className="flex flex-col items-start gap-6">
         <div
-          className={`w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow`}
+          className={`w-14 h-14 rounded-2xl bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow`}
         >
           <IconComp size={18} className="text-white" aria-hidden />
         </div>
@@ -332,7 +333,7 @@ function StepCard({
         </div>
 
         {stepNumber === totalSteps && (
-          <div className="w-full h-1 bg-gradient-to-r from-primary-500 via-amber-500 to-violet-500 rounded-full mt-2"></div>
+          <div className="w-full h-1 bg-linear-to-r from-primary-500 via-amber-500 to-violet-500 rounded-full mt-2"></div>
         )}
       </div>
     </article>
@@ -377,7 +378,7 @@ function EnhancedBusCard({
     <div className="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-all duration-300 group hover:scale-105">
       <div className="flex items-start gap-4">
         <div
-          className={`w-12 h-12 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center text-white justify-center shadow-md`}
+          className={`w-12 h-12 rounded-lg bg-linear-to-br from-primary-500 to-primary-600 flex items-center text-white justify-center shadow-md`}
         >
           <IconComp />
         </div>
@@ -407,9 +408,9 @@ function HighlightItem({
   return (
     <div className="flex items-start gap-4 p-4 rounded-xl bg-white border border-gray-100 hover:bg-gray-50 transition-colors">
       <div
-        className={`w-12 h-12 rounded-xl bg-gradient-to-br ${
+        className={`w-12 h-12 rounded-xl bg-linear-to-br ${
           gradient ?? "from-green-500 to-emerald-500"
-        } flex items-center justify-center shadow-md flex-shrink-0`}
+        } flex items-center justify-center shadow-md shrink-0`}
       >
         <IconComp className="text-white" />
       </div>

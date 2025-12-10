@@ -116,7 +116,7 @@ const FooterColumn: React.FC<{ title: string; items: NavigationLink[] }> = ({
 }) => (
   <div className="space-y-4">
     <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-      <div className="w-1 h-6 bg-gradient-to-b from-primary-500 to-primary-600 rounded-full mr-3" />
+      <div className="w-1 h-6 bg-linear-to-b from-primary-500 to-primary-600 rounded-full mr-3" />
       {title}
     </h3>
     <ul className="space-y-3">
@@ -140,7 +140,7 @@ const ContactRow: React.FC<{
   label: React.ReactNode;
 }> = ({ icon: Icon, label }) => (
   <div className="flex items-start group">
-    <div className="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center mr-3 mt-0.5 flex-shrink-0 group-hover:bg-gray-50 group-hover:border-gray-300 transition-all duration-300 group-hover:shadow-sm">
+    <div className="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center mr-3 mt-0.5 shrink-0 group-hover:bg-gray-50 group-hover:border-gray-300 transition-all duration-300 group-hover:shadow-sm">
       <Icon className="w-3 h-3 text-gray-600" />
     </div>
     <p className="text-gray-600 group-hover:text-gray-900 transition-colors duration-300 font-medium text-sm leading-relaxed">
@@ -190,7 +190,7 @@ const NewsletterForm: React.FC<{
           value={email}
           onChange={handleChange}
           placeholder={placeholder}
-          className={`w-full px-4 py-3 bg-white border rounded-xl text-gray-900 placeholder-gray-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent ${
+          className={`w-full px-4 py-3 bg-white border rounded text-gray-900 placeholder-gray-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent ${
             status === "error"
               ? "border-primary-400 shadow-sm"
               : "border-gray-200 hover:border-gray-300"
@@ -205,7 +205,7 @@ const NewsletterForm: React.FC<{
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:scale-[1.02] transition-all duration-300 font-semibold shadow hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-w-[120px]"
+        className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded hover:scale-[1.02] transition-all duration-300 font-semibold shadow hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-w-[120px]"
       >
         {isSubmitting ? (
           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -345,8 +345,8 @@ const Footer: React.FC<{ data: FooterData }> = ({ data }) => {
         />
       </div>
 
-      <div className="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50 pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-gray-50 to-blue-50 rounded-full translate-x-1/3 translate-y-1/3 opacity-50 pointer-events-none" />
+      <div className="absolute top-0 left-0 w-72 h-72 bg-linear-to-br from-blue-50 to-purple-50 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50 pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-linear-to-tl from-gray-50 to-blue-50 rounded-full translate-x-1/3 translate-y-1/3 opacity-50 pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12">
@@ -387,7 +387,7 @@ const Footer: React.FC<{ data: FooterData }> = ({ data }) => {
 
           <div className="lg:col-span-2 space-y-6">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-              <div className="w-1 h-6 bg-gradient-to-b from-primary-500 to-primary-600 rounded-full mr-3" />
+              <div className="w-1 h-6 bg-linear-to-b from-primary-500 to-primary-600 rounded-full mr-3" />
               Get in Touch
             </h3>
 
@@ -409,7 +409,7 @@ const Footer: React.FC<{ data: FooterData }> = ({ data }) => {
         <div className="mt-16 pt-12 border-t border-gray-200">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="text-center lg:text-left space-y-3">
-              <h3 className="text-2xl font-semibold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+              <h3 className="text-2xl font-semibold bg-linear-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
                 {data.newsletter.title}
               </h3>
               <p className="text-gray-600 text-base max-w-md">

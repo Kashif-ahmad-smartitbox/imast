@@ -122,7 +122,7 @@ export default function ClientTopLoader({
         >
           <div className="h-1.5 w-full bg-gray-200/50 overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-red-500 via-red-600 to-red-500 transition-all duration-300 ease-out"
+              className="h-full bg-linear-to-r from-red-500 via-red-600 to-red-500 transition-all duration-300 ease-out"
               style={{
                 width: `${progress}%`,
                 background:
@@ -133,7 +133,7 @@ export default function ClientTopLoader({
             >
               {/* Shimmer effect */}
               <div
-                className="h-full w-20 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_1s_ease-in-out_infinite]"
+                className="h-full w-20 bg-linear-to-r from-transparent via-white/30 to-transparent animate-[shimmer_1s_ease-in-out_infinite]"
                 style={{
                   transform: `translateX(${progress === 100 ? 200 : 0}%)`,
                 }}
@@ -228,7 +228,7 @@ export default function ClientTopLoader({
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <span className="text-xs font-medium text-gray-600 min-w-[2rem]">
+                <span className="text-xs font-medium text-gray-600 min-w-8">
                   {Math.round(progress)}%
                 </span>
               </div>

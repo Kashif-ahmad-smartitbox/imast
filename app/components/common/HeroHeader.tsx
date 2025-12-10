@@ -30,7 +30,7 @@ export default function HeroHeader({ data }: { data: any }) {
     <section
       role="region"
       aria-label={title || "Page hero"}
-      className={`relative flex items-center overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 ${containerClasses}`}
+      className={`relative flex items-center overflow-hidden bg-linear-to-br from-gray-900 via-gray-800 to-gray-950 ${containerClasses}`}
       style={{
         minHeight: height || (variant === "compact" ? "36vh" : "70vh"),
         backgroundImage: backgroundImage
@@ -123,7 +123,7 @@ export default function HeroHeader({ data }: { data: any }) {
               <span className="block drop-shadow-lg">{title}</span>
 
               {highlight && (
-                <span className="block mt-2 bg-gradient-to-r from-primary-400 via-primary-300 to-primary-200 bg-clip-text text-transparent drop-shadow-lg">
+                <span className="block mt-2 bg-linear-to-r from-primary-400 via-primary-300 to-primary-200 bg-clip-text text-transparent drop-shadow-lg">
                   {highlight}
                 </span>
               )}
@@ -149,10 +149,10 @@ export default function HeroHeader({ data }: { data: any }) {
               {ctaPrimary && (
                 <a
                   href={ctaPrimary.href}
-                  className="group relative px-6 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary-300 overflow-hidden"
+                  className="group relative px-6 py-3 rounded-xl text-sm font-semibold text-white bg-linear-to-r from-primary-500 to-primary-600 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary-300 overflow-hidden"
                 >
                   <span className="relative z-10">{ctaPrimary.label}</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary-400 to-primary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-linear-to-r from-primary-400 to-primary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </a>
               )}
 

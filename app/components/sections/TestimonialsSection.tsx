@@ -144,13 +144,13 @@ const TestimonialCard: React.FC<{
     <div
       className={`relative rounded-3xl transition-all duration-500 cursor-pointer ${
         isActive
-          ? "bg-gradient-to-br from-white to-primary-50 shadow-2xl scale-100 border-2 border-primary-200"
+          ? "bg-linear-to-br from-white to-primary-50 shadow-2xl scale-100 border-2 border-primary-200"
           : "bg-white shadow-lg scale-95 opacity-70 border-2 border-gray-100 hover:scale-98 hover:opacity-90 hover:border-primary-100"
       }`}
       onClick={onClick}
     >
       {/* Quote Icon */}
-      <div className="absolute -top-4 -left-4 w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg">
+      <div className="absolute -top-4 -left-4 w-12 h-12 rounded-2xl bg-linear-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg">
         <Quote className="w-6 h-6 text-white" />
       </div>
 
@@ -190,7 +190,7 @@ const TestimonialCard: React.FC<{
 
         {/* Author Info */}
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-primary-100 to-primary-200">
+          <div className="w-14 h-14 rounded-2xl border-4 border-white shadow-lg overflow-hidden bg-linear-to-br from-primary-100 to-primary-200">
             <img
               src={testimonial.avatar}
               alt={testimonial.name}
@@ -207,7 +207,7 @@ const TestimonialCard: React.FC<{
 
       {/* Active indicator */}
       {isActive && (
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-t-full" />
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-linear-to-r from-primary-500 to-primary-600 rounded-t-full" />
       )}
     </div>
   );
@@ -255,24 +255,6 @@ export default function TestimonialsSection({
 
   return (
     <section className="relative py-20 lg:py-28 overflow-hidden bg-white">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-primary-50 rounded-full opacity-40 blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-primary-100 rounded-full opacity-30 blur-3xl" />
-
-        {/* Grid Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
-
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16 lg:mb-20">

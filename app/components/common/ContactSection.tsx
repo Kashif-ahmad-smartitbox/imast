@@ -11,6 +11,12 @@ import {
   MessageCircle,
   AlertCircle,
   ExternalLink,
+  User,
+  Building,
+  MessageSquare,
+  ChevronDown,
+  Sparkles,
+  Target,
 } from "lucide-react";
 import { ContactApi, SubmitFormPayload } from "@/services/modules/contact";
 
@@ -257,7 +263,6 @@ export default function ContactSection({ data }: ContactSectionProps) {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
@@ -320,15 +325,12 @@ export default function ContactSection({ data }: ContactSectionProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
     setSubmitError(null);
 
     try {
-      // Prepare payload for ContactApi
       const payload: SubmitFormPayload = {
         formName: "contact",
         data: {
@@ -343,25 +345,12 @@ export default function ContactSection({ data }: ContactSectionProps) {
         honeypot: null,
       };
 
-      // Call the actual API
-      const result = await ContactApi.submitForm(payload);
+      await ContactApi.submitForm(payload);
 
-      // Handle successful submission
-      setIsSubmitted(true);
-      setFormData({
-        name: "",
-        email: "",
-        company: "",
-        subject: "",
-        message: "",
-      });
-      setTouched({});
-
-      console.log("Form submitted successfully:", result);
+      window.location.href = "/thankyou";
     } catch (error: any) {
       console.error("Failed to submit form:", error);
 
-      // Handle different types of errors
       if (error.response?.data?.message) {
         setSubmitError(error.response.data.message);
       } else if (error.message) {
@@ -382,149 +371,106 @@ export default function ContactSection({ data }: ContactSectionProps) {
     "Office hours": Clock,
   };
 
-  if (isSubmitted) {
-    return (
-      <section className="py-20 lg:py-28 relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-100">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-          <div className="absolute top-10 right-10 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-          <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-        </div>
-
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 sm:p-12 border border-primary-100 shadow-2xl transform transition-all duration-500 hover:scale-105">
-            <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <CheckCircle className="w-12 h-12 text-white" />
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              {content.success.title}
-            </h2>
-            <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto leading-relaxed">
-              {content.success.description}
-            </p>
-            <button
-              onClick={() => setIsSubmitted(false)}
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold hover:shadow-2xl hover:scale-105 transition-all duration-300 shadow-lg group"
-            >
-              {content.form.buttons.anotherMessage}
-              <Send className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section
-      className="py-20 lg:py-28 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-primary-50"
+      className="relative py-24 lg:py-32 overflow-hidden bg-linear-to-br from-white via-primary-50/20 to-primary-100/10"
       id="contact"
     >
-      {/* Enhanced Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-primary-100 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000" />
-
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Enhanced Header */}
-        <div className="text-center mb-16 lg:mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 border border-primary-200 mb-6 backdrop-blur-sm">
-            <div className="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
-            <span className="text-sm font-semibold uppercase tracking-wide text-primary-700">
-              {content.header.subtitle}
-            </span>
-          </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
-            {content.header.title}
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            {content.header.description}
-          </p>
-        </div>
+        {/* Enhanced Header with animation */}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-          {/* Enhanced Contact Information */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-primary-100 shadow-xl hover:shadow-2xl transition-all duration-500">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
-                  <MessageCircle className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">
-                  {content.contactInfo.title}
-                </h3>
-              </div>
-
-              <div className="space-y-6">
-                {content.contactInfo.items.map((item, index) => {
-                  const IconComponent =
-                    iconMap[item.label as keyof typeof iconMap] ||
-                    MessageCircle;
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-start gap-4 group p-4 rounded-2xl hover:bg-primary-50 transition-all duration-300 cursor-pointer"
-                      onClick={() =>
-                        item.href && window.open(item.href, "_blank")
-                      }
-                    >
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                        <IconComponent className="w-6 h-6 text-primary-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 mb-1">
-                          {item.label}
-                        </p>
-                        {item.href ? (
-                          <a
-                            href={item.href}
-                            className="flex items-center gap-1 text-primary-600 hover:text-primary-700 font-medium transition-colors mt-1 group/link"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {item.value}
-                            <ExternalLink className="w-3 h-3 opacity-0 group-hover/link:opacity-100 transition-opacity" />
-                          </a>
-                        ) : (
-                          <p className="text-primary-600 font-medium mt-1">
-                            {item.value}
-                          </p>
-                        )}
-                        <p className="text-sm text-gray-500 mt-2">
-                          {item.description}
-                        </p>
-                      </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
+          {/* Enhanced Contact Information - Glassmorphism Card */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24">
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-xl shadow-primary-100/30 hover:shadow-2xl hover:shadow-primary-200/40 transition-all duration-500 group">
+                <div className="relative mb-10">
+                  <div className="absolute -top-4 -left-4 w-16 h-16 rounded-2xl bg-linear-to-br from-primary-500 to-blue-500 opacity-10 blur-lg" />
+                  <div className="flex items-center gap-4 relative">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {content.contactInfo.title}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Get in touch through your preferred channel
+                      </p>
                     </div>
-                  );
-                })}
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {content.contactInfo.items.map((item, index) => {
+                    const IconComponent =
+                      iconMap[item.label as keyof typeof iconMap] ||
+                      MessageCircle;
+                    return (
+                      <div
+                        key={index}
+                        className="relative group/card p-6 rounded-2xl bg-linear-to-br from-white to-white/80 border border-gray-100 hover:border-primary-200 hover:shadow-lg hover:shadow-primary-100/30 transition-all duration-300 cursor-pointer overflow-hidden"
+                        onClick={() =>
+                          item.href && window.open(item.href, "_blank")
+                        }
+                      >
+                        {/* Hover effect background */}
+                        <div className="absolute inset-0 bg-linear-to-br from-primary-50/0 to-blue-50/0 group-hover/card:from-primary-50/50 group-hover/card:to-blue-50/30 transition-all duration-500" />
+
+                        <div className="relative flex items-start gap-5">
+                          <div className="relative">
+                            <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm group-hover/card:shadow-md transition-shadow duration-300">
+                              <IconComponent className="w-4 h-4 text-white" />
+                            </div>
+                            <div className="absolute inset-0 bg-linear-to-br from-primary-400/20 to-blue-400/20 rounded-xl blur-md opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <p className="text-lg font-bold text-gray-900 mb-1 tracking-wide">
+                              {item.label}
+                            </p>
+                            {item.href ? (
+                              <a
+                                href={item.href}
+                                className="flex items-center gap-2 text-sm font-semibold text-primary-700 hover:text-primary-800 transition-colors mt-1 group/link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {item.value}
+                                <ExternalLink className="w-4 h-4 opacity-0 group-hover/link:opacity-100 transition-opacity transform group-hover/link:translate-x-1" />
+                              </a>
+                            ) : (
+                              <p className="text-sm font-semibold text-primary-700 mt-1">
+                                {item.value}
+                              </p>
+                            )}
+                            <p className="text-sm text-gray-500 mt-1 leading-relaxed">
+                              {item.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Animated indicator */}
+                        <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
+                          <div className="w-2 h-2 rounded-full bg-primary-500 animate-ping" />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Enhanced Contact Form */}
+          {/* Enhanced Contact Form - Modern Card */}
           <div className="lg:col-span-2">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-primary-100 shadow-xl hover:shadow-2xl transition-all duration-500">
-              {/* Error Message */}
+            <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 lg:p-10 border border-white/50 shadow-2xl shadow-primary-100/20 hover:shadow-primary-200/30 transition-all duration-500">
+              {/* Error Message with improved design */}
               {submitError && (
-                <div className="mb-8 p-6 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-4 animate-shake">
-                  <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-red-800 font-semibold text-lg">
+                <div className="mb-10 p-6 rounded-2xl bg-linear-to-r from-red-50/80 to-red-50/50 border border-red-200/80 backdrop-blur-sm flex items-start gap-5 animate-fade-in">
+                  <div className="relative">
+                    <AlertCircle className="w-7 h-7 text-red-500 shrink-0" />
+                    <div className="absolute inset-0 bg-red-400/20 rounded-full blur-sm" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-red-900 font-bold text-lg">
                       {content.errors.submission}
                     </p>
                     <p className="text-red-700 mt-2">{submitError}</p>
@@ -532,15 +478,19 @@ export default function ContactSection({ data }: ContactSectionProps) {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* Name */}
-                  <div className="group">
+              <form onSubmit={handleSubmit} className="space-y-10">
+                {/* Personal Information Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Name Field */}
+                  <div className="group relative">
                     <label
                       htmlFor="name"
-                      className="block text-sm font-semibold text-gray-700 mb-3"
+                      className="block text-sm font-bold text-gray-700 mb-4 uppercase tracking-wider"
                     >
-                      {content.form.labels.name}
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        {content.form.labels.name}
+                      </div>
                     </label>
                     <input
                       type="text"
@@ -549,28 +499,32 @@ export default function ContactSection({ data }: ContactSectionProps) {
                       value={formData.name}
                       onChange={handleChange}
                       onBlur={() => handleBlur("name")}
-                      className={`w-full px-5 py-4 rounded-2xl border-2 transition-all duration-300 ${
+                      className={`w-full px-6 py-3 rounded-xl border-2 transition-all duration-300 ${
                         errors.name
-                          ? "border-red-300 bg-red-50 focus:border-red-500 focus:ring-2 focus:ring-red-200"
-                          : "border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
-                      } outline-none group-hover:border-primary-300 disabled:opacity-50`}
+                          ? "border-red-300 bg-red-50/50 focus:border-red-500 focus:ring-4 focus:ring-red-100"
+                          : "border-gray-200 hover:border-primary-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+                      } outline-none bg-white/80 backdrop-blur-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed`}
                       placeholder={content.form.placeholders.name}
                       disabled={isSubmitting}
                     />
                     {errors.name && touched.name && (
-                      <p className="mt-2 text-sm text-red-600 animate-fadeIn">
+                      <p className="mt-3 text-sm font-medium text-red-600 animate-fade-in flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />
                         {errors.name}
                       </p>
                     )}
                   </div>
 
-                  {/* Email */}
-                  <div className="group">
+                  {/* Email Field */}
+                  <div className="group relative">
                     <label
                       htmlFor="email"
-                      className="block text-sm font-semibold text-gray-700 mb-3"
+                      className="block text-sm font-bold text-gray-700 mb-4 uppercase tracking-wider"
                     >
-                      {content.form.labels.email}
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-4 h-4" />
+                        {content.form.labels.email}
+                      </div>
                     </label>
                     <input
                       type="email"
@@ -579,30 +533,35 @@ export default function ContactSection({ data }: ContactSectionProps) {
                       value={formData.email}
                       onChange={handleChange}
                       onBlur={() => handleBlur("email")}
-                      className={`w-full px-5 py-4 rounded-2xl border-2 transition-all duration-300 ${
+                      className={`w-full px-6 py-3 rounded-xl border-2 transition-all duration-300 ${
                         errors.email
-                          ? "border-red-300 bg-red-50 focus:border-red-500 focus:ring-2 focus:ring-red-200"
-                          : "border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
-                      } outline-none group-hover:border-primary-300 disabled:opacity-50`}
+                          ? "border-red-300 bg-red-50/50 focus:border-red-500 focus:ring-4 focus:ring-red-100"
+                          : "border-gray-200 hover:border-primary-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+                      } outline-none bg-white/80 backdrop-blur-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed`}
                       placeholder={content.form.placeholders.email}
                       disabled={isSubmitting}
                     />
                     {errors.email && touched.email && (
-                      <p className="mt-2 text-sm text-red-600 animate-fadeIn">
+                      <p className="mt-3 text-sm font-medium text-red-600 animate-fade-in flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />
                         {errors.email}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* Company */}
-                  <div className="group">
+                {/* Company & Subject Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Company Field */}
+                  <div className="group relative">
                     <label
                       htmlFor="company"
-                      className="block text-sm font-semibold text-gray-700 mb-3"
+                      className="block text-sm font-bold text-gray-700 mb-4 uppercase tracking-wider"
                     >
-                      {content.form.labels.company}
+                      <div className="flex items-center gap-2">
+                        <Building className="w-4 h-4" />
+                        {content.form.labels.company}
+                      </div>
                     </label>
                     <input
                       type="text"
@@ -610,19 +569,22 @@ export default function ContactSection({ data }: ContactSectionProps) {
                       name="company"
                       value={formData.company}
                       onChange={handleChange}
-                      className="w-full px-5 py-4 rounded-2xl border-2 border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all duration-300 group-hover:border-primary-300 disabled:opacity-50"
+                      className="w-full px-6 py-3 rounded-xl border-2 border-gray-200 hover:border-primary-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-100 outline-none bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       placeholder={content.form.placeholders.company}
                       disabled={isSubmitting}
                     />
                   </div>
 
                   {/* Enhanced Subject Dropdown */}
-                  <div className="group">
+                  <div className="group relative">
                     <label
                       htmlFor="subject"
-                      className="block text-sm font-semibold text-gray-700 mb-3"
+                      className="block text-sm font-bold text-gray-700 mb-4 uppercase tracking-wider"
                     >
-                      {content.form.labels.subject}
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4" />
+                        {content.form.labels.subject}
+                      </div>
                     </label>
                     <div className="relative">
                       <select
@@ -631,11 +593,11 @@ export default function ContactSection({ data }: ContactSectionProps) {
                         value={formData.subject}
                         onChange={handleChange}
                         onBlur={() => handleBlur("subject")}
-                        className={`w-full px-5 py-4 pr-12 rounded-2xl border-2 appearance-none transition-all duration-300 ${
+                        className={`w-full px-6 py-3 pr-12 rounded-xl border-2 appearance-none transition-all duration-300 ${
                           errors.subject
-                            ? "border-red-300 bg-red-50 focus:border-red-500 focus:ring-2 focus:ring-red-200"
-                            : "border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
-                        } outline-none group-hover:border-primary-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50`}
+                            ? "border-red-300 bg-red-50/50 focus:border-red-500 focus:ring-4 focus:ring-red-100"
+                            : "border-gray-200 hover:border-primary-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+                        } outline-none bg-white/80 backdrop-blur-sm shadow-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-50`}
                         disabled={isSubmitting}
                       >
                         <option value="" className="text-gray-400">
@@ -645,7 +607,7 @@ export default function ContactSection({ data }: ContactSectionProps) {
                           <option
                             key={option}
                             value={option}
-                            className="text-gray-900"
+                            className="text-gray-900 py-2"
                           >
                             {option}
                           </option>
@@ -653,30 +615,19 @@ export default function ContactSection({ data }: ContactSectionProps) {
                       </select>
 
                       {/* Custom dropdown icon */}
-                      <div className="absolute right-5 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                        <svg
+                      <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <ChevronDown
                           className={`w-5 h-5 transition-all duration-300 ${
                             formData.subject
                               ? "text-primary-500"
-                              : isSubmitting
-                              ? "text-gray-300"
                               : "text-gray-400 group-hover:text-primary-400"
                           } ${isSubmitting ? "animate-pulse" : ""}`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
+                        />
                       </div>
                     </div>
                     {errors.subject && touched.subject && (
-                      <p className="mt-2 text-sm text-red-600 animate-fadeIn">
+                      <p className="mt-3 text-sm font-medium text-red-600 animate-fade-in flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />
                         {errors.subject}
                       </p>
                     )}
@@ -684,16 +635,31 @@ export default function ContactSection({ data }: ContactSectionProps) {
                 </div>
 
                 {/* Enhanced Message Textarea */}
-                <div className="group">
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-semibold text-gray-700 mb-3"
-                  >
-                    {content.form.labels.message}
-                    <span className="text-xs font-normal text-gray-500 ml-2">
-                      ({formData.message.length}/10 min)
-                    </span>
-                  </label>
+                <div className="group relative">
+                  <div className="flex items-center justify-between mb-4">
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-bold text-gray-700 uppercase tracking-wider"
+                    >
+                      <div className="flex items-center gap-2">
+                        <MessageCircle className="w-4 h-4" />
+                        {content.form.labels.message}
+                      </div>
+                    </label>
+                    <div className="text-sm font-medium text-gray-500">
+                      <span
+                        className={
+                          formData.message.length >= 10
+                            ? "text-green-600"
+                            : "text-gray-400"
+                        }
+                      >
+                        {formData.message.length}
+                      </span>
+                      /10 min
+                    </div>
+                  </div>
+
                   <textarea
                     id="message"
                     name="message"
@@ -701,42 +667,75 @@ export default function ContactSection({ data }: ContactSectionProps) {
                     onChange={handleChange}
                     onBlur={() => handleBlur("message")}
                     rows={6}
-                    className={`w-full px-5 py-4 rounded-2xl border-2 transition-all duration-300 ${
+                    className={`w-full px-6 py-4.5 rounded-xl border-2 transition-all duration-300 ${
                       errors.message
-                        ? "border-red-300 bg-red-50 focus:border-red-500 focus:ring-2 focus:ring-red-200"
-                        : "border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
-                    } outline-none resize-vertical group-hover:border-primary-300 disabled:opacity-50`}
+                        ? "border-red-300 bg-red-50/50 focus:border-red-500 focus:ring-4 focus:ring-red-100"
+                        : "border-gray-200 hover:border-primary-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-100"
+                    } outline-none bg-white/80 backdrop-blur-sm shadow-sm resize-none disabled:opacity-50 disabled:cursor-not-allowed`}
                     placeholder={content.form.placeholders.message}
                     disabled={isSubmitting}
                   />
+
+                  {/* Character count indicator */}
+                  <div className="absolute bottom-4 right-6 flex items-center gap-2">
+                    <div
+                      className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                        formData.message.length >= 10
+                          ? "bg-green-500"
+                          : "bg-gray-300"
+                      }`}
+                    />
+                    <span
+                      className={`text-xs font-medium transition-colors duration-300 ${
+                        formData.message.length >= 10
+                          ? "text-green-600"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {formData.message.length >= 10
+                        ? "✓ Ready to send"
+                        : "Minimum 10 characters"}
+                    </span>
+                  </div>
+
                   {errors.message && touched.message && (
-                    <p className="mt-2 text-sm text-red-600 animate-fadeIn">
+                    <p className="mt-3 text-sm font-medium text-red-600 animate-fade-in flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" />
                       {errors.message}
                     </p>
                   )}
                 </div>
 
-                {/* Enhanced Submit Button */}
-                <div className="flex items-center justify-between pt-6 border-t border-gray-200">
-                  <p className="text-sm text-gray-500">
-                    {content.form.validation.requiredFields}
-                  </p>
+                {/* Enhanced Submit Section */}
+                <div className="flex flex-col sm:flex-row items-center justify-between pt-10 border-t border-gray-200/70 gap-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+                      <CheckCircle className="w-4 h-4 text-primary-600" />
+                    </div>
+                    <p className="text-sm text-gray-600 font-medium">
+                      {content.form.validation.requiredFields}
+                    </p>
+                  </div>
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold hover:from-primary-600 hover:to-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-500 shadow-xl hover:shadow-2xl transform hover:scale-105 disabled:transform-none group"
+                    className="relative inline-flex items-center gap-4 px-8 py-4 rounded bg-primary-600 to-blue-600 text-white font-bold text-sm hover:from-primary-600 hover:via-primary-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-primary-500/30 transform hover:scale-105 disabled:transform-none group overflow-hidden min-w-[220px] justify-center"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <Loader className="w-5 h-5 animate-spin" />
-                        {content.form.buttons.submitting}
-                      </>
-                    ) : (
-                      <>
-                        {content.form.buttons.submit}
-                        <Send className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
-                      </>
-                    )}
+                    {/* Content */}
+                    <div className="relative flex items-center gap-3">
+                      {isSubmitting ? (
+                        <>
+                          <Loader className="w-6 h-6 animate-spin" />
+                          {content.form.buttons.submitting}
+                        </>
+                      ) : (
+                        <>
+                          {content.form.buttons.submit}
+                          <Send className="w-4 h-4 transform group-hover:translate-x-2 transition-transform duration-300" />
+                        </>
+                      )}
+                    </div>
                   </button>
                 </div>
               </form>
@@ -744,60 +743,6 @@ export default function ContactSection({ data }: ContactSectionProps) {
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        @keyframes shake {
-          0%,
-          100% {
-            transform: translateX(0);
-          }
-          25% {
-            transform: translateX(-5px);
-          }
-          75% {
-            transform: translateX(5px);
-          }
-        }
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-        .animate-shake {
-          animation: shake 0.5s ease-in-out;
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-      `}</style>
     </section>
   );
 }
