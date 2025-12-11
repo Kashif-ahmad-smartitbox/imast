@@ -167,7 +167,7 @@ const Pagination: React.FC<{
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
                 disabled={loading}
-                className={`min-w-[2rem] px-2 py-1 text-sm rounded-lg transition-colors ${
+                className={`min-w-8 px-2 py-1 text-sm rounded-lg transition-colors ${
                   page === pageNum
                     ? "bg-primary-600 text-white border border-primary-600"
                     : "text-gray-600 border border-gray-300 hover:bg-gray-100"
@@ -226,7 +226,7 @@ const ContactRow: React.FC<{
     <tr className="hover:bg-gray-50 transition-colors group">
       <td className="px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex-shrink-0 w-8 h-8 bg-primary-50 rounded-lg flex items-center justify-center">
+          <div className="shrink-0 w-8 h-8 bg-primary-50 rounded-lg flex items-center justify-center">
             <User className="w-4 h-4 text-primary-600" />
           </div>
           <div>
@@ -269,7 +269,7 @@ const ContactRow: React.FC<{
 
       <td className="px-6 py-4 text-gray-500 w-[140px]">
         <div className="flex items-center gap-1">
-          <Calendar className="w-3 h-3 flex-shrink-0" />
+          <Calendar className="w-3 h-3 shrink-0" />
           {formatDate(contact.createdAt)}
         </div>
       </td>
