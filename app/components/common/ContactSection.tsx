@@ -346,7 +346,7 @@ export default function ContactSection({ data }: ContactSectionProps) {
         },
         email: formData.email,
         name: formData.name,
-        urlRef: urlRef ? urlRef : "/",
+        urlRef: urlRef ? urlRef : "https://www.imast.in/contact",
         honeypot: null,
       };
 
