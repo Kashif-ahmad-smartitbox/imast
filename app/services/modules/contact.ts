@@ -8,6 +8,7 @@ export type FormSubmission = {
   data: Record<string, any>;
   email?: string;
   name?: string;
+  urlRef?: string;
   ip?: string;
   userAgent?: string;
   referrer?: string;
@@ -22,6 +23,7 @@ export type SubmitFormPayload = {
   data?: Record<string, any>;
   email?: string;
   name?: string;
+  urlRef?: string;
   honeypot?: string | null;
   recaptchaToken?: string;
 };

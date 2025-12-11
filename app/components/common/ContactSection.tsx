@@ -19,6 +19,7 @@ import {
   Target,
 } from "lucide-react";
 import { ContactApi, SubmitFormPayload } from "@/services/modules/contact";
+import { useSearchParams } from "next/navigation";
 
 interface FormData {
   name: string;
@@ -266,6 +267,9 @@ export default function ContactSection({ data }: ContactSectionProps) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
+  const searchParams = useSearchParams();
+  const urlRef = searchParams.get("ref") || "";
+
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -342,6 +346,7 @@ export default function ContactSection({ data }: ContactSectionProps) {
         },
         email: formData.email,
         name: formData.name,
+        urlRef: urlRef ? urlRef : "/",
         honeypot: null,
       };
 

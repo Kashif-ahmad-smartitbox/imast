@@ -260,7 +260,7 @@ const ContactRow: React.FC<{
       <td className="px-6 py-4 text-gray-500 text-sm">
         {contact.referrer ? (
           <div className="max-w-[200px] truncate" title={contact.referrer}>
-            {contact.referrer}
+            {contact.urlRef || contact.referrer}
           </div>
         ) : (
           "—"
