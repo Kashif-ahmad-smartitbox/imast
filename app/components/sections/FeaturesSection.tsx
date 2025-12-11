@@ -14,6 +14,7 @@ import {
   HeartHandshake,
   Globe,
 } from "lucide-react";
+import { highlightText } from "@/lib/highlightText";
 
 type Feature = {
   id?: string | number;
@@ -59,6 +60,41 @@ export default function FeaturesSection({ data }: Props) {
     features = [],
   } = data || {};
 
+  const highlighted = highlightText(title, [
+    { word: "Simple", className: "text-primary-500" },
+    { word: "True View", className: "text-primary-500" },
+    { word: "Advantages", className: "text-primary-500" },
+    { word: "Work Champ", className: "text-primary-500" },
+    { word: "Rewards", className: "text-primary-500" },
+    { word: "Excellence", className: "text-primary-500" },
+    { word: "Employee Engagement", className: "text-primary-500" },
+    { word: "Loyalty Program", className: "text-primary-500" },
+    { word: "Features", className: "text-primary-500" },
+    { word: "Loyalty Board", className: "text-primary-500" },
+  ]);
+
+  const highlighted2 = highlightText(subtitle, [
+    { word: "Cloud-Based", className: "text-primary-500" },
+    { word: "Supermarket", className: "text-primary-500" },
+    { word: "Multi-Store", className: "text-primary-500" },
+    { word: "businesses", className: "text-primary-500" },
+    { word: "customer-focused", className: "text-primary-500" },
+    { word: "tools", className: "text-primary-500" },
+    {
+      word: "employee performance",
+      className: "text-primary-500",
+    },
+    { word: "reward programs", className: "text-primary-500" },
+    { word: "meaningful", className: "text-primary-500" },
+    { word: "engagement initiatives", className: "text-primary-500" },
+    { word: "organizational", className: "text-primary-500" },
+    { word: "strengthen", className: "text-primary-500" },
+    { word: "customer experiences", className: "text-primary-500" },
+    { word: "efficient transactions", className: "text-primary-500" },
+    { word: "IMAST’s", className: "text-primary-500" },
+    { word: "Channel Loyalty", className: "text-primary-500" },
+  ]);
+
   // Default icons if none provided
   const defaultIcons = [Zap, Shield, Users, TrendingUp, Clock, CheckCircle];
 
@@ -73,20 +109,15 @@ export default function FeaturesSection({ data }: Props) {
               {maintitle}
             </span>
           </div>
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-            {title.split(" ").map((word, index) => (
-              <span
-                key={index}
-                className={index % 2 === 1 ? "text-primary-500" : ""}
-              >
-                {word}{" "}
-              </span>
-            ))}
-          </h2>
+          <h2
+            className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight"
+            dangerouslySetInnerHTML={{ __html: highlighted }}
+          />
 
-          <h3 className="mt-6 text-lg lg:text-xl font-semibold text-gray-800 max-w-4xl mx-auto leading-relaxed">
-            {subtitle}
-          </h3>
+          <h3
+            className="mt-6 text-lg lg:text-xl font-semibold text-gray-800 max-w-4xl mx-auto leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: highlighted2 }}
+          />
 
           <p className="mt-6 mx-auto text-sm text-gray-600 max-w-3xl leading-relaxed">
             {description}

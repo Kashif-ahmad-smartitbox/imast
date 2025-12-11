@@ -13,6 +13,7 @@ import {
   LucideIcon,
 } from "lucide-react";
 import ImastCard, { ImastCardProps } from "./ImastCard";
+import { highlightText } from "@/lib/highlightText";
 
 export type Feature = {
   icon: string;
@@ -71,12 +72,7 @@ export default function KeyValue({ data }: KeyValueProps) {
   if (!data) return null;
 
   return (
-    <section className="bg-gradient-to-br from-white via-primary-50/20 to-gray-50/50 py-16 lg:py-24 xl:py-28 relative overflow-hidden">
-      {/* Enhanced Background Elements */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-primary-100/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 animate-pulse-slow"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-100/20 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 animate-pulse-slow delay-1000"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-100/10 rounded-full blur-2xl animate-pulse-slow delay-500"></div>
-
+    <section className="bg-linear-to-br from-white via-primary-50/20 to-gray-50/50 py-16 lg:py-24 xl:py-28 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 xl:gap-20 items-center">
           {/* LEFT: Pitch + benefits */}
@@ -121,10 +117,6 @@ function RightContent({ cardProps }: { cardProps?: ImastCardProps }) {
         {/* @ts-expect-error: cardProps may be partial/dynamic */}
         <ImastCard {...(cardProps ?? {})} />
       </div>
-
-      {/* Floating elements for visual interest */}
-      <div className="absolute -top-4 -right-4 w-24 h-24 bg-yellow-100/30 rounded-full blur-xl animate-bounce-slow"></div>
-      <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-blue-100/20 rounded-full blur-xl animate-bounce-slow delay-700"></div>
     </div>
   );
 }
@@ -138,6 +130,11 @@ function HeaderSection({
   headline: string;
   lead?: string;
 }) {
+  const highlighted = highlightText(headline, [
+    { word: "platform", className: "text-primary-500" },
+    { word: "Practical", className: "text-primary-500" },
+  ]);
+
   return (
     <div className="text-center lg:text-left">
       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-100 mb-4">
@@ -147,9 +144,10 @@ function HeaderSection({
         </span>
       </div>
 
-      <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 leading-tight">
-        {headline}
-      </h2>
+      <h2
+        className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 leading-tight"
+        dangerouslySetInnerHTML={{ __html: highlighted }}
+      />
 
       {lead && (
         <p className="mt-4 text-base sm:text-lg text-gray-600 max-w-2xl leading-relaxed">
@@ -168,12 +166,12 @@ function TrustBadge({ trusted }: { trusted?: TrustedData }) {
           {trusted?.peopleImage?.map((item) => (
             <div
               key={item.id}
-              className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-400 overflow-hidden rounded-full border-3 border-white flex items-center justify-center"
+              className="w-10 h-10 bg-linear-to-br from-red-600 to-red-400 overflow-hidden rounded-full border-3 border-white flex items-center justify-center"
             >
               <img
                 src={item.img}
                 alt={item.alt}
-                className="w-[100%] h-[100%] object-cover"
+                className="w-full h-full object-cover"
               />
             </div>
           ))}
@@ -205,7 +203,7 @@ function TrustBadge({ trusted }: { trusted?: TrustedData }) {
 
 function FeaturesGrid({ features }: { features: Feature[] }) {
   return (
-    <div className="mt-10 lg:mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+    <div className="mt-10 lg:mt-12 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2">
       {features.map((feature, index) => (
         <EnhancedFeature
           key={feature.title + index}
@@ -242,14 +240,14 @@ function CTAButton({
     "group relative inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3 rounded font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden";
 
   const variants = {
-    primary: `${baseClasses} bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg hover:shadow-xl`,
+    primary: `${baseClasses} bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg hover:shadow-xl`,
     secondary: `${baseClasses} border-2 border-gray-200 bg-white/80 text-gray-700 hover:bg-white hover:border-primary-200 hover:text-primary-700 hover:shadow-md`,
   };
 
   return (
     <a href={link} className={variants[variant]}>
       {variant === "primary" && (
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-700 to-primary-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-primary-700 to-primary-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       )}
       <span className="relative">{text}</span>
       <ArrowRight
@@ -285,7 +283,7 @@ function EnhancedFeature({
     >
       <div className="flex gap-4 items-start">
         <div
-          className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-3`}
+          className={`flex items-center justify-center w-12 h-12 rounded-xl bg-linear-to-r from-primary-500 to-primary-600 text-white shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-3`}
         >
           <IconComp className="w-6 h-6" />
         </div>

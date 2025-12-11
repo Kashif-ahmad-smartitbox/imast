@@ -86,7 +86,7 @@ export default function LoyaltyLandingSection({ data }: Props) {
       <div className="mt-8 space-y-3">
         {features.map((feature, index) => (
           <div key={index} className="flex items-center gap-3 group">
-            <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+            <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
               <div className="w-2 h-2 rounded-full bg-primary-600" />
             </div>
             <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
@@ -129,7 +129,7 @@ export default function LoyaltyLandingSection({ data }: Props) {
                         className="transition-transform duration-700 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                      <div className="w-full h-full bg-linear-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
                         <div className="text-gray-400 text-lg">Image</div>
                       </div>
                     )}
@@ -177,7 +177,7 @@ export default function LoyaltyLandingSection({ data }: Props) {
               <div className="mt-5 flex flex-col sm:flex-row gap-4">
                 <a
                   href="#get-started"
-                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-linear-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
                 >
                   <span>Get Started</span>
                   <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
@@ -197,73 +197,66 @@ export default function LoyaltyLandingSection({ data }: Props) {
 
         {/* Cards grid */}
         {cards.length > 0 && (
-          <div className="mt-24">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-              {cards.map((card, index) => {
-                const IconComponent = card.icon
-                  ? iconMap[card.icon as keyof typeof iconMap]
-                  : ArrowRight;
-
-                return (
-                  <a
-                    key={card.id}
-                    href={card.href || "#"}
-                    className="group block bg-white rounded-3xl p-8 transition-all duration-500 hover:-translate-y-2 border border-gray-100"
-                  >
-                    {/* Card header with icon */}
-                    <div className="flex items-start justify-between mb-6">
-                      <div
-                        className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
-                        style={{
-                          background: `linear-gradient(135deg, ${accentColor}15, ${accentColor}30)`,
-                        }}
-                      >
-                        {card.image ? (
-                          <img
-                            src={card.image}
-                            alt={card.title}
-                            className="w-8 h-8 object-contain"
-                          />
-                        ) : IconComponent ? (
-                          <IconComponent
-                            className="w-7 h-7"
-                            style={{ color: accentColor }}
-                          />
-                        ) : (
-                          <div
-                            className="w-8 h-8 rounded-full"
-                            style={{ backgroundColor: accentColor }}
-                          />
-                        )}
+          <div className="mt-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {cards.map((card) => (
+                <a
+                  key={card.id}
+                  href={card.href || "#"}
+                  className="group block bg-white rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border border-gray-100 overflow-hidden"
+                >
+                  {/* Image with aspect ratio */}
+                  <div className="relative mb-6 overflow-hidden rounded-xl bg-gray-50">
+                    {card.image ? (
+                      <div className="relative pt-[70%]">
+                        <img
+                          src={card.image}
+                          alt={card.title}
+                          className="absolute inset-0 w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                        />
                       </div>
+                    ) : (
+                      <div className="pt-[70%] flex items-center justify-center">
+                        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                          <span className="text-3xl opacity-30">📄</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
-                      <ArrowRight
-                        className="w-5 h-5 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300"
+                  {/* Content */}
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-gray-800 transition-colors line-clamp-2">
+                      {card.title}
+                    </h3>
+
+                    {card.excerpt && (
+                      <p className="text-gray-600 text-sm leading-relaxed group-hover:text-gray-700 transition-colors line-clamp-2">
+                        {card.excerpt}
+                      </p>
+                    )}
+
+                    {/* Simple CTA */}
+                    <div className="flex items-center justify-between pt-3">
+                      <span
+                        className="text-sm font-medium flex items-center gap-1.5"
                         style={{ color: accentColor }}
-                      />
+                      >
+                        Learn More
+                        <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform duration-300" />
+                      </span>
                     </div>
+                  </div>
 
-                    {/* Card content */}
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-gray-800 transition-colors">
-                        {card.title}
-                      </h3>
-
-                      {card.excerpt && (
-                        <p className="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors">
-                          {card.excerpt}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Hover accent line */}
+                  {/* Simple bottom accent line */}
+                  <div className="mt-4">
                     <div
-                      className="mt-6 h-1 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
+                      className="h-0.5 rounded-full w-0 group-hover:w-full transition-all duration-300 origin-left"
                       style={{ backgroundColor: accentColor }}
                     />
-                  </a>
-                );
-              })}
+                  </div>
+                </a>
+              ))}
             </div>
           </div>
         )}

@@ -8,6 +8,7 @@ import {
   updatePage,
   PageItem2,
   PageWithContentResponse,
+  deletePage,
 } from "@/services/modules/pageModule";
 import {
   updateModule,
@@ -212,7 +213,7 @@ const InputField: React.FC<InputFieldProps> = ({
     transition-all duration-200 bg-white placeholder-gray-400
     ${
       error
-        ? "border-red-300 focus:ring-red-500 focus:border-red-500"
+        ? "border-primary-300 focus:ring-primary-500 focus:border-primary-500"
         : "border-gray-300"
     }
     ${disabled || readOnly ? "bg-gray-50 cursor-not-allowed opacity-70" : ""}
@@ -224,7 +225,7 @@ const InputField: React.FC<InputFieldProps> = ({
     <div className={fullWidth ? "col-span-full" : ""}>
       <label className="block text-sm font-semibold text-gray-800 mb-2">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-primary-500 ml-1">*</span>}
         {readOnly && ( // Add this section
           <span className="ml-2 text-xs text-blue-600 font-normal">
             (read-only)
@@ -264,7 +265,7 @@ const InputField: React.FC<InputFieldProps> = ({
       </div>
 
       {error && (
-        <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
+        <p className="mt-2 text-sm text-primary-600 flex items-center gap-1">
           <AlertCircle className="w-4 h-4" />
           {error}
         </p>
@@ -411,7 +412,7 @@ const ArrayFieldEditor: React.FC<ArrayFieldEditorProps> = ({
           />
           <button
             onClick={() => removeItem(index)}
-            className="p-2 text-red-500 hover:text-red-700 rounded transition-colors"
+            className="p-2 text-primary-500 hover:text-primary-700 rounded transition-colors"
             type="button"
           >
             <Trash2 className="w-4 h-4" />
@@ -488,11 +489,11 @@ const ObjectFieldEditor: React.FC<ObjectFieldEditorProps> = ({
         onChange={(e) => handleChange(e.target.value)}
         rows={6}
         className={`w-full border rounded-lg px-3 py-2 text-sm font-mono outline-none ${
-          error ? "border-red-300" : "border-gray-300"
+          error ? "border-primary-300" : "border-gray-300"
         }`}
         placeholder='{"key": "value"}'
       />
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-primary-600">{error}</p>}
     </div>
   );
 };
@@ -565,14 +566,14 @@ const JSONEditor: React.FC<JSONEditorProps> = ({
         rows={12}
         disabled={disabled}
         className={`w-full border rounded-lg px-3 py-2 text-sm font-mono outline-none ${
-          error ? "border-red-300 bg-red-50" : "border-gray-300"
+          error ? "border-primary-300 bg-primary-50" : "border-gray-300"
         } ${disabled ? "bg-gray-50 cursor-not-allowed opacity-70" : ""}`}
         placeholder="Enter valid JSON..."
       />
 
       {error && (
-        <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded border border-red-200">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+        <div className="flex items-center gap-2 text-sm text-primary-600 bg-primary-50 p-3 rounded border border-primary-200">
+          <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -902,7 +903,7 @@ const ModuleContentEditor: React.FC<ModuleContentEditorProps> = ({
                   {!disabled && (
                     <button
                       onClick={() => removeField(index)}
-                      className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
+                      className="text-primary-500 hover:text-primary-700 p-1 rounded transition-colors"
                       type="button"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -1039,9 +1040,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     switch (type) {
       case "danger":
         return {
-          icon: <AlertCircle className="w-6 h-6 text-red-600" />,
-          button: "bg-red-600 hover:bg-red-700",
-          background: "bg-red-50",
+          icon: <AlertCircle className="w-6 h-6 text-primary-600" />,
+          button: "bg-primary-600 hover:bg-primary-700",
+          background: "bg-primary-50",
         };
       case "warning":
         return {
@@ -1097,9 +1098,95 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   );
 };
 
-// ────────────────────────────────
-// Add Module Modal Components
-// ────────────────────────────────
+interface DeletePageModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  pageTitle: string;
+  isDeleting: boolean;
+}
+
+const DeletePageModal: React.FC<DeletePageModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  pageTitle,
+  isDeleting,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-60">
+      <div className="bg-white rounded-2xl w-full max-w-md">
+        <div className="p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+              <AlertCircle className="w-6 h-6 text-primary-600" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Delete Page</h3>
+              <p className="text-gray-600 mt-1">
+                This action cannot be undone.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 p-4 bg-primary-50 border border-primary-200 rounded-xl">
+            <p className="text-primary-800 font-medium">
+              Are you sure you want to delete the page "
+              <span className="font-bold">{pageTitle}</span>"?
+            </p>
+            <div className="mt-3 text-sm text-primary-700 space-y-1">
+              <p className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                All page data will be permanently removed
+              </p>
+              <p className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                Modules will not be deleted (they can be reused)
+              </p>
+              <p className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                This action is irreversible
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 rounded-b-2xl">
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={onClose}
+              disabled={isDeleting}
+              className="px-6 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              type="button"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              disabled={isDeleting}
+              className="px-6 py-2 bg-primary-500 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              type="button"
+            >
+              {isDeleting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4" />
+                  Delete Page
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface AddModuleModalProps {
   isOpen: boolean;
@@ -1335,7 +1422,7 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
         <div className="border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-linear-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
                 <Plus className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -1580,14 +1667,14 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
             <div
               className={`mt-4 p-4 rounded-xl border flex items-center gap-3 ${
                 message.type === "error"
-                  ? "bg-red-50 text-red-800 border-red-200"
+                  ? "bg-primary-50 text-primary-800 border-primary-200"
                   : "bg-green-50 text-green-800 border-green-200"
               }`}
             >
               {message.type === "error" ? (
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                <AlertCircle className="w-5 h-5 shrink-0" />
               ) : (
-                <CheckCircle className="w-5 h-5 flex-shrink-0" />
+                <CheckCircle className="w-5 h-5 shrink-0" />
               )}
               <span className="font-medium">{message.text}</span>
             </div>
@@ -1611,7 +1698,7 @@ const AddModuleModal: React.FC<AddModuleModalProps> = ({
               className={`px-6 py-3 rounded-xl text-white font-semibold transition-all duration-200 ${
                 modeConfig.disabled
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
+                  : "bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
               }`}
               type="button"
             >
@@ -1680,7 +1767,7 @@ const ReorderModal: React.FC<ReorderModalProps> = ({
         <div className="border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-linear-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
                 <GripVertical className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -1769,7 +1856,7 @@ const ReorderModal: React.FC<ReorderModalProps> = ({
             </button>
             <button
               onClick={handleSave}
-              className="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
+              className="px-6 py-3 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
               type="button"
             >
               Save Order
@@ -1842,9 +1929,36 @@ export default function EditPage() {
   const [showReorderModal, setShowReorderModal] = useState(false);
   const [reorderingModules, setReorderingModules] = useState(false);
 
-  // ────────────────────────────────
-  // Data Fetching
-  // ────────────────────────────────
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingPage, setDeletingPage] = useState(false);
+
+  const handleDeletePage = async () => {
+    setDeletingPage(true);
+
+    try {
+      const deleteFn = deletePage as unknown as (
+        id: string
+      ) => Promise<{ success: boolean; message: string }>;
+
+      await deleteFn(id);
+
+      setUpdateMsg({
+        type: "success",
+        text: "Page deleted successfully!",
+      });
+
+      setTimeout(() => {
+        router.push("/admin/dashboard/content/pages");
+      }, 1500);
+    } catch (err: any) {
+      setUpdateMsg({
+        type: "error",
+        text: err.message || "Failed to delete page",
+      });
+      setDeletingPage(false);
+    }
+  };
+
   const getPageData = useCallback(async () => {
     if (!id) return;
 
@@ -2167,9 +2281,9 @@ export default function EditPage() {
   // ────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100">
         <div className="text-center">
-          <div className="w-20 h-20 bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+          <div className="w-20 h-20 bg-linear-to-r from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
             <RefreshCw className="w-8 h-8 text-white animate-spin" />
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-3">Loading Page</h3>
@@ -2186,10 +2300,10 @@ export default function EditPage() {
   // ────────────────────────────────
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100">
         <div className="max-w-md text-center">
-          <div className="mx-auto w-24 h-24 bg-red-100 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-            <AlertCircle className="w-12 h-12 text-red-600" />
+          <div className="mx-auto w-24 h-24 bg-primary-100 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+            <AlertCircle className="w-12 h-12 text-primary-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Unable to Load Page
@@ -2220,7 +2334,7 @@ export default function EditPage() {
 
   if (!pageData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100">
         <div className="text-center">
           <FileText className="w-20 h-20 text-gray-300 mx-auto mb-6" />
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -2243,7 +2357,7 @@ export default function EditPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* HEADER */}
         <div className="mb-8">
@@ -2402,6 +2516,15 @@ export default function EditPage() {
                 )}
               </div>
             </div>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              disabled={deletingPage}
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-xl"
+              type="button"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete This Page
+            </button>
           </div>
 
           {/* MAIN CONTENT */}
@@ -2410,9 +2533,9 @@ export default function EditPage() {
             {activeTab === "settings" && (
               <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden animate-fadeIn">
                 {/* Header */}
-                <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white px-8 py-6">
+                <div className="border-b border-gray-200 bg-linear-to-r from-gray-50 to-white px-8 py-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <div className="w-12 h-12 bg-linear-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
                       <Settings className="w-6 h-6 text-white" />
                     </div>
 
@@ -2580,9 +2703,9 @@ export default function EditPage() {
                     </div>
 
                     {isDraftWithoutModules && (
-                      <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+                      <div className="p-4 bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
                         <div className="flex items-start gap-3">
-                          <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                          <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
                           <div>
                             <h4 className="font-semibold text-blue-900 mb-1">
                               Modules Visibility
@@ -2600,7 +2723,7 @@ export default function EditPage() {
                 </div>
 
                 {/* Footer Actions */}
-                <div className="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white px-8 py-6">
+                <div className="border-t border-gray-200 bg-linear-to-r from-gray-50 to-white px-8 py-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="flex-1">
                       {updateMsg && (
@@ -2608,13 +2731,13 @@ export default function EditPage() {
                           className={`flex items-center gap-3 p-4 rounded-xl border ${
                             updateMsg.type === "success"
                               ? "bg-green-50 text-green-800 border-green-200"
-                              : "bg-red-50 text-red-800 border-red-200"
+                              : "bg-primary-50 text-primary-800 border-primary-200"
                           }`}
                         >
                           {updateMsg.type === "success" ? (
-                            <CheckCircle className="w-5 h-5 flex-shrink-0" />
+                            <CheckCircle className="w-5 h-5 shrink-0" />
                           ) : (
-                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                            <AlertCircle className="w-5 h-5 shrink-0" />
                           )}
                           <span className="font-medium">{updateMsg.text}</span>
                         </div>
@@ -2624,10 +2747,10 @@ export default function EditPage() {
                     <button
                       onClick={handlePageUpdate}
                       disabled={updatingPage}
-                      className={`flex items-center gap-3 px-8 py-4 rounded-xl text-white font-semibold shadow-lg transition-all duration-200 min-w-[160px] justify-center ${
+                      className={`flex items-center gap-3 px-8 py-4 rounded-xl text-white font-semibold shadow-lg transition-all duration-200 min-w-40 justify-center ${
                         updatingPage
                           ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/25"
+                          : "bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/25"
                       }`}
                       type="button"
                     >
@@ -2655,7 +2778,7 @@ export default function EditPage() {
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+                      <div className="w-12 h-12 bg-linear-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
                         <Layers className="w-6 h-6 text-white" />
                       </div>
 
@@ -2694,7 +2817,7 @@ export default function EditPage() {
                     {!isDraftWithoutModules && moduleCount > 1 && (
                       <button
                         onClick={() => setShowReorderModal(true)}
-                        className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-200 font-semibold shadow-lg shadow-gray-500/25 mr-2 cursor-pointer text-sm"
+                        className="flex items-center gap-3 px-4 py-2 bg-linear-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-200 font-semibold shadow-lg shadow-gray-500/25 mr-2 cursor-pointer text-sm"
                         type="button"
                       >
                         <GripVertical className="w-4 h-4" />
@@ -2706,7 +2829,7 @@ export default function EditPage() {
                     {!isDraftWithoutModules && (
                       <button
                         onClick={() => setShowAddModuleModal(true)}
-                        className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25 cursor-pointer text-sm"
+                        className="flex items-center gap-3 px-4 py-2 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25 cursor-pointer text-sm"
                         type="button"
                       >
                         <Plus className="w-4 h-4" />
@@ -2732,7 +2855,7 @@ export default function EditPage() {
                       </p>
                       <button
                         onClick={() => setActiveTab("settings")}
-                        className="px-8 py-3.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
+                        className="px-8 py-3.5 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
                         type="button"
                       >
                         Go to Page Settings
@@ -2763,7 +2886,7 @@ export default function EditPage() {
                                     <h3 className="text-xl font-semibold text-gray-900">
                                       {moduleData.title || "Untitled Module"}
                                     </h3>
-                                    <span className="text-xs bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1.5 rounded-full font-semibold shadow-sm">
+                                    <span className="text-xs bg-linear-to-r from-primary-500 to-primary-600 text-white px-3 py-1.5 rounded-full font-semibold shadow-sm">
                                       {moduleData.type}
                                     </span>
                                     <span className="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full font-semibold">
@@ -2804,7 +2927,7 @@ export default function EditPage() {
                                     <>
                                       <button
                                         onClick={() => startEdit(moduleData)}
-                                        className="flex items-center gap-2 px-5 py-2 text-xs bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold cursor-pointer"
+                                        className="flex items-center gap-2 px-5 py-2 text-xs bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold cursor-pointer"
                                         type="button"
                                       >
                                         <Edit3 className="w-4 h-4" />
@@ -2814,7 +2937,7 @@ export default function EditPage() {
                                         onClick={() =>
                                           setModuleToRemove(moduleData._id)
                                         }
-                                        className="flex items-center gap-2 px-5 py-2 text-xs bg-transparent text-primary-500 rounded-xl hover:bg-red-700 transition-all duration-200 font-semibold border border-primary-300 hover:text-white cursor-pointer"
+                                        className="flex items-center gap-2 px-5 py-2 text-xs bg-transparent text-primary-500 rounded-xl hover:bg-primary-700 transition-all duration-200 font-semibold border border-primary-300 hover:text-white cursor-pointer"
                                         type="button"
                                       >
                                         <Trash2 className="w-4 h-4" />
@@ -2873,14 +2996,14 @@ export default function EditPage() {
                                     <div
                                       className={`p-4 rounded-xl border flex items-center gap-3 ${
                                         moduleMsg.type === "error"
-                                          ? "bg-red-50 text-red-800 border-red-200"
+                                          ? "bg-primary-50 text-primary-800 border-primary-200"
                                           : "bg-green-50 text-green-800 border-green-200"
                                       }`}
                                     >
                                       {moduleMsg.type === "error" ? (
-                                        <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                                        <AlertCircle className="w-5 h-5 shrink-0" />
                                       ) : (
-                                        <CheckCircle className="w-5 h-5 flex-shrink-0" />
+                                        <CheckCircle className="w-5 h-5 shrink-0" />
                                       )}
                                       <span className="font-medium">
                                         {moduleMsg.text}
@@ -2908,7 +3031,7 @@ export default function EditPage() {
                                       className={`flex items-center gap-3 px-6 py-3 rounded-xl text-white font-semibold transition-all duration-200 ${
                                         savingModule
                                           ? "bg-gray-400 cursor-not-allowed"
-                                          : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
+                                          : "bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
                                       }`}
                                       type="button"
                                     >
@@ -2947,7 +3070,7 @@ export default function EditPage() {
                         {searchTerm ? (
                           <button
                             onClick={() => setSearchTerm("")}
-                            className="px-6 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
+                            className="px-6 py-2.5 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25"
                             type="button"
                           >
                             Clear Search
@@ -2955,7 +3078,7 @@ export default function EditPage() {
                         ) : (
                           <button
                             onClick={() => setShowAddModuleModal(true)}
-                            className="flex items-center gap-3 px-6 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25 mx-auto"
+                            className="flex items-center gap-3 px-6 py-2.5 bg-linear-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-semibold shadow-lg shadow-primary-500/25 mx-auto"
                             type="button"
                           >
                             <Plus className="w-4 h-4" />
@@ -2998,6 +3121,14 @@ export default function EditPage() {
         confirmText={removingModule ? "Removing..." : "Remove Module"}
         cancelText="Cancel"
         type="danger"
+      />
+
+      <DeletePageModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeletePage}
+        pageTitle={pageFields.title || "Untitled Page"}
+        isDeleting={deletingPage}
       />
     </div>
   );

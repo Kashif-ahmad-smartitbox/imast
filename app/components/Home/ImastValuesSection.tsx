@@ -59,7 +59,7 @@ export default memo(function ImastValuesSection(props: any) {
   return (
     <section className="relative">
       <div className="relative">
-        <div className="w-full h-[250px] md:h-[300px] lg:h-[500px] overflow-hidden bg-gradient-to-br from-slate-900/20 to-primary-900/10">
+        <div className="w-full h-[250px] md:h-[300px] lg:h-[500px] overflow-hidden bg-linear-to-br from-slate-900/20 to-primary-900/10">
           <img
             src={props.data.heroImage.src}
             alt={props.data.heroImage.alt}
@@ -69,7 +69,7 @@ export default memo(function ImastValuesSection(props: any) {
           />
         </div>
 
-        <div className="relative z-30 -mt-[60px] md:-mt-[80px] lg:-mt-[50px]">
+        <div className="relative z-30 -mt-[60px] md:-mt-20 lg:-mt-[50px]">
           <div className="w-[94vw] md:w-[86vw] lg:w-[76vw] max-w-6xl mx-auto">
             <div className="bg-white rounded-3xl ring-1 ring-slate-200 p-8 md:p-12 lg:p-16">
               <div className="max-w-5xl mx-auto">

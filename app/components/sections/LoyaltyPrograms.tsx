@@ -10,6 +10,7 @@ import {
   Zap,
   Sparkles,
 } from "lucide-react";
+import { highlightText } from "@/app/lib/highlightText";
 
 type Program = {
   id: string | number;
@@ -174,6 +175,12 @@ export default function LoyaltyPrograms({ data }: Props) {
     );
   };
 
+  const highlighted = highlightText(heading, [
+    { word: "Campaigns", className: "text-primary-500" },
+    { word: "Loyalty", className: "text-primary-500" },
+    { word: "Imast", className: "text-primary-500" },
+  ]);
+
   return (
     <section
       className={`${containerPadding} ${styles.container} relative overflow-hidden`}
@@ -195,9 +202,8 @@ export default function LoyaltyPrograms({ data }: Props) {
             id="loyalty-heading"
             className="text-2xl lg:text-3xl font-bold leading-tight mb-3"
             style={{ color: textColor }}
-          >
-            {heading}
-          </h2>
+            dangerouslySetInnerHTML={{ __html: highlighted }}
+          />
 
           {subheading && (
             <p className="text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">

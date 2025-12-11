@@ -15,6 +15,7 @@ import {
   Target,
   CheckCircle,
 } from "lucide-react";
+import { highlightText } from "@/app/lib/highlightText";
 
 type ModuleItem = {
   id?: string | number;
@@ -55,6 +56,11 @@ export default function DMSModulesSection({ data }: { data: ModulesData }) {
   // Default icons if none provided
   const defaultIcons = [Zap, Shield, Users, TrendingUp, BarChart3, Smartphone];
 
+  const highlighted = highlightText(title, [
+    { word: "IM", className: "text-primary-500" },
+    { word: "DMS", className: "text-primary-500" },
+  ]);
+
   return (
     <section className="py-20 lg:py-28 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -67,9 +73,10 @@ export default function DMSModulesSection({ data }: { data: ModulesData }) {
             </span>
           </div>
 
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
-            {title}
-          </h2>
+          <h2
+            className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight"
+            dangerouslySetInnerHTML={{ __html: highlighted }}
+          />
 
           {subtitle && (
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">

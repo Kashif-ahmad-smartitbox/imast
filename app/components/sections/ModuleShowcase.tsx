@@ -33,7 +33,7 @@ export default function ModuleShowcase({ data }: Props) {
   const {
     heading = "Technology platform modules with Manpower Outsourcing",
     subtitle,
-    background = "#9b288f",
+    background = "#E80041",
     accentColor = "#9b28a0",
     cards = [],
     containerPadding = "py-20 lg:py-28",

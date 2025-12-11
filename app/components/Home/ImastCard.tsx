@@ -93,7 +93,7 @@ export default function ImastCard({
           </div>
 
           {/* Key metrics grid */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6 lg:mb-8">
+          <div className="grid grid-cols-3 gap-2 mb-4 sm:mb-6 lg:mb-8">
             {metrics.map((metric, index) => (
               <MetricCard
                 key={index}
@@ -108,10 +108,10 @@ export default function ImastCard({
           {/* Modules section */}
           <div className="mb-4 sm:mb-6 lg:mb-8">
             <h4 className="text-xs sm:text-sm font-semibold text-gray-700 mb-3 sm:mb-4 flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-gradient-to-r from-primary-500 to-amber-500 rounded-full flex-shrink-0"></div>
+              <div className="w-1.5 h-1.5 bg-linear-to-r from-primary-500 to-amber-500 rounded-full shrink-0"></div>
               Integrated Modules
             </h4>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+            <div className="flex flex-wrap gap-2">
               {modules.map((module, index) => (
                 <ModulePill
                   key={index}
@@ -126,7 +126,7 @@ export default function ImastCard({
           {/* Bottom stats and CTA */}
           <div className="pt-4 sm:pt-6 border-t border-gray-100">
             <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3 sm:gap-4">
-              <div className="flex flex-wrap gap-2 sm:gap-3">
+              <div className="flex flex-wrap gap-2">
                 {stats.map((stat, index) => (
                   <StatPill
                     key={index}
@@ -156,7 +156,7 @@ function MetricCard({ icon, label, value, delay }: MetricCardData) {
       style={{ animationDelay: `${delay}ms` }}
     >
       <div
-        className={`inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white mb-1 sm:mb-2 group-hover/metric:scale-110 transition-transform duration-300 mx-auto`}
+        className={`inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-linear-to-r from-primary-500 to-primary-600 text-white mb-1 sm:mb-2 group-hover/metric:scale-110 transition-transform duration-300 mx-auto`}
       >
         <IconComponent className="w-3 h-3 sm:w-4 sm:h-4" />
       </div>
@@ -184,7 +184,7 @@ function ModulePill({
 
   return (
     <div
-      className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-white text-gray-700 text-xs font-medium border border-gray-100 hover:border-gray-200 hover:scale-105 transition-all duration-300 cursor-pointer group/module flex-shrink-0 min-w-0"
+      className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-white text-gray-700 text-xs font-medium border border-gray-100 hover:border-gray-200 hover:scale-105 transition-all duration-300 cursor-pointer group/module shrink-0 min-w-0"
       style={{
         flex: "1 1 auto",
         maxWidth: "calc(50% - 0.75rem)",
@@ -193,7 +193,7 @@ function ModulePill({
     >
       <div className="flex items-center gap-1.5 sm:gap-2 w-full">
         <div
-          className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+          className={`w-1.5 h-1.5 rounded-full shrink-0 ${
             index % 3 === 0
               ? "bg-primary-400"
               : index % 3 === 1
@@ -202,7 +202,7 @@ function ModulePill({
           }`}
         ></div>
         <div className="flex items-center gap-1.5 min-w-0 flex-1">
-          <IconComponent className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+          <IconComponent className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
           <span className="truncate text-xs sm:text-xs">{name}</span>
         </div>
       </div>
@@ -220,7 +220,7 @@ function StatPill({ icon, label, value, color, delay }: StatPillData) {
 
   return (
     <div
-      className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border ${colorClasses[color]} transition-all duration-300 hover:scale-105 hover:shadow-sm flex-shrink-0`}
+      className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border ${colorClasses[color]} transition-all duration-300 hover:scale-105 hover:shadow-sm shrink-0`}
       style={{ animationDelay: `${delay}ms` }}
     >
       <span className="font-bold text-xs sm:text-sm">{icon}</span>

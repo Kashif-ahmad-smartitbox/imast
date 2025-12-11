@@ -138,16 +138,81 @@ const FooterColumn: React.FC<{ title: string; items: NavigationLink[] }> = ({
 const ContactRow: React.FC<{
   icon: React.ComponentType<{ className?: string; size?: number }>;
   label: React.ReactNode;
-}> = ({ icon: Icon, label }) => (
-  <div className="flex items-start group">
-    <div className="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center mr-3 mt-0.5 shrink-0 group-hover:bg-gray-50 group-hover:border-gray-300 transition-all duration-300 group-hover:shadow-sm">
-      <Icon className="w-3 h-3 text-gray-600" />
+  value: string;
+  type: string;
+}> = ({ icon: Icon, label, value, type }) => {
+  // Handle click based on type
+  const handleClick = () => {
+    switch (type) {
+      case "email":
+        window.location.href = `mailto:${value}`;
+        break;
+      case "phone":
+        window.location.href = `tel:${value.replace(/\s/g, "")}`;
+        break;
+      case "address":
+        // Open in Google Maps if it's an address
+        const encodedAddress = encodeURIComponent(value);
+        window.open(
+          `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`,
+          "_blank"
+        );
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Determine if this item should be clickable
+  const isClickable = ["email", "phone", "address"].includes(type);
+
+  const content = (
+    <div className="flex items-start group">
+      <div
+        className={`w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center mr-3 mt-0.5 shrink-0 transition-all duration-300 ${
+          isClickable
+            ? "group-hover:bg-gray-50 group-hover:border-gray-300 group-hover:shadow-sm cursor-pointer"
+            : ""
+        }`}
+      >
+        <Icon
+          className={`w-3 h-3 ${
+            isClickable
+              ? "text-gray-600 group-hover:text-gray-900"
+              : "text-gray-600"
+          } transition-colors duration-300`}
+        />
+      </div>
+      <p
+        className={`text-gray-600 transition-colors duration-300 font-medium text-sm leading-relaxed ${
+          isClickable ? "group-hover:text-gray-900 cursor-pointer" : ""
+        }`}
+      >
+        {label}
+      </p>
     </div>
-    <p className="text-gray-600 group-hover:text-gray-900 transition-colors duration-300 font-medium text-sm leading-relaxed">
-      {label}
-    </p>
-  </div>
-);
+  );
+
+  if (!isClickable) {
+    return content;
+  }
+
+  return (
+    <button
+      onClick={handleClick}
+      className="w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:rounded-lg"
+      aria-label={`${
+        type === "email"
+          ? "Send email to"
+          : type === "phone"
+          ? "Call"
+          : "Open location for"
+      } ${value}`}
+    >
+      {content}
+    </button>
+  );
+};
 
 const NewsletterForm: React.FC<{
   email: string;
@@ -399,6 +464,8 @@ const Footer: React.FC<{ data: FooterData }> = ({ data }) => {
                     key={contact.type}
                     icon={IconComponent}
                     label={formatContactInfo(contact)}
+                    value={contact.value}
+                    type={contact.type}
                   />
                 );
               })}

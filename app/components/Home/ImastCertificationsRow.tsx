@@ -43,14 +43,13 @@ const DEFAULT_BADGES = [
 ];
 
 export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
-  // autoplay state
   const [activeIndex, setActiveIndex] = useState(-1);
   const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const msPerBadge = 700; // how long each badge stays highlighted
-    const pauseAfterCycle = 900; // pause after completing the cycle
+    const msPerBadge = 700;
+    const pauseAfterCycle = 900;
 
     function startLoop() {
       let idx = 0;

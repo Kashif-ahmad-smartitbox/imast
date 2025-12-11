@@ -10,6 +10,7 @@ import {
   Target,
   Star,
 } from "lucide-react";
+import { highlightText } from "@/app/lib/highlightText";
 
 type CardItem = {
   id: string | number;
@@ -225,6 +226,11 @@ export default function FeatureGridSection({ data }: Props) {
     );
   };
 
+  const highlighted = highlightText(heading, [
+    { word: "Sales Excellence", className: "text-primary-500" },
+    { word: "IMAST", className: "text-primary-500" },
+  ]);
+
   return (
     <section
       className={`relative overflow-hidden ${currentVariant.container}`}
@@ -265,12 +271,11 @@ export default function FeatureGridSection({ data }: Props) {
 
           <h2
             id="feature-grid-heading"
-            className={`text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4 ${
+            className={`text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-4 ${
               variant === "gradient" ? "text-white" : "text-gray-900"
             }`}
-          >
-            {heading}
-          </h2>
+            dangerouslySetInnerHTML={{ __html: highlighted }}
+          />
 
           {subtitle && (
             <p
