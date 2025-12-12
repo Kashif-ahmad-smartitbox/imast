@@ -8,6 +8,7 @@ import { AuthProvider } from "@/services/context/AuthContext";
 import { AlertProvider } from "@/components/alerts/AlertProvider";
 import { GoogleTags, GoogleTagsNoscript } from "./components/GoogleTags";
 import { GlobalModalProvider } from "@/components/global/GlobalModalProvider";
+import MetaTagFixer from "./components/MetaTagFixer";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -31,6 +32,7 @@ export default function RootLayout({
         <GoogleTags />
       </head>
       <body className={`${outfit.variable} antialiased`}>
+        <MetaTagFixer />
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-M499M7HP"
