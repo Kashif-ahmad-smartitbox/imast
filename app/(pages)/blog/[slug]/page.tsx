@@ -81,7 +81,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SingleBlogPage({ params }: Props) {
-  const { slug } = params;
+  const { slug } = (await params) as { slug: string };
 
   // Fetch blog server-side so we can build JSON-LD (and avoid relying on client fetch)
   const response = await getBlogBySlug(slug);

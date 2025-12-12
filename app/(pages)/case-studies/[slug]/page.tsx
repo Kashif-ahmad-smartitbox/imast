@@ -81,7 +81,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SingleStoriesPage({ params }: Props) {
-  const { slug } = params;
+  const { slug } = (await params) as { slug: string };
 
   // Fetch story server-side so we can build JSON-LD
   const response = await getStory(slug);
