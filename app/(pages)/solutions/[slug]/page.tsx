@@ -4,6 +4,13 @@ import ModuleRenderer from "@/components/modules/ModuleRenderer";
 import { getPageWithContent } from "@/services/modules/pageModule";
 import { notFound } from "next/navigation";
 
+import Schema from "@/components/Schema";
+import {
+  breadcrumbSchema,
+  webPageSchema,
+  softwareApplicationSchema,
+} from "@/lib/schema";
+
 type PageResponse = {
   page?: any;
   message?: string;
@@ -33,6 +40,7 @@ export async function generateMetadata({
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
+    const canonical = page.canonicalUrl || `${baseUrl}/solutions/${slug}`;
 
     return {
       title: page.metaTitle || page.title || "imast",
@@ -49,8 +57,9 @@ export async function generateMetadata({
           page.excerpt ||
           "Discover expert insights and analysis.",
         type: "website",
-        url: `${baseUrl}/solutions/${slug}`,
+        url: canonical,
         siteName: "iMast",
+        images: page.ogImage ? [page.ogImage] : undefined,
       },
       twitter: {
         card: "summary_large_image",
@@ -63,7 +72,7 @@ export async function generateMetadata({
       robots:
         page.status === "published" ? "index, follow" : "noindex, nofollow",
       alternates: {
-        canonical: page.canonicalUrl || `${baseUrl}/solutions/${slug}`,
+        canonical,
       },
     };
   } catch (error) {
@@ -98,7 +107,9 @@ export default async function Page({ params }: { params: any }) {
           <h1 className="text-xl font-semibold text-gray-900 mb-2">
             No content
           </h1>
-          <p className="text-gray-600">This page has no content yet.</p>
+          <p className="text-gray-600">
+            No modules configured for this solution page.
+          </p>
         </div>
       </div>
     );
@@ -108,8 +119,49 @@ export default async function Page({ params }: { params: any }) {
     .slice()
     .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
 
+  // build schema
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    "https://www.imast.in";
+  const canonical = page.canonicalUrl || `${baseUrl}/solutions/${slug}`;
+
+  const bc = breadcrumbSchema([
+    { position: 1, name: "Home", item: `${baseUrl}/` },
+    { position: 2, name: "Solutions", item: `${baseUrl}/solutions` },
+    { position: 3, name: page.title || slug, item: canonical },
+  ]);
+
+  const pageWeb = webPageSchema({
+    name: page.metaTitle || page.title || "Solution",
+    url: canonical,
+    description: page.metaDescription || page.excerpt,
+  });
+
+  // SoftwareApplication schema for solution pages (fallback to WebPage if insufficient data)
+  const appSchema = softwareApplicationSchema({
+    name: page.title || "Solution",
+    url: canonical,
+    image:
+      page.image ||
+      page.ogImage ||
+      `${baseUrl}/assets/images/solutions/default.png`,
+    description: page.metaDescription || page.excerpt,
+    operatingSystem: page.meta?.operatingSystem || page.meta?.os || "Web",
+    applicationCategory:
+      page.meta?.applicationCategory || "BusinessApplication",
+    publisherName: page.meta?.publisherName || "IMAST",
+  });
+
+  // Decide which schemas to emit:
+  // - Always emit breadcrumb + webpage
+  // - Emit SoftwareApplication for solutions (helps rich results) — it's safe even if some fields are defaults
+  const schemaList = [bc, pageWeb, appSchema];
+
   return (
     <main>
+      {/* Page-level schema (Organization/WebSite already provided in layout) */}
+      <Schema data={schemaList} />
+
       {layout.map((item: any, idx: number) => (
         <ModuleRenderer item={item} index={idx} key={item.module?._id ?? idx} />
       ))}

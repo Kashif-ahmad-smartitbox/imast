@@ -4,6 +4,9 @@ import ModuleRenderer from "@/components/modules/ModuleRenderer";
 import { getPageWithContent } from "@/services/modules/pageModule";
 import { notFound } from "next/navigation";
 
+import Schema from "@/components/Schema";
+import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
+
 type PageResponse = {
   page?: any;
   message?: string;
@@ -27,12 +30,13 @@ export async function generateMetadata({
     }
 
     const page = response.page;
-    // ensure this is a policies page
     if (page.type !== "policies") {
       notFound();
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
+    const canonical =
+      page.canonicalUrl || `${baseUrl.replace(/\/$/, "")}/policies/${slug}`;
 
     return {
       title: page.metaTitle || page.title || "iMast",
@@ -49,8 +53,9 @@ export async function generateMetadata({
           page.excerpt ||
           "Discover expert insights and analysis.",
         type: "website",
-        url: `${baseUrl}/policies/${slug}`,
+        url: canonical,
         siteName: "iMast",
+        images: page.ogImage ? [page.ogImage] : undefined,
       },
       twitter: {
         card: "summary_large_image",
@@ -63,7 +68,7 @@ export async function generateMetadata({
       robots:
         page.status === "published" ? "index, follow" : "noindex, nofollow",
       alternates: {
-        canonical: page.canonicalUrl || `${baseUrl}/policies/${slug}`,
+        canonical,
       },
     };
   } catch (error) {
@@ -86,7 +91,6 @@ export default async function Page({ params }: { params: any }) {
 
   const page = response.page;
 
-  // require policies type
   if (page.type !== "policies") {
     notFound();
   }
@@ -98,7 +102,9 @@ export default async function Page({ params }: { params: any }) {
           <h1 className="text-xl font-semibold text-gray-900 mb-2">
             No content
           </h1>
-          <p className="text-gray-600">This page has no content yet.</p>
+          <p className="text-gray-600">
+            No modules configured for this policy page.
+          </p>
         </div>
       </div>
     );
@@ -108,8 +114,29 @@ export default async function Page({ params }: { params: any }) {
     .slice()
     .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
 
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    "https://www.imast.in";
+  const canonical = page.canonicalUrl || `${baseUrl}/policies/${slug}`;
+
+  const bc = breadcrumbSchema([
+    { position: 1, name: "Home", item: `${baseUrl}/` },
+    { position: 2, name: "Policies", item: `${baseUrl}/policies` },
+    { position: 3, name: page.title || slug, item: canonical },
+  ]);
+
+  const pageWeb = webPageSchema({
+    name: page.metaTitle || page.title || "Policy",
+    url: canonical,
+    description: page.metaDescription || page.excerpt,
+  });
+
+  const schemaList = [bc, pageWeb];
+
   return (
     <main>
+      <Schema data={schemaList} />
+
       {layout.map((item: any, idx: number) => (
         <ModuleRenderer item={item} index={idx} key={item.module?._id ?? idx} />
       ))}

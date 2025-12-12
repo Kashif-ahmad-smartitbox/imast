@@ -2,6 +2,10 @@ import React from "react";
 import { Metadata } from "next";
 import SingleStories from "@/app/components/pages/SingleStories";
 import { getStory } from "@/app/services/modules/stories";
+import { notFound } from "next/navigation";
+
+import Schema from "@/components/Schema";
+import { breadcrumbSchema, articleSchema } from "@/lib/schema";
 
 interface Props {
   params: { slug: string };
@@ -24,16 +28,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
-    const canonicalUrl = `${baseUrl}/case-studies/${slug}`;
+    const canonicalUrl = `${baseUrl.replace(/\/$/, "")}/case-studies/${slug}`;
 
     const metaDescription =
       story.metaDescription ||
       story.excerpt ||
-      story.body
-        ?.replace(/<[^>]*>/g, "")
-        .substring(0, 160)
-        .trim() + "..." ||
-      "Read this captivating story on iMast";
+      (story.body
+        ? story.body
+            .replace(/<[^>]*>/g, "")
+            .substring(0, 160)
+            .trim() + "..."
+        : "Read this captivating story on iMast");
 
     const openGraph: any = {
       type: "article",
@@ -60,15 +65,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: metaDescription,
         images: [story.image || `${baseUrl}/twitter-image.jpg`],
       },
-      ...(story.publishedAt && {
-        publishedTime: story.publishedAt,
-      }),
-      ...(story.updatedAt && {
-        modifiedTime: story.updatedAt,
-      }),
-      ...(story.tags?.length && {
-        keywords: story.tags.join(", "),
-      }),
+      ...(story.publishedAt && { publishedTime: story.publishedAt }),
+      ...(story.updatedAt && { modifiedTime: story.updatedAt }),
+      ...(story.tags?.length && { keywords: story.tags.join(", ") }),
     };
   } catch (error) {
     console.error("Error generating metadata for story:", error);
@@ -81,8 +80,55 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-function SingleStoriesPage({ params }: Props) {
-  return <SingleStories />;
-}
+export default async function SingleStoriesPage({ params }: Props) {
+  const { slug } = params;
 
-export default SingleStoriesPage;
+  // Fetch story server-side so we can build JSON-LD
+  const response = await getStory(slug);
+  const story = response.story;
+
+  if (!story || story.status === "draft") {
+    notFound();
+  }
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    "https://www.imast.in";
+  const canonical = `${baseUrl}/case-studies/${slug}`;
+
+  // BreadcrumbList
+  const bc = breadcrumbSchema([
+    { position: 1, name: "Home", item: `${baseUrl}/` },
+    { position: 2, name: "Case Studies", item: `${baseUrl}/case-studies` },
+    { position: 3, name: story.title || slug, item: canonical },
+  ]);
+
+  // Article schema
+  const art = articleSchema({
+    title: story.title,
+    url: canonical,
+    image: story.image || undefined,
+    description:
+      story.metaDescription ||
+      story.excerpt ||
+      (story.body
+        ? story.body
+            .replace(/<[^>]*>/g, "")
+            .substring(0, 160)
+            .trim() + "..."
+        : undefined),
+    authorName: "imast",
+    publishedTime: story.publishedAt,
+    modifiedTime: story.updatedAt,
+  });
+
+  return (
+    <>
+      {/* Page-level JSON-LD (Organization/WebSite provided in RootLayout) */}
+      <Schema data={[bc, art]} />
+
+      {/* Existing page rendering */}
+      <SingleStories />
+    </>
+  );
+}

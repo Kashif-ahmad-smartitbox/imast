@@ -1,8 +1,12 @@
+// app/[slug]/page.tsx
 import React from "react";
 import { Metadata } from "next";
 import ModuleRenderer from "@/components/modules/ModuleRenderer";
 import { getPageWithContent } from "@/services/modules/pageModule";
 import { notFound } from "next/navigation";
+
+import Schema from "@/components/Schema";
+import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
 
 type PageResponse = {
   page?: any;
@@ -140,8 +144,34 @@ export default async function Page({ params }: { params: any }) {
   const layout = (page.layout || [])
     .slice()
     .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
+
+  // build schema (only emit for published pages)
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    "https://www.imast.in";
+  const canonical = page.canonicalUrl || `${baseUrl}/${slug}`;
+
+  const schemaList: any[] = [];
+
+  if (page.status === "published") {
+    const bc = breadcrumbSchema([
+      { position: 1, name: "Home", item: `${baseUrl}/` },
+      { position: 2, name: page.title || slug, item: canonical },
+    ]);
+
+    const pageWeb = webPageSchema({
+      name: page.metaTitle || page.title || "Page",
+      url: canonical,
+      description: page.metaDescription || page.excerpt,
+    });
+
+    schemaList.push(bc, pageWeb);
+  }
+
   return (
     <main>
+      {schemaList.length > 0 && <Schema data={schemaList} />}
+
       {layout.map((item: any, idx: number) => (
         <ModuleRenderer item={item} index={idx} key={item.module?._id ?? idx} />
       ))}

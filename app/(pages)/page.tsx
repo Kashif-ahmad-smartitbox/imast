@@ -5,6 +5,7 @@ import {
   getPageWithContent,
   PageWithContentResponse,
 } from "@/services/modules/pageModule";
+import Schema from "@/components/Schema";
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -113,8 +114,42 @@ export default async function HomePage() {
     .slice()
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 
+  // Build page-level schema: breadcrumb + webpage
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    "https://www.imast.in";
+  const canonical = baseUrl + "/";
+
+  const breadcrumb = {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: canonical,
+      },
+    ],
+  };
+
+  const webPage = {
+    "@type": "WebPage",
+    url: canonical,
+    name:
+      response.page.metaTitle ||
+      response.page.title ||
+      "IMAST – Smart Automation & Loyalty Solutions",
+    description:
+      response.page.metaDescription ||
+      response.page.excerpt ||
+      "IMAST provides enterprise automation, loyalty, SFA, HRMS and retail solutions to improve business efficiency and customer engagement.",
+  };
+
   return (
     <main>
+      {/* Page-level schema: breadcrumb + webpage (Organization & WebSite already in RootLayout) */}
+      <Schema data={[breadcrumb, webPage]} />
+
       {layout.map((item, index) => (
         <ModuleRenderer
           item={item}
