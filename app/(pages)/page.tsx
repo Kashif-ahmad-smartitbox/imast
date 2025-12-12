@@ -65,7 +65,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  // ... rest of your component code remains the same
   let response: PageWithContentResponse;
 
   try {
