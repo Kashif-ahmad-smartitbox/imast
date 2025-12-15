@@ -251,7 +251,7 @@ const ContactRow: React.FC<{
 
       <td className="px-6 py-4 text-gray-500 text-sm">
         <div className="flex items-center gap-1">
-          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 text-nowrap rounded">
             {displayData.otherFields} fields
           </span>
         </div>

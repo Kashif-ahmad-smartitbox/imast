@@ -11,6 +11,7 @@ import { GlobalModalProvider } from "@/components/global/GlobalModalProvider";
 
 import Schema from "@/components/Schema";
 import { organizationSchema } from "@/lib/schema";
+import { NavigationProvider } from "./context/NavigationContext";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -70,12 +71,13 @@ export default function RootLayout({
         </noscript>
 
         <ClientTopLoader />
-
-        <AuthProvider>
-          <GlobalModalProvider>
-            <AlertProvider>{children}</AlertProvider>
-          </GlobalModalProvider>
-        </AuthProvider>
+        <NavigationProvider>
+          <AuthProvider>
+            <GlobalModalProvider>
+              <AlertProvider>{children}</AlertProvider>
+            </GlobalModalProvider>
+          </AuthProvider>
+        </NavigationProvider>
         <Analytics />
       </body>
     </html>

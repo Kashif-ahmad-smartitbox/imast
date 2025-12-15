@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { ContactApi, SubmitFormPayload } from "@/services/modules/contact";
 import { useSearchParams } from "next/navigation";
+import { usePreviousUrl } from "./usePreviousUrl";
+import { useNavigation } from "@/app/context/NavigationContext";
 
 interface FormData {
   name: string;
@@ -194,7 +196,8 @@ const getSafeValue = <T,>(value: T | undefined, defaultValue: T): T => {
 };
 
 export default function ContactSection({ data }: ContactSectionProps) {
-  // Safely merge data with defaults
+  const { currentUrl } = useNavigation();
+
   const content = {
     header: { ...defaultData.header, ...data?.header },
     contactInfo: {
@@ -312,7 +315,6 @@ export default function ContactSection({ data }: ContactSectionProps) {
       [name]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({
         ...prev,
@@ -320,7 +322,6 @@ export default function ContactSection({ data }: ContactSectionProps) {
       }));
     }
 
-    // Clear submit error when user makes changes
     if (submitError) {
       setSubmitError(null);
     }
@@ -346,7 +347,7 @@ export default function ContactSection({ data }: ContactSectionProps) {
         },
         email: formData.email,
         name: formData.name,
-        urlRef: urlRef ? urlRef : "https://www.imast.in/contact",
+        urlRef: urlRef ? urlRef : currentUrl,
         honeypot: null,
       };
 
@@ -368,7 +369,6 @@ export default function ContactSection({ data }: ContactSectionProps) {
     }
   };
 
-  // Icon mapping for contact info items
   const iconMap = {
     "Email us": Mail,
     "Call us": Phone,
@@ -382,10 +382,7 @@ export default function ContactSection({ data }: ContactSectionProps) {
       id="contact"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Enhanced Header with animation */}
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
-          {/* Enhanced Contact Information - Glassmorphism Card */}
           <div className="lg:col-span-1">
             <div className="sticky top-24">
               <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-xl shadow-primary-100/30 hover:shadow-2xl hover:shadow-primary-200/40 transition-all duration-500 group">
@@ -416,9 +413,6 @@ export default function ContactSection({ data }: ContactSectionProps) {
                           item.href && window.open(item.href, "_blank")
                         }
                       >
-                        {/* Hover effect background */}
-                        <div className="absolute inset-0 bg-linear-to-br from-primary-50/0 to-blue-50/0 group-hover/card:from-primary-50/50 group-hover/card:to-blue-50/30 transition-all duration-500" />
-
                         <div className="relative flex items-start gap-5">
                           <div className="relative">
                             <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm group-hover/card:shadow-md transition-shadow duration-300">

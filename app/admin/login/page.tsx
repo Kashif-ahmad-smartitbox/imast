@@ -81,7 +81,7 @@ export default function AdminLogin() {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-purple-50/30 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 via-white to-purple-50/30 p-4">
         <div className="absolute inset-0 overflow-hidden" aria-hidden>
           <div className="absolute -top-40 -right-32 w-80 h-80 bg-purple-100 rounded-full blur-3xl opacity-30 animate-pulse" />
           <div className="absolute -bottom-40 -left-32 w-80 h-80 bg-primary-100 rounded-full blur-3xl opacity-30 animate-pulse delay-1000" />
@@ -97,7 +97,7 @@ export default function AdminLogin() {
                   alt="Imast Logo"
                 />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
+              <h1 className="text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
                 Admin Portal
               </h1>
               <p className="text-gray-500 text-sm">
@@ -111,7 +111,7 @@ export default function AdminLogin() {
                 role="alert"
               >
                 <svg
-                  className="w-4 h-4 mt-0.5 flex-shrink-0"
+                  className="w-4 h-4 mt-0.5 shrink-0"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
