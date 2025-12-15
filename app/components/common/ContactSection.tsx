@@ -195,7 +195,7 @@ const getSafeValue = <T,>(value: T | undefined, defaultValue: T): T => {
 };
 
 export default function ContactSection({ data }: ContactSectionProps) {
-  const { currentUrl } = useNavigation();
+  const { previousUrl } = useNavigation();
 
   const content = {
     header: { ...defaultData.header, ...data?.header },
@@ -346,7 +346,7 @@ export default function ContactSection({ data }: ContactSectionProps) {
         },
         email: formData.email,
         name: formData.name,
-        urlRef: urlRef ? urlRef : currentUrl,
+        urlRef: urlRef ? urlRef : previousUrl,
         honeypot: null,
       };
 

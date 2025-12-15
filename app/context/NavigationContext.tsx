@@ -1,14 +1,19 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useRef } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 type NavigationContextType = {
-  previousUrl: string | null;
+  previousUrl: string;
   currentUrl: string;
+  navigateFrom: string | null;
 };
 
-const NavigationContext = createContext<NavigationContextType | null>(null);
+const NavigationContext = createContext<NavigationContextType>({
+  previousUrl: "/",
+  currentUrl: "",
+  navigateFrom: null,
+});
 
 export function NavigationProvider({
   children,
@@ -17,34 +22,47 @@ export function NavigationProvider({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const previousUrlRef = useRef<string | null>(null);
-  const currentUrlRef = useRef<string>("");
+  const [navigationState, setNavigationState] = useState<NavigationContextType>(
+    {
+      previousUrl: "",
+      currentUrl: "",
+      navigateFrom: null,
+    }
+  );
 
   useEffect(() => {
-    const fullUrl =
-      pathname + (searchParams.toString() ? `?${searchParams}` : "");
+    // Store the navigation state in sessionStorage for persistence
+    const storedNavigation = sessionStorage.getItem("imast-navigation");
+    const initialPreviousUrl = storedNavigation
+      ? JSON.parse(storedNavigation).currentUrl
+      : null;
 
-    previousUrlRef.current = currentUrlRef.current || null;
-    currentUrlRef.current = fullUrl;
+    const fullUrl =
+      pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+
+    setNavigationState({
+      previousUrl: initialPreviousUrl,
+      currentUrl: fullUrl,
+      navigateFrom: initialPreviousUrl,
+    });
+
+    // Store current URL for next navigation
+    sessionStorage.setItem(
+      "imast-navigation",
+      JSON.stringify({
+        currentUrl: fullUrl,
+        timestamp: Date.now(),
+      })
+    );
   }, [pathname, searchParams]);
 
   return (
-    <NavigationContext.Provider
-      value={{
-        previousUrl: previousUrlRef.current,
-        currentUrl: currentUrlRef.current,
-      }}
-    >
+    <NavigationContext.Provider value={navigationState}>
       {children}
     </NavigationContext.Provider>
   );
 }
 
 export function useNavigation() {
-  const context = useContext(NavigationContext);
-  if (!context) {
-    throw new Error("useNavigation must be used inside NavigationProvider");
-  }
-  return context;
+  return useContext(NavigationContext);
 }

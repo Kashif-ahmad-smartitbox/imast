@@ -70,17 +70,16 @@ export default function RootLayout({
             title="GTM"
           />
         </noscript>
-
-        <ClientTopLoader />
-        <AuthProvider>
-          <GlobalModalProvider>
-            <Suspense fallback={null}>
-              <NavigationProvider>
+        <Suspense fallback={null}>
+          <NavigationProvider>
+            <ClientTopLoader />
+            <AuthProvider>
+              <GlobalModalProvider>
                 <AlertProvider>{children}</AlertProvider>
-              </NavigationProvider>
-            </Suspense>
-          </GlobalModalProvider>
-        </AuthProvider>
+              </GlobalModalProvider>
+            </AuthProvider>
+          </NavigationProvider>
+        </Suspense>
         <Analytics />
       </body>
     </html>
