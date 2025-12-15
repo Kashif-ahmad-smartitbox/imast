@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { ContactApi, SubmitFormPayload } from "@/services/modules/contact";
 import { useSearchParams } from "next/navigation";
-import { usePreviousUrl } from "./usePreviousUrl";
 import { useNavigation } from "@/app/context/NavigationContext";
 
 interface FormData {
