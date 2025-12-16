@@ -19,6 +19,7 @@ import {
   ArrowRight,
   Trophy,
 } from "lucide-react";
+import Link from "next/link";
 
 /* ----- Types ----- */
 type Media =
@@ -41,6 +42,7 @@ type Media =
 type AwardItem = {
   title: string;
   issuer: string;
+  link: string;
   year?: number;
   description?: string;
   logo?: string;
@@ -219,7 +221,8 @@ function AwardCard({
   openLightbox: (media?: Media, title?: string) => void;
 }) {
   return (
-    <article
+    <Link
+      href={award.link}
       className="group bg-white/90 backdrop-blur-sm rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer flex-shrink-0 w-[280px] xs:w-[300px] sm:w-[320px] md:w-[350px] lg:w-[380px] transition-all duration-500 border border-gray-200/60 hover:border-primary-300/50"
       tabIndex={0}
       aria-labelledby={`award-title-${award.title}`}
@@ -305,7 +308,7 @@ function AwardCard({
       {/* Corner accents */}
       <div className="absolute top-2 right-2 sm:top-3 sm:right-3 w-1 h-1 sm:w-2 sm:h-2 border-t border-r border-primary-500/0 group-hover:border-primary-500/50 transition-all duration-500 delay-200" />
       <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 w-1 h-1 sm:w-2 sm:h-2 border-b border-l border-primary-500/0 group-hover:border-primary-500/50 transition-all duration-500 delay-300" />
-    </article>
+    </Link>
   );
 }
 

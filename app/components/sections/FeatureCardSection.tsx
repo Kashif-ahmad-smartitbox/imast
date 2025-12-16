@@ -29,6 +29,7 @@ type Data = {
   background?: string;
   accentColor?: string;
   button?: { label?: string; href?: string };
+  button2?: { label?: string; href?: string };
   reverse?: boolean;
   rtl?: boolean;
 };
@@ -54,6 +55,7 @@ export default function FeatureCardSimple({ data }: { data: Data }) {
     background = "bg-gradient-to-br from-red-50 to-red-100",
     accentColor = "oklch(64.5% 0.246 16.439)",
     button = { label: "Learn More", href: "#" },
+    button2 = { label: "Learn More", href: "/contact" },
     reverse = false,
     rtl = false,
   } = data || {};
@@ -258,12 +260,14 @@ export default function FeatureCardSimple({ data }: { data: Data }) {
                     />
                   </a>
 
-                  <a
-                    href="#"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-700 rounded-lg border border-gray-300 transition-all duration-300 hover:border-gray-400 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-100"
-                  >
-                    View Demo
-                  </a>
+                  {button2 && (
+                    <a
+                      href={button2.href}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-gray-700 rounded-lg border border-gray-300 transition-all duration-300 hover:border-gray-400 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-100"
+                    >
+                      {button2.label}
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
