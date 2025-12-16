@@ -22,7 +22,7 @@ type CardItem = {
 
 type CTA = {
   title: string;
-  button: { label: string; href: string };
+  button: { label: string; href: string }[];
   image?: string;
   backgroundGradient?: string;
   subtitle?: string;
@@ -33,6 +33,7 @@ type Props = {
     title: string;
     subtitle?: string;
     description?: string;
+    button: { label: string; href: string }[];
     imageSrc?: string;
     imageAlt?: string;
     background?: string;
@@ -174,23 +175,25 @@ export default function LoyaltyLandingSection({ data }: Props) {
               <FeatureList />
 
               {/* CTA Buttons */}
-              <div className="mt-5 flex flex-col sm:flex-row gap-4">
-                <a
-                  href="#get-started"
-                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-linear-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
-                >
-                  <span>Get Started</span>
-                  <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
-                </a>
+              {Array.isArray(data.button) && (
+                <div className="mt-5 flex flex-col sm:flex-row gap-4">
+                  <a
+                    href={data.button[0].href}
+                    className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-linear-to-r from-primary-600 to-primary-700 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                  >
+                    <span>{data.button[0].label}</span>
+                    <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
+                  </a>
 
-                <a
-                  href="#demo"
-                  className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 border border-black font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
-                >
-                  <Play className="w-5 h-5 text-black" />
-                  <span className="text-black"> Watch Demo</span>
-                </a>
-              </div>
+                  <a
+                    href={data.button[1].href}
+                    className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 border border-black font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                  >
+                    <Play className="w-5 h-5 text-black" />
+                    <span className="text-black"> {data.button[1].label}</span>
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -320,23 +323,25 @@ export default function LoyaltyLandingSection({ data }: Props) {
                     {ctaBanner.subtitle}
                   </p>
                 )}
-                <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                  <a
-                    href={ctaBanner.button.href}
-                    className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-white text-black font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
-                  >
-                    {ctaBanner.button.label}
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </a>
+                {Array.isArray(ctaBanner.button) && (
+                  <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                    <a
+                      href={ctaBanner.button[0].href}
+                      className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 bg-white text-black font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                    >
+                      {ctaBanner.button[0].label}
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </a>
 
-                  <a
-                    href="#learn-more"
-                    className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
-                  >
-                    Learn More
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </a>
-                </div>
+                    <a
+                      href={ctaBanner.button[1].href}
+                      className="mt-4 rounded group inline-flex items-center gap-3 px-5 py-3 hover:bg-white/5 text-white border border-white/30 font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
+                    >
+                      {ctaBanner.button[1].label}
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>

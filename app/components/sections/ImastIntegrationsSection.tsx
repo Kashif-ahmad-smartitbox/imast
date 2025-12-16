@@ -217,20 +217,6 @@ export default function ImastIntegrationsRotatingSection({
                   {/* Shine effect on hover */}
                   <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 </div>
-
-                {/* Slot name */}
-                {slot.name && (
-                  <div className="mt-3 text-center">
-                    <h4 className="text-white font-medium text-sm">
-                      {slot.name}
-                    </h4>
-                    {slot.description && (
-                      <p className="text-primary-200 text-xs mt-1">
-                        {slot.description}
-                      </p>
-                    )}
-                  </div>
-                )}
               </div>
             );
           })}

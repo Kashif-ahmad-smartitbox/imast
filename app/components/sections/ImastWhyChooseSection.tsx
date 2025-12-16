@@ -11,6 +11,7 @@ import {
   CheckCircle,
   TrendingUp,
 } from "lucide-react";
+import Link from "next/link";
 
 // map icon names to lucide components
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -35,6 +36,10 @@ export type WhyItem = {
 export type WhySectionData = {
   heading?: string;
   highlight?: string;
+  button: {
+    label: string;
+    href: string;
+  };
   subtitle?: string;
   intro?: string;
   items: WhyItem[];
@@ -149,10 +154,15 @@ export default function ImastWhyChooseSection({
             </p>
 
             {/* CTA Button */}
-            <button className="mt-8 inline-flex items-center gap-3 px-8 py-3 rounded-2xl bg-linear-to-r from-primary-500 to-primary-600 text-white font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-primary-300">
-              Get Started
-              <ArrowRight className="w-5 h-5" />
-            </button>
+            {data.button && (
+              <Link
+                href={data.button.href}
+                className="mt-8 inline-flex items-center gap-3 px-8 py-3 rounded-2xl bg-linear-to-r from-primary-500 to-primary-600 text-white font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-primary-300"
+              >
+                {data.button.label}
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            )}
           </div>
 
           {/* Right Content - Cards Grid */}
