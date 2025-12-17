@@ -90,6 +90,11 @@ export type HowItWorksData = {
     pretitle?: string;
     description?: string;
   };
+  certifiedData: {
+    title: string;
+    subheading: string;
+    description: string;
+  };
   badges: any;
 };
 
@@ -286,7 +291,12 @@ export default function HowItWorks({ data }: Props) {
           </div>
         </div>
       </div>
-      <ImastCertificationsRow badges={data.badges} />
+      <ImastCertificationsRow
+        title={data.certifiedData.title}
+        subheading={data.certifiedData.subheading}
+        description={data.certifiedData.description}
+        badges={data.badges}
+      />
     </section>
   );
 }

@@ -49,6 +49,15 @@ const ACCEPTED_FILE_TYPES = {
   "image/*": [],
   "video/*": [],
   "audio/*": [],
+  "application/pdf": [],
+  "application/msword": [],
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [],
+  "application/vnd.ms-excel": [],
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [],
+  "text/plain": [],
+  "application/zip": [],
+  "application/x-rar-compressed": [],
+  "application/x-7z-compressed": [],
 };
 
 const FILE_TYPE_ICONS = {
@@ -56,6 +65,15 @@ const FILE_TYPE_ICONS = {
   "video/": Video,
   "audio/": Music,
   "application/pdf": File,
+  "application/msword": File,
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    File,
+  "application/vnd.ms-excel": File,
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": File,
+  "text/plain": File,
+  "application/zip": File,
+  "application/x-rar-compressed": File,
+  "application/x-7z-compressed": File,
   default: File,
 };
 
@@ -64,6 +82,16 @@ const FILE_TYPE_COLORS = {
   "video/": "from-purple-500 to-pink-500",
   "audio/": "from-green-500 to-emerald-500",
   "application/pdf": "from-red-500 to-orange-500",
+  "application/msword": "from-blue-500 to-indigo-500",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    "from-blue-500 to-indigo-500",
+  "application/vnd.ms-excel": "from-green-500 to-teal-500",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+    "from-green-500 to-teal-500",
+  "text/plain": "from-gray-500 to-gray-600",
+  "application/zip": "from-yellow-500 to-amber-500",
+  "application/x-rar-compressed": "from-yellow-500 to-amber-500",
+  "application/x-7z-compressed": "from-yellow-500 to-amber-500",
   default: "from-gray-500 to-gray-700",
 };
 
@@ -90,6 +118,22 @@ const getFileIcon = (type: string) => {
       return icon;
     }
   }
+
+  // Check for document types
+  if (type.includes("word") || type.includes("document")) {
+    return FILE_TYPE_ICONS["application/msword"];
+  }
+  if (type.includes("excel") || type.includes("spreadsheet")) {
+    return FILE_TYPE_ICONS["application/vnd.ms-excel"];
+  }
+  if (
+    type.includes("zip") ||
+    type.includes("rar") ||
+    type.includes("compressed")
+  ) {
+    return FILE_TYPE_ICONS["application/zip"];
+  }
+
   return FILE_TYPE_ICONS.default;
 };
 
@@ -99,7 +143,44 @@ const getFileColor = (type: string) => {
       return color;
     }
   }
+
+  // Check for document types
+  if (type.includes("word") || type.includes("document")) {
+    return FILE_TYPE_COLORS["application/msword"];
+  }
+  if (type.includes("excel") || type.includes("spreadsheet")) {
+    return FILE_TYPE_COLORS["application/vnd.ms-excel"];
+  }
+  if (
+    type.includes("zip") ||
+    type.includes("rar") ||
+    type.includes("compressed")
+  ) {
+    return FILE_TYPE_COLORS["application/zip"];
+  }
+  if (type === "text/plain") {
+    return FILE_TYPE_COLORS["text/plain"];
+  }
+
   return FILE_TYPE_COLORS.default;
+};
+
+const getFileTypeCategory = (type: string): string => {
+  if (type.startsWith("image/")) return "image/";
+  if (type.startsWith("video/")) return "video/";
+  if (type.startsWith("audio/")) return "audio/";
+  if (type === "application/pdf") return "application/pdf";
+  if (type.includes("word") || type.includes("document")) return "document";
+  if (type.includes("excel") || type.includes("spreadsheet"))
+    return "spreadsheet";
+  if (
+    type.includes("zip") ||
+    type.includes("rar") ||
+    type.includes("compressed")
+  )
+    return "archive";
+  if (type === "text/plain") return "text";
+  return "other";
 };
 
 const publicBase = ((): string => {
@@ -445,9 +526,29 @@ const MediaLibrary: React.FC = () => {
     );
 
     if (fileTypeFilter !== "all") {
-      filtered = filtered.filter((item) =>
-        item.type.startsWith(fileTypeFilter)
-      );
+      if (fileTypeFilter === "document") {
+        filtered = filtered.filter(
+          (item) => item.type.includes("word") || item.type.includes("document")
+        );
+      } else if (fileTypeFilter === "spreadsheet") {
+        filtered = filtered.filter(
+          (item) =>
+            item.type.includes("excel") || item.type.includes("spreadsheet")
+        );
+      } else if (fileTypeFilter === "archive") {
+        filtered = filtered.filter(
+          (item) =>
+            item.type.includes("zip") ||
+            item.type.includes("rar") ||
+            item.type.includes("compressed")
+        );
+      } else if (fileTypeFilter === "text") {
+        filtered = filtered.filter((item) => item.type === "text/plain");
+      } else {
+        filtered = filtered.filter((item) =>
+          item.type.startsWith(fileTypeFilter)
+        );
+      }
     }
 
     filtered.sort((a, b) => {
@@ -588,6 +689,55 @@ const MediaLibrary: React.FC = () => {
     );
   };
 
+  // Calculate stats
+  const stats = useMemo(() => {
+    const images = media.filter((item) =>
+      item.type.startsWith("image/")
+    ).length;
+    const videos = media.filter((item) =>
+      item.type.startsWith("video/")
+    ).length;
+    const audio = media.filter((item) => item.type.startsWith("audio/")).length;
+    const pdfs = media.filter((item) => item.type === "application/pdf").length;
+    const documents = media.filter(
+      (item) => item.type.includes("word") || item.type.includes("document")
+    ).length;
+    const spreadsheets = media.filter(
+      (item) => item.type.includes("excel") || item.type.includes("spreadsheet")
+    ).length;
+    const archives = media.filter(
+      (item) =>
+        item.type.includes("zip") ||
+        item.type.includes("rar") ||
+        item.type.includes("compressed")
+    ).length;
+    const text = media.filter((item) => item.type === "text/plain").length;
+
+    const other =
+      media.length -
+      (images +
+        videos +
+        audio +
+        pdfs +
+        documents +
+        spreadsheets +
+        archives +
+        text);
+
+    return {
+      images,
+      videos,
+      audio,
+      pdfs,
+      documents,
+      spreadsheets,
+      archives,
+      text,
+      other,
+      total: media.length,
+    };
+  }, [media]);
+
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -648,35 +798,33 @@ const MediaLibrary: React.FC = () => {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Stats - Updated with more categories */}
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
           <div className="bg-white rounded-2xl p-6 border border-gray-200">
             <div className="text-2xl font-bold text-gray-900">{total}</div>
             <div className="text-sm text-gray-600">Total Files</div>
           </div>
           <div className="bg-white rounded-2xl p-6 border border-gray-200">
             <div className="text-2xl font-bold text-gray-900">
-              {media.filter((item) => item.type.startsWith("image/")).length}
+              {stats.images}
             </div>
-            <div className="text-sm text-gray-600">Images (on page)</div>
+            <div className="text-sm text-gray-600">Images</div>
           </div>
           <div className="bg-white rounded-2xl p-6 border border-gray-200">
             <div className="text-2xl font-bold text-gray-900">
-              {media.filter((item) => item.type.startsWith("video/")).length}
+              {stats.videos}
             </div>
-            <div className="text-sm text-gray-600">Videos (on page)</div>
+            <div className="text-sm text-gray-600">Videos</div>
+          </div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-200">
+            <div className="text-2xl font-bold text-gray-900">{stats.pdfs}</div>
+            <div className="text-sm text-gray-600">PDFs</div>
           </div>
           <div className="bg-white rounded-2xl p-6 border border-gray-200">
             <div className="text-2xl font-bold text-gray-900">
-              {
-                media.filter(
-                  (item) =>
-                    !item.type.startsWith("image/") &&
-                    !item.type.startsWith("video/")
-                ).length
-              }
+              {stats.documents + stats.spreadsheets}
             </div>
-            <div className="text-sm text-gray-600">Other Files (on page)</div>
+            <div className="text-sm text-gray-600">Documents</div>
           </div>
         </div>
 
@@ -739,6 +887,11 @@ const MediaLibrary: React.FC = () => {
                 <option value="image/">Images</option>
                 <option value="video/">Videos</option>
                 <option value="audio/">Audio</option>
+                <option value="application/pdf">PDFs</option>
+                <option value="document">Documents</option>
+                <option value="spreadsheet">Spreadsheets</option>
+                <option value="archive">Archives</option>
+                <option value="text">Text Files</option>
               </select>
               <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
                 <svg
@@ -880,7 +1033,24 @@ const MediaLibrary: React.FC = () => {
                               <FileIcon className="w-8 h-8" />
                             </div>
                             <div className="text-xs font-medium uppercase tracking-wide bg-black/20 px-2 py-1 rounded-full backdrop-blur-sm">
-                              {item.type.split("/")[1] || item.type}
+                              {item.type.split("/")[1] ||
+                              item.type.includes("word")
+                                ? "DOC"
+                                : item.type.includes("excel")
+                                ? "XLS"
+                                : item.type.includes("spreadsheet")
+                                ? "XLSX"
+                                : item.type.includes("pdf")
+                                ? "PDF"
+                                : item.type.includes("zip")
+                                ? "ZIP"
+                                : item.type.includes("rar")
+                                ? "RAR"
+                                : item.type.includes("compressed")
+                                ? "Archive"
+                                : item.type.includes("plain")
+                                ? "TXT"
+                                : item.type.split("/")[1] || item.type}
                             </div>
                           </div>
                         )}
@@ -997,7 +1167,13 @@ const MediaLibrary: React.FC = () => {
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <FileIcon className="w-8 h-8 text-gray-400" />
+                            <div
+                              className={`p-2 rounded-lg bg-gradient-to-r ${getFileColor(
+                                item.type
+                              )}`}
+                            >
+                              <FileIcon className="w-5 h-5 text-white" />
+                            </div>
                             <div>
                               <div className="font-medium text-gray-900">
                                 {item.name}
@@ -1006,7 +1182,21 @@ const MediaLibrary: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600 capitalize">
-                          {item.type.split("/")[1] || item.type}
+                          {item.type.includes("word")
+                            ? "Document"
+                            : item.type.includes("excel")
+                            ? "Spreadsheet"
+                            : item.type.includes("pdf")
+                            ? "PDF"
+                            : item.type.includes("zip")
+                            ? "Archive"
+                            : item.type.includes("rar")
+                            ? "Archive"
+                            : item.type.includes("compressed")
+                            ? "Archive"
+                            : item.type.includes("plain")
+                            ? "Text File"
+                            : item.type.split("/")[1] || item.type}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600">
                           {formatSize(item.sizeKb)}
@@ -1215,12 +1405,36 @@ const MediaLibrary: React.FC = () => {
                 ) : (
                   <div className="bg-white rounded-2xl p-8 shadow-lg">
                     <div className="flex flex-col items-center gap-6">
-                      <div className="w-24 h-24 bg-gradient-to-r from-gray-500 to-gray-700 rounded-2xl flex items-center justify-center shadow-lg">
-                        <File className="w-12 h-12 text-white" />
+                      <div
+                        className={`w-24 h-24 rounded-2xl bg-gradient-to-r ${getFileColor(
+                          preview.type
+                        )} flex items-center justify-center shadow-lg`}
+                      >
+                        {getFileIcon(preview.type)({
+                          className: "w-12 h-12 text-white",
+                        })}
                       </div>
                       <div className="text-lg font-medium text-gray-700">
-                        {preview.type}
+                        {preview.type.includes("word")
+                          ? "Document"
+                          : preview.type.includes("excel")
+                          ? "Spreadsheet"
+                          : preview.type.includes("pdf")
+                          ? "PDF Document"
+                          : preview.type.includes("zip")
+                          ? "Archive File"
+                          : preview.type.includes("rar")
+                          ? "Archive File"
+                          : preview.type.includes("compressed")
+                          ? "Compressed File"
+                          : preview.type.includes("plain")
+                          ? "Text File"
+                          : preview.type}
                       </div>
+                      <p className="text-sm text-gray-500 max-w-md text-center">
+                        This file cannot be previewed directly. Download it to
+                        view the contents.
+                      </p>
                       <button
                         onClick={() => handleDownload(preview)}
                         className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-semibold"

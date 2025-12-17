@@ -42,7 +42,12 @@ const DEFAULT_BADGES = [
   },
 ];
 
-export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
+export default function ImastCertificationsRow({
+  title = "Certified & Compliant",
+  subheading = "Enterprise-Grade Security Standards",
+  description = "Adhering to global compliance frameworks to ensure your data remains protected with the highest security certifications",
+  badges = DEFAULT_BADGES,
+}) {
   const [activeIndex, setActiveIndex] = useState(-1);
   const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef<number | null>(null);
@@ -100,16 +105,11 @@ export default function ImastCertificationsRow({ badges = DEFAULT_BADGES }) {
     <section className="relative w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 lg:pt-16">
         <div className="mb-16">
-          <h3 className="text-2xl font-semibold text-red-600">
-            Certified & Compliant
-          </h3>
+          <h3 className="text-2xl font-semibold text-red-600">{title}</h3>
           <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-gray-900">
-            Enterprise-Grade Security Standards
+            {subheading}
           </h2>
-          <p className="mt-2 text-sm text-gray-600 max-w-xl">
-            Adhering to global compliance frameworks to ensure your data remains
-            protected with the highest security certifications
-          </p>
+          <p className="mt-2 text-sm text-gray-600 max-w-xl">{description}</p>
         </div>
 
         <motion.div
