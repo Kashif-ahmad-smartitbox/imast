@@ -1,9 +1,151 @@
-// lib/schema.ts
 export type JsonLd = Record<string, any>;
 
 /**
- * Organization + WebSite wrapped in @graph (suitable for site-wide placement)
+ * Enhanced WebPage schema with @id and isPartOf for homepage
  */
+export function webPageSchemaEnhanced(payload: {
+  name: string;
+  url: string;
+  description?: string;
+  image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  imageAlt?: string;
+}): JsonLd {
+  const out: any = {
+    "@type": "WebPage",
+    "@id": `${payload.url}#webpage`,
+    url: payload.url,
+    name: payload.name,
+    isPartOf: {
+      "@id": `${payload.url}#website`,
+    },
+  };
+
+  if (payload.description) out.description = payload.description;
+
+  if (payload.image) {
+    out.primaryImageOfPage = {
+      "@type": "ImageObject",
+      url: payload.image,
+      ...(payload.imageWidth && { width: payload.imageWidth }),
+      ...(payload.imageHeight && { height: payload.imageHeight }),
+      ...(payload.imageAlt && { alt: payload.imageAlt }),
+    };
+  }
+
+  return out;
+}
+
+export function productSchema(payload: {
+  name: string;
+  url: string;
+  image?: string;
+  description?: string;
+  brand?: string;
+  category?: string;
+  offers?: {
+    url: string;
+    availability?: string;
+    price?: string;
+    priceCurrency?: string;
+  };
+  relatedSoftware?: {
+    name: string;
+    operatingSystem?: string;
+    applicationCategory?: string;
+  };
+}): JsonLd {
+  const out: any = {
+    "@type": "Product",
+    name: payload.name,
+    url: payload.url,
+  };
+
+  if (payload.image) out.image = payload.image;
+  if (payload.description) out.description = payload.description;
+
+  if (payload.brand) {
+    out.brand = {
+      "@type": "Brand",
+      name: payload.brand,
+    };
+  }
+
+  if (payload.offers) {
+    out.offers = {
+      "@type": "Offer",
+      url: payload.offers.url,
+      ...(payload.offers.availability && {
+        availability: payload.offers.availability,
+      }),
+      ...(payload.offers.price && { price: payload.offers.price }),
+      ...(payload.offers.priceCurrency && {
+        priceCurrency: payload.offers.priceCurrency,
+      }),
+    };
+  }
+
+  if (payload.category) out.category = payload.category;
+
+  if (payload.relatedSoftware) {
+    out.isRelatedTo = {
+      "@type": "SoftwareApplication",
+      name: payload.relatedSoftware.name,
+      ...(payload.relatedSoftware.operatingSystem && {
+        operatingSystem: payload.relatedSoftware.operatingSystem,
+      }),
+      ...(payload.relatedSoftware.applicationCategory && {
+        applicationCategory: payload.relatedSoftware.applicationCategory,
+      }),
+      url: payload.url,
+    };
+  }
+
+  return out;
+}
+
+export function serviceSchema(payload: {
+  name: string;
+  url: string;
+  description?: string;
+  serviceType?: string;
+  providerId?: string;
+  areaServed?: string;
+  offers?: {
+    price?: string;
+    priceCurrency?: string;
+  };
+}): JsonLd {
+  const out: any = {
+    "@type": "Service",
+    name: payload.name,
+    url: payload.url,
+  };
+
+  if (payload.description) out.description = payload.description;
+  if (payload.serviceType) out.serviceType = payload.serviceType;
+  if (payload.areaServed) out.areaServed = payload.areaServed;
+
+  if (payload.providerId) {
+    out.provider = {
+      "@id": payload.providerId,
+    };
+  }
+
+  if (payload.offers) {
+    out.offers = {
+      "@type": "Offer",
+      ...(payload.offers.price && { price: payload.offers.price }),
+      ...(payload.offers.priceCurrency && {
+        priceCurrency: payload.offers.priceCurrency,
+      }),
+    };
+  }
+
+  return out;
+}
+
 export function organizationSchema({
   name,
   url,
@@ -83,7 +225,6 @@ export function webPageSchema(payload: {
 
 /**
  * SoftwareApplication schema producer
- * Use for product/solution pages to increase chance of rich results for apps/products.
  */
 export function softwareApplicationSchema(payload: {
   name: string;
@@ -118,7 +259,7 @@ export function softwareApplicationSchema(payload: {
 }
 
 /**
- * Article schema (useful for blog / case-study pages)
+ * Article schema
  */
 export function articleSchema(payload: {
   title: string;

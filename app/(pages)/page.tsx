@@ -6,6 +6,7 @@ import {
   PageWithContentResponse,
 } from "@/services/modules/pageModule";
 import Schema from "@/components/Schema";
+import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -13,54 +14,70 @@ export async function generateMetadata(): Promise<Metadata> {
 
     if (!response.page) {
       return {
-        title: "Home | imast",
-        description: "Welcome to imast - Your platform for insightful content.",
+        title: "Integrated SaaS Platform for Loyalty & Supply Chain | IMAST",
+        description:
+          "India's leading Integrated SaaS platform offering Loyalty & Supply Chain solutions. Empowering 100+ clients with innovative tools to drive growth.",
       };
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
+    const canonicalUrl = `${baseUrl}/`;
+    const ogImage =
+      "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
+    const defaultTitle =
+      "Integrated SaaS Platform for Loyalty & Supply Chain | IMAST";
+    const defaultDescription =
+      "India's leading Integrated SaaS platform offering Loyalty & Supply Chain solutions. Empowering 100+ clients with innovative tools to drive growth.";
 
     return {
-      title: response.page.metaTitle || response.page.title || "imast",
+      title: response.page.metaTitle || response.page.title || defaultTitle,
       description:
         response.page.metaDescription ||
         response.page.excerpt ||
-        "Discover expert insights and analysis.",
+        defaultDescription,
+      alternates: {
+        canonical: canonicalUrl,
+      },
       openGraph: {
-        title: response.page.metaTitle || response.page.title || "imast",
+        type: "website",
+        siteName: "IMAST",
+        title: response.page.metaTitle || response.page.title || defaultTitle,
         description:
           response.page.metaDescription ||
           response.page.excerpt ||
-          "Discover expert insights and analysis.",
-        type: "website",
-        url: baseUrl,
+          defaultDescription,
+        url: canonicalUrl,
         images: [
           {
-            url: "/favicon.png",
+            url: ogImage,
             width: 1200,
             height: 630,
-            alt: "IMAST",
+            alt: "IMAST Integrated SaaS Platform",
           },
         ],
+        locale: "en_IN",
       },
       twitter: {
         card: "summary_large_image",
-        title: response.page.metaTitle || response.page.title || "imast",
+        site: "@Imastopl",
+        creator: "@Imastopl",
+        title: response.page.metaTitle || response.page.title || defaultTitle,
         description:
           response.page.metaDescription ||
           response.page.excerpt ||
-          "Discover expert insights and analysis.",
-        images: ["/favicon.png"],
+          defaultDescription,
+        images: [ogImage],
       },
-      alternates: {
-        canonical: "/",
+      other: {
+        "og:image:alt": "IMAST Integrated SaaS Platform",
       },
     };
   } catch (error) {
     console.log("error", error);
     return {
-      title: "Home | imast",
-      description: "Welcome to iMast - Your platform for insightful content.",
+      title: "Integrated SaaS Platform for Loyalty & Supply Chain | IMAST",
+      description:
+        "India's leading Integrated SaaS platform offering Loyalty & Supply Chain solutions. Empowering 100+ clients with innovative tools to drive growth.",
     };
   }
 }
@@ -114,40 +131,48 @@ export default async function HomePage() {
     .slice()
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  // Build page-level schema: breadcrumb + webpage
+  // Build page-level schema
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
     "https://www.imast.in";
   const canonical = baseUrl + "/";
+  const ogImage =
+    "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
 
-  const breadcrumb = {
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: canonical,
-      },
-    ],
-  };
+  const breadcrumb = breadcrumbSchema([
+    {
+      position: 1,
+      name: "Home",
+      item: canonical,
+    },
+  ]);
 
   const webPage = {
     "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
     url: canonical,
     name:
       response.page.metaTitle ||
       response.page.title ||
-      "IMAST – Smart Automation & Loyalty Solutions",
+      "Integrated SaaS Platform for Loyalty & Supply Chain | IMAST",
     description:
       response.page.metaDescription ||
       response.page.excerpt ||
-      "IMAST provides enterprise automation, loyalty, SFA, HRMS and retail solutions to improve business efficiency and customer engagement.",
+      "India's leading Integrated SaaS platform offering Loyalty & Supply Chain solutions. Empowering 100+ clients with innovative tools to drive growth.",
+    isPartOf: {
+      "@id": `${canonical}#website`,
+    },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: ogImage,
+      width: 1200,
+      height: 630,
+      alt: "IMAST Integrated SaaS Platform",
+    },
   };
 
   return (
     <main>
-      {/* Page-level schema: breadcrumb + webpage (Organization & WebSite already in RootLayout) */}
       <Schema data={[breadcrumb, webPage]} />
 
       {layout.map((item, index) => (

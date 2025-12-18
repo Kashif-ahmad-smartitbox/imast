@@ -20,15 +20,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!story || story.status === "draft") {
       return {
-        title: "Story Not Found | imast",
+        title: "Story Not Found | IMAST",
         description:
           "The story you're looking for doesn't exist or may have been moved.",
         robots: "noindex, nofollow",
       };
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
     const canonicalUrl = `${baseUrl.replace(/\/$/, "")}/case-studies/${slug}`;
+    const defaultImage =
+      "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
 
     const metaDescription =
       story.metaDescription ||
@@ -38,15 +40,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             .replace(/<[^>]*>/g, "")
             .substring(0, 160)
             .trim() + "..."
-        : "Read this captivating story on iMast");
+        : "Read this captivating story on IMAST");
 
     const openGraph: any = {
       type: "article",
       url: canonicalUrl,
       title: story.title,
       description: metaDescription,
-      siteName: "iMast",
-      images: [story.image || `${baseUrl}/og-image.jpg`],
+      siteName: "IMAST",
+      images: [story.image || defaultImage],
+      locale: "en_IN",
     };
 
     if (story.publishedAt) openGraph.publishedTime = story.publishedAt;
@@ -54,16 +57,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (story.tags?.length) openGraph.tags = story.tags;
 
     return {
-      title: `${story.title} | iMast Stories`,
+      title: `${story.title} | IMAST Stories`,
       description: metaDescription,
       keywords: story.tags?.join(", "),
       alternates: { canonical: canonicalUrl },
       openGraph,
       twitter: {
         card: "summary_large_image",
+        site: "@Imastopl",
+        creator: "@Imastopl",
         title: story.title,
         description: metaDescription,
-        images: [story.image || `${baseUrl}/twitter-image.jpg`],
+        images: [story.image || defaultImage],
       },
       ...(story.publishedAt && { publishedTime: story.publishedAt }),
       ...(story.updatedAt && { modifiedTime: story.updatedAt }),
@@ -72,7 +77,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   } catch (error) {
     console.error("Error generating metadata for story:", error);
     return {
-      title: "Error Loading Story | iMast",
+      title: "Error Loading Story | IMAST",
       description:
         "There was an error loading this story. Please try again later.",
       robots: "noindex, nofollow",
@@ -114,7 +119,7 @@ export default async function SingleStoriesPage({ params }: Props) {
             .substring(0, 160)
             .trim() + "..."
         : undefined),
-    authorName: "imast",
+    authorName: "IMAST",
     publishedTime: story.publishedAt,
     modifiedTime: story.updatedAt,
   });

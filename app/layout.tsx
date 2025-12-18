@@ -33,7 +33,7 @@ export default function RootLayout({
   const orgJson = organizationSchema({
     name: "IMAST",
     url: SITE_URL,
-    logo: `${SITE_URL}/assets/images/logo.png`,
+    logo: `${SITE_URL}/logo.svg`,
     sameAs: [
       "https://www.linkedin.com/company/imastoperationspvtltd/",
       "https://www.facebook.com/imastoperations",

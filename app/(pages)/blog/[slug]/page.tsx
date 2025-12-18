@@ -20,14 +20,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!blog) {
       return {
-        title: "Article Not Found | imast",
+        title: "Article Not Found | IMAST",
         description: "The article you're looking for doesn't exist.",
         robots: "noindex, nofollow",
       };
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
     const canonicalUrl = `${baseUrl.replace(/\/$/, "")}/blog/${slug}`;
+    const defaultImage =
+      "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
 
     const metaDescription =
       blog.metaDescription ||
@@ -37,15 +39,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             .replace(/<[^>]*>/g, "")
             .substring(0, 160)
             .trim() + "..."
-        : "Read this insightful article on imast");
+        : "Read this insightful article on IMAST");
 
     const openGraph: any = {
       type: "article",
       url: canonicalUrl,
       title: blog.title,
       description: metaDescription,
-      siteName: "imast",
-      images: [blog.cover || `${baseUrl}/og-image.jpg`],
+      siteName: "IMAST",
+      images: [blog.cover || defaultImage],
+      locale: "en_IN",
     };
 
     if (blog.publishedAt) openGraph.publishedTime = blog.publishedAt;
@@ -53,17 +56,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (blog.tags?.length) openGraph.tags = blog.tags;
 
     return {
-      title: `${blog.title} | iMast`,
+      title: `${blog.title} | IMAST`,
       description: metaDescription,
       keywords: blog.tags?.join(", "),
-      authors: [{ name: "iMast" }],
+      authors: [{ name: "IMAST" }],
       alternates: { canonical: canonicalUrl },
       openGraph,
       twitter: {
         card: "summary_large_image",
+        site: "@Imastopl",
+        creator: "@Imastopl",
         title: blog.title,
         description: metaDescription,
-        images: [blog.cover || `${baseUrl}/twitter-image.jpg`],
+        images: [blog.cover || defaultImage],
       },
       ...(blog.publishedAt && { publishedTime: blog.publishedAt }),
       ...(blog.updatedAt && { modifiedTime: blog.updatedAt }),
@@ -72,7 +77,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   } catch (error) {
     console.log("error", error);
     return {
-      title: "Error | imast",
+      title: "Error | IMAST",
       description: "Error loading article",
       robots: "noindex, nofollow",
     };
@@ -94,14 +99,12 @@ export default async function SingleBlogPage({ params }: Props) {
     "https://www.imast.in";
   const canonical = `${baseUrl}/blog/${slug}`;
 
-  // BreadcrumbList
   const bc = breadcrumbSchema([
     { position: 1, name: "Home", item: `${baseUrl}/` },
     { position: 2, name: "Blog", item: `${baseUrl}/blogs` },
     { position: 3, name: blog.title || slug, item: canonical },
   ]);
 
-  // Article schema
   const art = articleSchema({
     title: blog.title,
     url: canonical,
@@ -115,7 +118,7 @@ export default async function SingleBlogPage({ params }: Props) {
             .substring(0, 160)
             .trim() + "..."
         : undefined),
-    authorName: "imast",
+    authorName: "IMAST",
     publishedTime: blog.publishedAt || new Date().toISOString(),
     modifiedTime: blog.updatedAt,
   });

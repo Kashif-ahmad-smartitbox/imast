@@ -34,36 +34,51 @@ export async function generateMetadata({
       notFound();
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
     const canonical =
       page.canonicalUrl || `${baseUrl.replace(/\/$/, "")}/policies/${slug}`;
+    const defaultImage =
+      "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
 
     return {
-      title: page.metaTitle || page.title || "iMast",
+      title: page.metaTitle || page.title || "IMAST",
       description:
         page.metaDescription ||
         page.excerpt ||
         "Discover expert insights and analysis.",
       keywords: page.keywords?.length ? page.keywords.join(", ") : undefined,
-      authors: [{ name: "iMast" }],
+      authors: [{ name: "IMAST" }],
       openGraph: {
-        title: page.metaTitle || page.title || "iMast",
+        title: page.metaTitle || page.title || "IMAST",
         description:
           page.metaDescription ||
           page.excerpt ||
           "Discover expert insights and analysis.",
         type: "website",
         url: canonical,
-        siteName: "iMast",
-        images: page.ogImage ? [page.ogImage] : undefined,
+        siteName: "IMAST",
+        images: page.ogImage
+          ? [page.ogImage]
+          : [
+              {
+                url: defaultImage,
+                width: 1200,
+                height: 630,
+                alt: "IMAST Integrated SaaS Platform",
+              },
+            ],
+        locale: "en_IN",
       },
       twitter: {
         card: "summary_large_image",
-        title: page.metaTitle || page.title || "iMast",
+        site: "@Imastopl",
+        creator: "@Imastopl",
+        title: page.metaTitle || page.title || "IMAST",
         description:
           page.metaDescription ||
           page.excerpt ||
           "Discover expert insights and analysis.",
+        images: page.ogImage ? [page.ogImage] : [defaultImage],
       },
       robots:
         page.status === "published" ? "index, follow" : "noindex, nofollow",

@@ -1,12 +1,15 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 type Card = {
   id: string | number;
   title: string;
   description: string;
   icon?: string;
+  link?: string; // Optional link for cards
+  linkLabel?: string; // Optional link label for cards
 };
 
 type Props = {
@@ -21,6 +24,23 @@ type Props = {
     cards: Card[];
     containerPadding?: string;
     badgeText?: string;
+
+    // Button/Link props
+    primaryButton?: {
+      label: string;
+      link: string;
+    };
+    secondaryButton?: {
+      label: string;
+      link: string;
+    };
+    // For the "Explore Sales Module" button specifically
+    exploreButton?: {
+      label: string;
+      link: string;
+    };
+    // For card click behavior
+    cardLinkType?: "button" | "entire-card"; // How cards should be clickable
   };
 };
 
@@ -36,9 +56,27 @@ export default function SalesStaffModule({ data }: Props) {
     cards = [],
     containerPadding = "py-20 lg:py-28 px-4 sm:px-6 lg:px-8",
     badgeText = "Sales Excellence",
+    primaryButton,
+    secondaryButton,
+    exploreButton = {
+      label: "Explore Sales Module",
+      link: "#",
+    },
+    cardLinkType = "button",
   } = data || {};
 
   const paleBg = (hex: string) => `${hex}14`;
+
+  // Handle click events
+  const handleCardClick = (card: Card) => {
+    if (card.link && cardLinkType === "entire-card") {
+      window.location.href = card.link;
+    }
+  };
+
+  const handleButtonClick = (link: string) => {
+    window.location.href = link;
+  };
 
   return (
     <section
@@ -209,24 +247,47 @@ export default function SalesStaffModule({ data }: Props) {
                 </div>
               </div>
 
-              {/* CTA Button */}
-              <div className="mt-8">
-                <button className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-linear-to-r from-orange-500 to-orange-600 text-white font-bold hover:shadow-2xl hover:scale-105 transition-all duration-300 shadow-lg group">
-                  Explore Sales Module
-                  <svg
-                    className="w-5 h-5 transform group-hover:translate-x-1 transition-transform"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+              {/* CTA Buttons */}
+              <div className="mt-8 flex flex-wrap gap-4">
+                {exploreButton && (
+                  <button
+                    onClick={() => handleButtonClick(exploreButton.link)}
+                    className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-linear-to-r from-orange-500 to-orange-600 text-white font-bold hover:shadow-2xl hover:scale-105 transition-all duration-300 shadow-lg group"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14 5l7 7m0 0l-7 7m7-7H3"
-                    />
-                  </svg>
-                </button>
+                    {exploreButton.label}
+                    <svg
+                      className="w-5 h-5 transform group-hover:translate-x-1 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                      />
+                    </svg>
+                  </button>
+                )}
+
+                {primaryButton && (
+                  <button
+                    onClick={() => handleButtonClick(primaryButton.link)}
+                    className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white text-orange-600 font-semibold hover:bg-orange-50 hover:shadow-lg transition-all duration-300 border border-orange-200"
+                  >
+                    {primaryButton.label}
+                  </button>
+                )}
+
+                {secondaryButton && (
+                  <button
+                    onClick={() => handleButtonClick(secondaryButton.link)}
+                    className="inline-flex items-center gap-3 px-6 py-3 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 hover:shadow-lg transition-all duration-300"
+                  >
+                    {secondaryButton.label}
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -238,8 +299,15 @@ export default function SalesStaffModule({ data }: Props) {
             {cards.map((card, index) => (
               <article
                 key={card.id}
-                className="group relative rounded-3xl p-8 backdrop-blur-sm border border-orange-100 hover:border-orange-300 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
+                className={`group relative rounded-3xl p-8 backdrop-blur-sm border border-orange-100 hover:border-orange-300 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 ${
+                  cardLinkType === "entire-card" && card.link
+                    ? "cursor-pointer"
+                    : ""
+                }`}
                 style={{ background: cardBg }}
+                onClick={() =>
+                  cardLinkType === "entire-card" && handleCardClick(card)
+                }
               >
                 {/* Background decorative element */}
                 <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-orange-500 to-orange-600 opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
@@ -280,9 +348,34 @@ export default function SalesStaffModule({ data }: Props) {
                   {card.title}
                 </h3>
 
-                <p className="text-gray-600 leading-relaxed text-base">
+                <p className="text-gray-600 leading-relaxed text-base mb-6">
                   {card.description}
                 </p>
+
+                {/* Card link button (if cardLinkType is "button" and card has link) */}
+                {cardLinkType === "button" && card.link && card.linkLabel && (
+                  <div className="mt-4">
+                    <button
+                      onClick={() => handleButtonClick(card.link!)}
+                      className="inline-flex items-center gap-2 text-orange-600 font-semibold hover:text-orange-800 transition-colors duration-300 group"
+                    >
+                      {card.linkLabel}
+                      <svg
+                        className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                )}
 
                 {/* Hover accent line */}
                 <div className="absolute bottom-0 left-8 right-8 h-1 bg-linear-to-r from-orange-500 to-orange-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />

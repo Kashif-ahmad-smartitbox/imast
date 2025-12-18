@@ -9,6 +9,7 @@ import {
   breadcrumbSchema,
   webPageSchema,
   softwareApplicationSchema,
+  productSchema,
 } from "@/lib/schema";
 
 type PageResponse = {
@@ -28,46 +29,63 @@ export async function generateMetadata({
 
     if (response.message === "Not found" || !response.page) {
       return {
-        title: "Page Not Found",
+        title: "Page Not Found | IMAST",
         description: "The page you are looking for does not exist.",
       };
     }
 
     const page = response.page;
-    // ensure this is a solutions page
     if (page.type !== "solutions") {
       notFound();
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://imast.in";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
     const canonical = page.canonicalUrl || `${baseUrl}/solutions/${slug}`;
+    const defaultImage =
+      "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
 
     return {
-      title: page.metaTitle || page.title || "imast",
+      title:
+        page.metaTitle || page.title || `${page.title || "Solution"} | IMAST`,
       description:
         page.metaDescription ||
         page.excerpt ||
         "Discover expert insights and analysis.",
       keywords: page.keywords?.length ? page.keywords.join(", ") : undefined,
-      authors: [{ name: "iMast" }],
+      authors: [{ name: "IMAST" }],
       openGraph: {
-        title: page.metaTitle || page.title || "imast",
+        title:
+          page.metaTitle || page.title || `${page.title || "Solution"} | IMAST`,
         description:
           page.metaDescription ||
           page.excerpt ||
           "Discover expert insights and analysis.",
         type: "website",
         url: canonical,
-        siteName: "iMast",
-        images: page.ogImage ? [page.ogImage] : undefined,
+        siteName: "IMAST",
+        images: page.ogImage
+          ? [page.ogImage]
+          : [
+              {
+                url: defaultImage,
+                width: 1200,
+                height: 630,
+                alt: "IMAST Integrated SaaS Platform",
+              },
+            ],
+        locale: "en_IN",
       },
       twitter: {
         card: "summary_large_image",
-        title: page.metaTitle || page.title || "imast",
+        site: "@Imastopl",
+        creator: "@Imastopl",
+        title:
+          page.metaTitle || page.title || `${page.title || "Solution"} | IMAST`,
         description:
           page.metaDescription ||
           page.excerpt ||
           "Discover expert insights and analysis.",
+        images: page.ogImage ? [page.ogImage] : [defaultImage],
       },
       robots:
         page.status === "published" ? "index, follow" : "noindex, nofollow",
@@ -78,7 +96,7 @@ export async function generateMetadata({
   } catch (error) {
     console.error("generateMetadata solutions:", error);
     return {
-      title: "Page Not Found",
+      title: "Page Not Found | IMAST",
       description: "The page you are looking for does not exist.",
     };
   }
@@ -95,7 +113,6 @@ export default async function Page({ params }: { params: any }) {
 
   const page = response.page;
 
-  // require solutions type
   if (page.type !== "solutions") {
     notFound();
   }
@@ -119,11 +136,13 @@ export default async function Page({ params }: { params: any }) {
     .slice()
     .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
 
-  // build schema
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
     "https://www.imast.in";
   const canonical = page.canonicalUrl || `${baseUrl}/solutions/${slug}`;
+  const defaultImage =
+    "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
+  const solutionImage = page.image || page.ogImage || defaultImage;
 
   const bc = breadcrumbSchema([
     { position: 1, name: "Home", item: `${baseUrl}/` },
@@ -131,26 +150,44 @@ export default async function Page({ params }: { params: any }) {
   ]);
 
   const pageWeb = webPageSchema({
-    name: page.metaTitle || page.title || "Solution",
+    name: page.metaTitle || page.title || `${page.title || "Solution"} | IMAST`,
     url: canonical,
     description: page.metaDescription || page.excerpt,
+  });
+
+  const productSchemaData = productSchema({
+    name: page.title || "Solution",
+    url: canonical,
+    image: solutionImage,
+    description: page.metaDescription || page.excerpt,
+    brand: "IMAST",
+    category: page.meta?.category || "Software",
+    offers: {
+      url: canonical,
+      availability: "https://schema.org/InStock",
+    },
+    relatedSoftware: {
+      name: page.title || "Solution",
+      operatingSystem:
+        page.meta?.operatingSystem || page.meta?.os || "Web, Android, iOS",
+      applicationCategory:
+        page.meta?.applicationCategory || "BusinessApplication",
+    },
   });
 
   const appSchema = softwareApplicationSchema({
     name: page.title || "Solution",
     url: canonical,
-    image:
-      page.image ||
-      page.ogImage ||
-      `${baseUrl}/assets/images/solutions/default.png`,
+    image: solutionImage,
     description: page.metaDescription || page.excerpt,
-    operatingSystem: page.meta?.operatingSystem || page.meta?.os || "Web",
+    operatingSystem:
+      page.meta?.operatingSystem || page.meta?.os || "Web, Android, iOS",
     applicationCategory:
       page.meta?.applicationCategory || "BusinessApplication",
     publisherName: page.meta?.publisherName || "IMAST",
   });
 
-  const schemaList = [bc, pageWeb, appSchema];
+  const schemaList = [bc, pageWeb, productSchemaData];
 
   return (
     <main>
