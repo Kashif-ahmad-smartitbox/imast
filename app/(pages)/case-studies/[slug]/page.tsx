@@ -4,7 +4,7 @@ import SingleStories from "@/app/components/pages/SingleStories";
 import { getStory } from "@/app/services/modules/stories";
 import { notFound } from "next/navigation";
 
-import Schema from "@/components/Schema";
+import Script from "next/script";
 import { breadcrumbSchema, articleSchema } from "@/lib/schema";
 
 interface Props {
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
-    const canonicalUrl = `${baseUrl.replace(/\/$/, "")}/case-studies/${slug}`;
+    const canonicalUrl = `${baseUrl}/case-studies/${slug}`;
     const defaultImage =
       "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
 
@@ -48,7 +48,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: story.title,
       description: metaDescription,
       siteName: "IMAST",
-      images: [story.image || defaultImage],
+      images: [
+        {
+          url: story.image || defaultImage,
+          width: 1200,
+          height: 630,
+          alt: story.title,
+        },
+      ],
       locale: "en_IN",
     };
 
@@ -73,6 +80,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ...(story.publishedAt && { publishedTime: story.publishedAt }),
       ...(story.updatedAt && { modifiedTime: story.updatedAt }),
       ...(story.tags?.length && { keywords: story.tags.join(", ") }),
+      other: {
+        "og:image:alt": story.title,
+      },
     };
   } catch (error) {
     console.error("Error generating metadata for story:", error);
@@ -95,21 +105,22 @@ export default async function SingleStoriesPage({ params }: Props) {
     notFound();
   }
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://www.imast.in";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
   const canonical = `${baseUrl}/case-studies/${slug}`;
+  const defaultImage =
+    "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
 
-  const bc = breadcrumbSchema([
+  // Build schemas
+  const breadcrumb = breadcrumbSchema([
     { position: 1, name: "Home", item: `${baseUrl}/` },
     { position: 2, name: "Case Studies", item: `${baseUrl}/case-studies` },
     { position: 3, name: story.title || slug, item: canonical },
   ]);
 
-  const art = articleSchema({
+  const article = articleSchema({
     title: story.title,
     url: canonical,
-    image: story.image || undefined,
+    image: story.image || defaultImage,
     description:
       story.metaDescription ||
       story.excerpt ||
@@ -118,15 +129,47 @@ export default async function SingleStoriesPage({ params }: Props) {
             .replace(/<[^>]*>/g, "")
             .substring(0, 160)
             .trim() + "..."
-        : undefined),
+        : "Read this captivating story on IMAST"),
     authorName: "IMAST",
     publishedTime: story.publishedAt,
     modifiedTime: story.updatedAt,
   });
 
+  // You might also want to add WebPage schema for better structure
+  const webPage = {
+    "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
+    url: canonical,
+    name: `${story.title} | IMAST Stories`,
+    description: story.metaDescription || story.excerpt,
+    isPartOf: {
+      "@id": `${baseUrl}/#website`,
+    },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: story.image || defaultImage,
+      width: 1200,
+      height: 630,
+      alt: story.title,
+    },
+  };
+
+  // Combine all schemas
+  const combinedSchema = {
+    "@context": "https://schema.org",
+    "@graph": [breadcrumb, webPage, article],
+  };
+
   return (
     <>
-      <Schema data={[bc, art]} />
+      {/* Use next/script for JSON-LD */}
+      <Script
+        id={`schema-story-${slug}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(combinedSchema) }}
+        strategy="afterInteractive"
+      />
+
       <SingleStories />
     </>
   );

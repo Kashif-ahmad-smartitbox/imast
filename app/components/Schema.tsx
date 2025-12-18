@@ -1,3 +1,7 @@
+"use client";
+
+import Script from "next/script";
+
 type Data = Record<string, any> | Record<string, any>[];
 
 export default function Schema({ data }: { data: Data }) {
@@ -17,9 +21,11 @@ export default function Schema({ data }: { data: Data }) {
     : arr[0];
 
   return (
-    <script
+    <Script
+      id="schema-script"
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }}
+      strategy="afterInteractive"
     />
   );
 }

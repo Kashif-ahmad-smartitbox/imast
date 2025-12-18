@@ -4,10 +4,10 @@ import ModuleRenderer from "@/components/modules/ModuleRenderer";
 import { getPageWithContent } from "@/services/modules/pageModule";
 import { notFound } from "next/navigation";
 
-import Schema from "@/components/Schema";
+import Script from "next/script";
 import {
   breadcrumbSchema,
-  webPageSchema,
+  webPageSchemaEnhanced,
   softwareApplicationSchema,
   productSchema,
 } from "@/lib/schema";
@@ -43,54 +43,51 @@ export async function generateMetadata({
     const canonical = page.canonicalUrl || `${baseUrl}/solutions/${slug}`;
     const defaultImage =
       "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
+    const solutionImage = page.image || page.ogImage || defaultImage;
+
+    const title =
+      page.metaTitle || page.title || `${page.title || "Solution"} | IMAST`;
+    const description =
+      page.metaDescription ||
+      page.excerpt ||
+      "Discover expert insights and analysis.";
 
     return {
-      title:
-        page.metaTitle || page.title || `${page.title || "Solution"} | IMAST`,
-      description:
-        page.metaDescription ||
-        page.excerpt ||
-        "Discover expert insights and analysis.",
+      title: title,
+      description: description,
       keywords: page.keywords?.length ? page.keywords.join(", ") : undefined,
       authors: [{ name: "IMAST" }],
       openGraph: {
-        title:
-          page.metaTitle || page.title || `${page.title || "Solution"} | IMAST`,
-        description:
-          page.metaDescription ||
-          page.excerpt ||
-          "Discover expert insights and analysis.",
+        title: title,
+        description: description,
         type: "website",
         url: canonical,
         siteName: "IMAST",
-        images: page.ogImage
-          ? [page.ogImage]
-          : [
-              {
-                url: defaultImage,
-                width: 1200,
-                height: 630,
-                alt: "IMAST Integrated SaaS Platform",
-              },
-            ],
+        images: [
+          {
+            url: solutionImage,
+            width: 1200,
+            height: 630,
+            alt: page.title || "IMAST Solution",
+          },
+        ],
         locale: "en_IN",
       },
       twitter: {
         card: "summary_large_image",
         site: "@Imastopl",
         creator: "@Imastopl",
-        title:
-          page.metaTitle || page.title || `${page.title || "Solution"} | IMAST`,
-        description:
-          page.metaDescription ||
-          page.excerpt ||
-          "Discover expert insights and analysis.",
-        images: page.ogImage ? [page.ogImage] : [defaultImage],
+        title: title,
+        description: description,
+        images: [solutionImage],
       },
       robots:
         page.status === "published" ? "index, follow" : "noindex, nofollow",
       alternates: {
         canonical,
+      },
+      other: {
+        "og:image:alt": page.title || "IMAST Solution",
       },
     };
   } catch (error) {
@@ -136,30 +133,40 @@ export default async function Page({ params }: { params: any }) {
     .slice()
     .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://www.imast.in";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
   const canonical = page.canonicalUrl || `${baseUrl}/solutions/${slug}`;
   const defaultImage =
     "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
   const solutionImage = page.image || page.ogImage || defaultImage;
 
-  const bc = breadcrumbSchema([
+  const title =
+    page.metaTitle || page.title || `${page.title || "Solution"} | IMAST`;
+  const description =
+    page.metaDescription ||
+    page.excerpt ||
+    "Discover expert insights and analysis.";
+
+  // Build schemas
+  const breadcrumb = breadcrumbSchema([
     { position: 1, name: "Home", item: `${baseUrl}/` },
     { position: 2, name: page.title || slug, item: canonical },
   ]);
 
-  const pageWeb = webPageSchema({
-    name: page.metaTitle || page.title || `${page.title || "Solution"} | IMAST`,
+  const webPage = webPageSchemaEnhanced({
+    name: title,
     url: canonical,
-    description: page.metaDescription || page.excerpt,
+    description: description,
+    image: solutionImage,
+    imageWidth: 1200,
+    imageHeight: 630,
+    imageAlt: page.title || "IMAST Solution",
   });
 
   const productSchemaData = productSchema({
     name: page.title || "Solution",
     url: canonical,
     image: solutionImage,
-    description: page.metaDescription || page.excerpt,
+    description: description,
     brand: "IMAST",
     category: page.meta?.category || "Software",
     offers: {
@@ -179,7 +186,7 @@ export default async function Page({ params }: { params: any }) {
     name: page.title || "Solution",
     url: canonical,
     image: solutionImage,
-    description: page.metaDescription || page.excerpt,
+    description: description,
     operatingSystem:
       page.meta?.operatingSystem || page.meta?.os || "Web, Android, iOS",
     applicationCategory:
@@ -187,15 +194,30 @@ export default async function Page({ params }: { params: any }) {
     publisherName: page.meta?.publisherName || "IMAST",
   });
 
-  const schemaList = [bc, pageWeb, productSchemaData];
+  // Combine all schemas
+  const combinedSchema = {
+    "@context": "https://schema.org",
+    "@graph": [breadcrumb, webPage, productSchemaData, appSchema],
+  };
 
   return (
-    <main>
-      <Schema data={schemaList} />
+    <>
+      <Script
+        id={`schema-${slug}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(combinedSchema) }}
+        strategy="afterInteractive"
+      />
 
-      {layout.map((item: any, idx: number) => (
-        <ModuleRenderer item={item} index={idx} key={item.module?._id ?? idx} />
-      ))}
-    </main>
+      <main>
+        {layout.map((item: any, idx: number) => (
+          <ModuleRenderer
+            item={item}
+            index={idx}
+            key={item.module?._id ?? idx}
+          />
+        ))}
+      </main>
+    </>
   );
 }

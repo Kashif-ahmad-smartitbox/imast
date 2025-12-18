@@ -5,20 +5,11 @@ import {
   getPageWithContent,
   PageWithContentResponse,
 } from "@/services/modules/pageModule";
-import Schema from "@/components/Schema";
-import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
+import { breadcrumbSchema, webPageSchemaEnhanced } from "@/lib/schema";
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
     const response: PageWithContentResponse = await getPageWithContent("home");
-
-    if (!response.page) {
-      return {
-        title: "Integrated SaaS Platform for Loyalty & Supply Chain | IMAST",
-        description:
-          "India's leading Integrated SaaS platform offering Loyalty & Supply Chain solutions. Empowering 100+ clients with innovative tools to drive growth.",
-      };
-    }
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
     const canonicalUrl = `${baseUrl}/`;
@@ -29,23 +20,61 @@ export async function generateMetadata(): Promise<Metadata> {
     const defaultDescription =
       "India's leading Integrated SaaS platform offering Loyalty & Supply Chain solutions. Empowering 100+ clients with innovative tools to drive growth.";
 
+    const title =
+      response.page?.metaTitle || response.page?.title || defaultTitle;
+    const description =
+      response.page?.metaDescription ||
+      response.page?.excerpt ||
+      defaultDescription;
+
+    if (!response.page) {
+      return {
+        title: defaultTitle,
+        description: defaultDescription,
+        alternates: {
+          canonical: canonicalUrl,
+        },
+        openGraph: {
+          type: "website",
+          siteName: "IMAST",
+          title: defaultTitle,
+          description: defaultDescription,
+          url: canonicalUrl,
+          images: [
+            {
+              url: ogImage,
+              width: 1200,
+              height: 630,
+              alt: "IMAST Integrated SaaS Platform",
+            },
+          ],
+          locale: "en_IN",
+        },
+        twitter: {
+          card: "summary_large_image",
+          site: "@Imastopl",
+          creator: "@Imastopl",
+          title: defaultTitle,
+          description: defaultDescription,
+          images: [ogImage],
+        },
+        other: {
+          "og:image:alt": "IMAST Integrated SaaS Platform",
+        },
+      };
+    }
+
     return {
-      title: response.page.metaTitle || response.page.title || defaultTitle,
-      description:
-        response.page.metaDescription ||
-        response.page.excerpt ||
-        defaultDescription,
+      title: title,
+      description: description,
       alternates: {
         canonical: canonicalUrl,
       },
       openGraph: {
         type: "website",
         siteName: "IMAST",
-        title: response.page.metaTitle || response.page.title || defaultTitle,
-        description:
-          response.page.metaDescription ||
-          response.page.excerpt ||
-          defaultDescription,
+        title: title,
+        description: description,
         url: canonicalUrl,
         images: [
           {
@@ -61,11 +90,8 @@ export async function generateMetadata(): Promise<Metadata> {
         card: "summary_large_image",
         site: "@Imastopl",
         creator: "@Imastopl",
-        title: response.page.metaTitle || response.page.title || defaultTitle,
-        description:
-          response.page.metaDescription ||
-          response.page.excerpt ||
-          defaultDescription,
+        title: title,
+        description: description,
         images: [ogImage],
       },
       other: {
@@ -131,14 +157,23 @@ export default async function HomePage() {
     .slice()
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  // Build page-level schema
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://www.imast.in";
-  const canonical = baseUrl + "/";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
+  const canonical = `${baseUrl}/`;
   const ogImage =
     "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
 
+  const defaultTitle =
+    "Integrated SaaS Platform for Loyalty & Supply Chain | IMAST";
+  const defaultDescription =
+    "India's leading Integrated SaaS platform offering Loyalty & Supply Chain solutions. Empowering 100+ clients with innovative tools to drive growth.";
+
+  const title = response.page.metaTitle || response.page.title || defaultTitle;
+  const description =
+    response.page.metaDescription ||
+    response.page.excerpt ||
+    defaultDescription;
+
+  // Build page-specific schemas
   const breadcrumb = breadcrumbSchema([
     {
       position: 1,
@@ -147,41 +182,38 @@ export default async function HomePage() {
     },
   ]);
 
-  const webPage = {
-    "@type": "WebPage",
-    "@id": `${canonical}#webpage`,
+  const webPage = webPageSchemaEnhanced({
+    name: title,
     url: canonical,
-    name:
-      response.page.metaTitle ||
-      response.page.title ||
-      "Integrated SaaS Platform for Loyalty & Supply Chain | IMAST",
-    description:
-      response.page.metaDescription ||
-      response.page.excerpt ||
-      "India's leading Integrated SaaS platform offering Loyalty & Supply Chain solutions. Empowering 100+ clients with innovative tools to drive growth.",
-    isPartOf: {
-      "@id": `${canonical}#website`,
-    },
-    primaryImageOfPage: {
-      "@type": "ImageObject",
-      url: ogImage,
-      width: 1200,
-      height: 630,
-      alt: "IMAST Integrated SaaS Platform",
-    },
+    description: description,
+    image: ogImage,
+    imageWidth: 1200,
+    imageHeight: 630,
+    imageAlt: "IMAST Integrated SaaS Platform",
+  });
+
+  // Combine page-specific schemas
+  const pageSchema = {
+    "@context": "https://schema.org",
+    "@graph": [breadcrumb, webPage],
   };
 
   return (
-    <main>
-      <Schema data={[breadcrumb, webPage]} />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
+      />
 
-      {layout.map((item, index) => (
-        <ModuleRenderer
-          item={item}
-          index={index}
-          key={item.module?._id || index}
-        />
-      ))}
-    </main>
+      <main>
+        {layout.map((item, index) => (
+          <ModuleRenderer
+            item={item}
+            index={index}
+            key={item.module?._id || index}
+          />
+        ))}
+      </main>
+    </>
   );
 }

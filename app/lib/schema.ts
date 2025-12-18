@@ -160,7 +160,9 @@ export function organizationSchema({
   contactPoint?: {
     telephone: string;
     contactType?: string;
+    email?: string;
     areaServed?: string;
+    availableLanguage?: string[];
   }[];
 }): JsonLd {
   const org: any = {

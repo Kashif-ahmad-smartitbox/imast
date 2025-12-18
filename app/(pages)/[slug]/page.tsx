@@ -4,8 +4,8 @@ import ModuleRenderer from "@/components/modules/ModuleRenderer";
 import { getPageWithContent } from "@/services/modules/pageModule";
 import { notFound } from "next/navigation";
 
-import Schema from "@/components/Schema";
-import { breadcrumbSchema, webPageSchema } from "@/lib/schema";
+import Script from "next/script";
+import { breadcrumbSchema, webPageSchemaEnhanced } from "@/lib/schema";
 
 type PageResponse = {
   page?: any;
@@ -13,7 +13,7 @@ type PageResponse = {
 };
 
 export const metadataBase = new URL(
-  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in"
 );
 
 export async function generateMetadata({
@@ -65,51 +65,50 @@ export async function generateMetadata({
     const canonical = page.canonicalUrl || `${baseUrl}/${slug}`;
     const defaultImage =
       "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
+    const pageImage = page.ogImage || page.image || defaultImage;
+
+    const title = page.metaTitle || page.title || "IMAST";
+    const description =
+      page.metaDescription ||
+      page.excerpt ||
+      "Discover expert insights and analysis.";
 
     return {
-      title: page.metaTitle || page.title || "IMAST",
-      description:
-        page.metaDescription ||
-        page.excerpt ||
-        "Discover expert insights and analysis.",
+      title: title,
+      description: description,
       keywords: page.keywords?.length ? page.keywords.join(", ") : undefined,
       authors: [{ name: "IMAST" }],
       openGraph: {
-        title: page.metaTitle || page.title || "IMAST",
-        description:
-          page.metaDescription ||
-          page.excerpt ||
-          "Discover expert insights and analysis.",
+        title: title,
+        description: description,
         type: "website",
         url: canonical,
         siteName: "IMAST",
-        images: page.ogImage
-          ? [page.ogImage]
-          : [
-              {
-                url: defaultImage,
-                width: 1200,
-                height: 630,
-                alt: "IMAST Integrated SaaS Platform",
-              },
-            ],
+        images: [
+          {
+            url: pageImage,
+            width: 1200,
+            height: 630,
+            alt: page.metaTitle || page.title || "IMAST",
+          },
+        ],
         locale: "en_IN",
       },
       twitter: {
         card: "summary_large_image",
         site: "@Imastopl",
         creator: "@Imastopl",
-        title: page.metaTitle || page.title || "IMAST",
-        description:
-          page.metaDescription ||
-          page.excerpt ||
-          "Discover expert insights and analysis.",
-        images: page.ogImage ? [page.ogImage] : [defaultImage],
+        title: title,
+        description: description,
+        images: [pageImage],
       },
       robots:
         page.status === "published" ? "index, follow" : "noindex, nofollow",
       alternates: {
         canonical,
+      },
+      other: {
+        "og:image:alt": page.metaTitle || page.title || "IMAST",
       },
     };
   } catch (error) {
@@ -158,35 +157,119 @@ export default async function Page({ params }: { params: any }) {
     .slice()
     .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://www.imast.in";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
   const canonical = page.canonicalUrl || `${baseUrl}/${slug}`;
+  const defaultImage =
+    "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
+  const pageImage = page.ogImage || page.image || defaultImage;
 
-  const schemaList: any[] = [];
+  const title = page.metaTitle || page.title || "IMAST";
+  const description =
+    page.metaDescription ||
+    page.excerpt ||
+    "Discover expert insights and analysis.";
 
-  if (page.status === "published") {
-    const bc = breadcrumbSchema([
-      { position: 1, name: "Home", item: `${baseUrl}/` },
-      { position: 2, name: page.title || slug, item: canonical },
-    ]);
+  // Build schemas
+  const breadcrumb = breadcrumbSchema([
+    { position: 1, name: "Home", item: `${baseUrl}/` },
+    { position: 2, name: page.title || slug, item: canonical },
+  ]);
 
-    const pageWeb = webPageSchema({
-      name: page.metaTitle || page.title || "Page",
+  const webPage = webPageSchemaEnhanced({
+    name: title,
+    url: canonical,
+    description: description,
+    image: pageImage,
+    imageWidth: 1200,
+    imageHeight: 630,
+    imageAlt: title,
+  });
+
+  let specialPageSchema = null;
+
+  if (slug === "about") {
+    specialPageSchema = {
+      "@type": "AboutPage",
+      "@id": `${canonical}#webpage`,
       url: canonical,
-      description: page.metaDescription || page.excerpt,
-    });
-
-    schemaList.push(bc, pageWeb);
+      name: title,
+      description: description,
+      isPartOf: {
+        "@id": `${baseUrl}/#website`,
+      },
+    };
+  } else if (slug === "contact") {
+    specialPageSchema = {
+      "@type": "ContactPage",
+      "@id": `${canonical}#webpage`,
+      url: canonical,
+      name: title,
+      description: description,
+      isPartOf: {
+        "@id": `${baseUrl}/#website`,
+      },
+    };
+  } else if (
+    slug === "privacy-policy" ||
+    slug === "terms" ||
+    slug === "terms-of-service"
+  ) {
+    specialPageSchema = {
+      "@type": "WebPage",
+      "@id": `${canonical}#webpage`,
+      url: canonical,
+      name: title,
+      description: description,
+      isPartOf: {
+        "@id": `${baseUrl}/#website`,
+      },
+      about: {
+        "@type": "Thing",
+        name: "Legal Document",
+      },
+    };
   }
 
-  return (
-    <main>
-      {schemaList.length > 0 && <Schema data={schemaList} />}
+  const schemaList = [];
 
-      {layout.map((item: any, idx: number) => (
-        <ModuleRenderer item={item} index={idx} key={item.module?._id ?? idx} />
-      ))}
-    </main>
+  if (page.status === "published") {
+    schemaList.push(breadcrumb);
+
+    if (specialPageSchema) {
+      schemaList.push(specialPageSchema);
+    } else {
+      schemaList.push(webPage);
+    }
+  }
+
+  const combinedSchema =
+    schemaList.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@graph": schemaList,
+        }
+      : null;
+
+  return (
+    <>
+      {combinedSchema && (
+        <Script
+          id={`schema-page-${slug}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(combinedSchema) }}
+          strategy="afterInteractive"
+        />
+      )}
+
+      <main>
+        {layout.map((item: any, idx: number) => (
+          <ModuleRenderer
+            item={item}
+            index={idx}
+            key={item.module?._id ?? idx}
+          />
+        ))}
+      </main>
+    </>
   );
 }

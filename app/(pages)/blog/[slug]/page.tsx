@@ -4,7 +4,7 @@ import SingleBlog from "@/components/pages/SingleBlog";
 import { getBlogBySlug } from "@/app/services/modules/blog";
 import { notFound } from "next/navigation";
 
-import Schema from "@/components/Schema";
+import Script from "next/script";
 import { breadcrumbSchema, articleSchema } from "@/lib/schema";
 
 interface Props {
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
-    const canonicalUrl = `${baseUrl.replace(/\/$/, "")}/blog/${slug}`;
+    const canonicalUrl = `${baseUrl}/blog/${slug}`;
     const defaultImage =
       "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
 
@@ -47,7 +47,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: blog.title,
       description: metaDescription,
       siteName: "IMAST",
-      images: [blog.cover || defaultImage],
+      images: [
+        {
+          url: blog.cover || defaultImage,
+          width: 1200,
+          height: 630,
+          alt: blog.title,
+        },
+      ],
       locale: "en_IN",
     };
 
@@ -73,6 +80,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ...(blog.publishedAt && { publishedTime: blog.publishedAt }),
       ...(blog.updatedAt && { modifiedTime: blog.updatedAt }),
       ...(blog.tags?.length && { keywords: blog.tags.join(", ") }),
+      other: {
+        "og:image:alt": blog.title,
+      },
     };
   } catch (error) {
     console.log("error", error);
@@ -94,21 +104,22 @@ export default async function SingleBlogPage({ params }: Props) {
     notFound();
   }
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://www.imast.in";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.imast.in";
   const canonical = `${baseUrl}/blog/${slug}`;
+  const defaultImage =
+    "https://res.cloudinary.com/diefvxqdv/image/upload/v1761311252/imast/media/pres-pic2.png";
 
-  const bc = breadcrumbSchema([
+  // Build schemas
+  const breadcrumb = breadcrumbSchema([
     { position: 1, name: "Home", item: `${baseUrl}/` },
     { position: 2, name: "Blog", item: `${baseUrl}/blogs` },
     { position: 3, name: blog.title || slug, item: canonical },
   ]);
 
-  const art = articleSchema({
+  const article = articleSchema({
     title: blog.title,
     url: canonical,
-    image: blog.cover || undefined,
+    image: blog.cover || defaultImage,
     description:
       blog.metaDescription ||
       blog.excerpt ||
@@ -117,15 +128,78 @@ export default async function SingleBlogPage({ params }: Props) {
             .replace(/<[^>]*>/g, "")
             .substring(0, 160)
             .trim() + "..."
-        : undefined),
+        : "Read this insightful article on IMAST"),
     authorName: "IMAST",
     publishedTime: blog.publishedAt || new Date().toISOString(),
     modifiedTime: blog.updatedAt,
   });
 
+  // Add WebPage schema for better structure
+  const webPage = {
+    "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
+    url: canonical,
+    name: `${blog.title} | IMAST`,
+    description: blog.metaDescription || blog.excerpt,
+    isPartOf: {
+      "@id": `${baseUrl}/#website`,
+    },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: blog.cover || defaultImage,
+      width: 1200,
+      height: 630,
+      alt: blog.title,
+    },
+  };
+
+  // For blogs, you might want to add more specific schema
+  // Like BlogPosting if it's a formal blog post
+  const blogPosting = {
+    "@type": "BlogPosting",
+    headline: blog.title,
+    image: blog.cover || defaultImage,
+    datePublished: blog.publishedAt || new Date().toISOString(),
+    dateModified: blog.updatedAt,
+    author: {
+      "@type": "Organization",
+      name: "IMAST",
+      url: baseUrl,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "IMAST",
+      logo: {
+        "@type": "ImageObject",
+        url: `${baseUrl}/logo.svg`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonical,
+    },
+    articleBody: blog.body
+      ? blog.body.replace(/<[^>]*>/g, "").substring(0, 5000) + "..."
+      : undefined,
+    keywords: blog.tags?.join(", "),
+  };
+
+  // Combine all schemas
+  const combinedSchema = {
+    "@context": "https://schema.org",
+    "@graph": [breadcrumb, webPage, article, blogPosting],
+  };
+
   return (
     <>
-      <Schema data={[bc, art]} />
+      {/* Use next/script for JSON-LD */}
+      <Script
+        id={`schema-blog-${slug}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(combinedSchema) }}
+        strategy="afterInteractive"
+      />
+
       <SingleBlog />
     </>
   );
