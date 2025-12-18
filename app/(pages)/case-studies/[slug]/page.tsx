@@ -83,7 +83,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SingleStoriesPage({ params }: Props) {
   const { slug } = (await params) as { slug: string };
 
-  // Fetch story server-side so we can build JSON-LD
   const response = await getStory(slug);
   const story = response.story;
 
@@ -96,14 +95,12 @@ export default async function SingleStoriesPage({ params }: Props) {
     "https://www.imast.in";
   const canonical = `${baseUrl}/case-studies/${slug}`;
 
-  // BreadcrumbList
   const bc = breadcrumbSchema([
     { position: 1, name: "Home", item: `${baseUrl}/` },
     { position: 2, name: "Case Studies", item: `${baseUrl}/case-studies` },
     { position: 3, name: story.title || slug, item: canonical },
   ]);
 
-  // Article schema
   const art = articleSchema({
     title: story.title,
     url: canonical,
@@ -124,10 +121,7 @@ export default async function SingleStoriesPage({ params }: Props) {
 
   return (
     <>
-      {/* Page-level JSON-LD (Organization/WebSite provided in RootLayout) */}
       <Schema data={[bc, art]} />
-
-      {/* Existing page rendering */}
       <SingleStories />
     </>
   );

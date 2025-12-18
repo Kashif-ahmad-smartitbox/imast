@@ -127,8 +127,7 @@ export default async function Page({ params }: { params: any }) {
 
   const bc = breadcrumbSchema([
     { position: 1, name: "Home", item: `${baseUrl}/` },
-    { position: 2, name: "Solutions", item: `${baseUrl}/solutions` },
-    { position: 3, name: page.title || slug, item: canonical },
+    { position: 2, name: page.title || slug, item: canonical },
   ]);
 
   const pageWeb = webPageSchema({
@@ -137,7 +136,6 @@ export default async function Page({ params }: { params: any }) {
     description: page.metaDescription || page.excerpt,
   });
 
-  // SoftwareApplication schema for solution pages (fallback to WebPage if insufficient data)
   const appSchema = softwareApplicationSchema({
     name: page.title || "Solution",
     url: canonical,
@@ -152,14 +150,10 @@ export default async function Page({ params }: { params: any }) {
     publisherName: page.meta?.publisherName || "IMAST",
   });
 
-  // Decide which schemas to emit:
-  // - Always emit breadcrumb + webpage
-  // - Emit SoftwareApplication for solutions (helps rich results) — it's safe even if some fields are defaults
   const schemaList = [bc, pageWeb, appSchema];
 
   return (
     <main>
-      {/* Page-level schema (Organization/WebSite already provided in layout) */}
       <Schema data={schemaList} />
 
       {layout.map((item: any, idx: number) => (

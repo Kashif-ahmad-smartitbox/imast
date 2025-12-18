@@ -1,4 +1,3 @@
-// app/blog/[slug]/page.tsx
 import React from "react";
 import { Metadata } from "next";
 import SingleBlog from "@/components/pages/SingleBlog";
@@ -83,7 +82,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SingleBlogPage({ params }: Props) {
   const { slug } = (await params) as { slug: string };
 
-  // Fetch blog server-side so we can build JSON-LD (and avoid relying on client fetch)
   const response = await getBlogBySlug(slug);
   const blog = response.blog;
 
@@ -99,7 +97,7 @@ export default async function SingleBlogPage({ params }: Props) {
   // BreadcrumbList
   const bc = breadcrumbSchema([
     { position: 1, name: "Home", item: `${baseUrl}/` },
-    { position: 2, name: "Blog", item: `${baseUrl}/blog` },
+    { position: 2, name: "Blog", item: `${baseUrl}/blogs` },
     { position: 3, name: blog.title || slug, item: canonical },
   ]);
 

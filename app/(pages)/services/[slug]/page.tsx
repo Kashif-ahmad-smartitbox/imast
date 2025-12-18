@@ -123,8 +123,7 @@ export default async function Page({ params }: { params: any }) {
 
   const bc = breadcrumbSchema([
     { position: 1, name: "Home", item: `${baseUrl}/` },
-    { position: 2, name: "Services", item: `${baseUrl}/services` },
-    { position: 3, name: page.title || slug, item: canonical },
+    { position: 2, name: page.title || slug, item: canonical },
   ]);
 
   const pageWeb = webPageSchema({
