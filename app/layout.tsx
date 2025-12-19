@@ -13,6 +13,7 @@ import Schema from "@/components/Schema";
 import { organizationSchema } from "@/lib/schema";
 import { NavigationProvider } from "./context/NavigationContext";
 import { Suspense } from "react";
+import Script from "next/script";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -90,6 +91,7 @@ export default function RootLayout({
       <head>
         <GoogleTags />
         <Schema data={orgJson} />
+        <script src="https://t.contentsquare.net/uxa/6d15b0ee1f6b4.js" async />
       </head>
       <body className={`${outfit.variable} antialiased`}>
         <noscript>
